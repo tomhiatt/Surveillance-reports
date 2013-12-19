@@ -1,0 +1,122 @@
+Regional TB report `r yr <- as.numeric(format(Sys.time(),"%Y")) - 1; yr+1`
+========================================================
+
+Abstract
+--------------------------------------------------------
+
+### Background
+
+### Methods
+
+### Results
+
+### Conclusion
+
+Introduction
+--------------------------------------------------------
+
+This report is the first in a series of reports.
+
+Methods
+--------------------------------------------------------
+
+Data were collected through an on-line data collection system.
+
+Results
+--------------------------------------------------------
+
+```{r echo=FALSE}
+# runprofile()
+# Functions to assist this document
+incCount <- function(inObj, useName) {
+  nObj <- length(inObj)
+  useNum <- max(inObj) + 1
+  inObj <- c(inObj, useNum)
+  names(inObj)[nObj + 1] <- useName
+  inObj
+}
+figCount <- c(`_` = 0)
+tableCount <- c(`_` = 0)
+
+# tableCount <- incCount(tableCount, "t.blogPostDocs")
+# tableCount
+
+pasteLabel <- function(preText, inObj, objName, insLink = TRUE) {
+  objNum <- inObj[objName]
+  
+  useText <- paste(preText, objNum, sep = " ")
+  if (insLink) {
+    useText <- paste("[", useText, "](#", objName, ")", sep = "")
+  }
+  useText
+}
+
+tableCat <- function(inFrame) {
+    outText <- paste(names(inFrame), collapse = " | ")
+    outText <- c(outText, paste(rep("---", ncol(inFrame)), collapse = " | "))
+    invisible(apply(inFrame, 1, function(inRow) {
+        outText <<- c(outText, paste(inRow, collapse = " | "))
+    }))
+    return(outText)
+}
+```
+
+``` {r, echo=FALSE}
+# Order list
+figCount <- incCount(figCount, "f.blogPostDocs")
+tableCount <- incCount(tableCount, "t.blogPostDocs")
+```
+
+As seen in `r I(pasteLabel("Figure", figCount, "f.blogPostDocs"))` the trend is evident.
+
+<a id="f.blogPostDocs"></a> 
+```{r fig.width=7, fig.height=6, echo=FALSE}
+
+plot(cars)
+```
+#### `r I(pasteLabel("Figure", figCount, "f.blogPostDocs", insLink=FALSE))` Case rates per 100 000 population, `r yr`.
+
+And also as seen in `r I(pasteLabel("Table", tableCount, "t.blogPostDocs"))` the trend is evident.
+
+<a id="t.blogPostDocs"></a> 
+```{r echo=FALSE, results='asis'}
+postDocBlogs <- data.frame(PD = c("p1", "p2", "p3"), NBlog = c(4, 10, 2), Year = c(1, 
+    4, 2))
+
+postDocInsert <- tableCat(postDocBlogs)
+```
+
+``` {r echo=FALSE, results='asis'}
+cat(postDocInsert, sep = "\n")
+```
+#### `r I(pasteLabel("Table", tableCount, "t.blogPostDocs", insLink=FALSE))` Case rates per 100 000 population, `r yr`.
+
+Overall header
+
+First Header  | Second Header
+------------- | -------------
+Content Cell  | Content Cell
+Content Cell  | Content Cell
+
+
+Discussion
+--------------------------------------------------------
+
+Annex
+--------------------------------------------------------
+
+The
+
+```{r}
+summary(cars)
+```
+
+You can also embed plots, for example:
+
+```{r fig.width=7, fig.height=6}
+plot(cars)
+```
+
+```{r}
+
+```
