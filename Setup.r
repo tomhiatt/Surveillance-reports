@@ -17,7 +17,7 @@ basefolder <- "d:/users/hiattt/Google Drive/Work files/Global TB report/Tables a
 
 # Set-up
 
-libraries(c('reshape', 'ggplot2', 'grid', 'scales', 'xtable', 'stringr', 'timeSeries'))
+libraries(c('reshape', 'ggplot2', 'grid', 'scales', 'xtable', 'stringr', 'timeSeries', 'ggthemes'))
 
 # library(treemap)
 # library(RODBC)
@@ -220,4 +220,41 @@ figsave <- function(obj, data, name, width=11, height=7){
 
 tablecopy <- function(table){
   file.copy(glue("Tables/", table, Sys.Date(), ".htm"), glue("Review/", table, ".htm"), overwrite=TRUE)
+}
+
+########################################################
+# Functions to assist with tables and figure in markdown document (poached from here: http://rmflight.github.io/posts/2012/10/papersinRmd.html)
+########################################################
+
+yr <- as.numeric(format(Sys.time(),"%Y")) - 1; yr+1
+incCount <- function(inObj, useName) {
+  nObj <- length(inObj)
+  useNum <- max(inObj) + 1
+  inObj <- c(inObj, useNum)
+  names(inObj)[nObj + 1] <- useName
+  inObj
+}
+figCount <- c(`_` = 0)
+tableCount <- c(`_` = 0)
+
+# tableCount <- incCount(tableCount, "t.blogPostDocs")
+# tableCount
+
+pasteLabel <- function(preText, inObj, objName, insLink = TRUE) {
+  objNum <- inObj[objName]
+  
+  useText <- paste(preText, objNum, sep = " ")
+  if (insLink) {
+    useText <- paste("[", useText, "](#", objName, ")", sep = "")
+  }
+  useText
+}
+
+tableCat <- function(inFrame) {
+  outText <- paste(names(inFrame), collapse = " | ")
+  outText <- c(outText, paste(rep("---", ncol(inFrame)), collapse = " | "))
+  invisible(apply(inFrame, 1, function(inRow) {
+    outText <<- c(outText, paste(inRow, collapse = " | "))
+  }))
+  return(outText)
 }

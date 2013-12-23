@@ -687,13 +687,6 @@ if(thisyear==2013){
 # Order by country
 tiasb <- tiasb[order(tiasb$country),]
 
-# Get best report for < 15 (This is now redundant with the data checks in the system)
-# for(c.typ in c('new_sp', 'new_sn', 'new_ep')){
-#   for(sex in c('m', 'f')){
-#    tiasb[glue(c.typ, '_', sex, '.child')] <- ifelse(!is.na(tiasb[[glue(c.typ, '_', sex, '014')]]), tiasb[[glue(c.typ, '_', sex, '014')]], .rowsums(tiasb[c(glue(c.typ, '_', sex, '04'), glue(c.typ, '_', sex, '514'))]))
-#   }
-# }
-
 # Combine categories
 # The all vars are not shown for countries where only sp was reported. But they are included in aggregates.
 
