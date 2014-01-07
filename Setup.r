@@ -9,7 +9,6 @@
 
 start <- Sys.time()
 source("d:/users/hiattt/Dropbox/Code/R/.Rprofile")
-runprofile()
 
 # SETTINGS. Change these three things as appropriate
 thisyear <- as.numeric(format(Sys.time(),"%Y")) # This refers to the report year
@@ -226,7 +225,8 @@ tablecopy <- function(table){
 # Functions to assist with tables and figure in markdown document (poached from here: http://rmflight.github.io/posts/2012/10/papersinRmd.html)
 ########################################################
 
-yr <- as.numeric(format(Sys.time(),"%Y")) - 1; yr+1
+yr <- as.numeric(format(Sys.time(),"%Y")) - ifelse(as.numeric(format(Sys.time(),"%m")) < 4, 2, 1)
+
 incCount <- function(inObj, useName) {
   nObj <- length(inObj)
   useNum <- max(inObj) + 1

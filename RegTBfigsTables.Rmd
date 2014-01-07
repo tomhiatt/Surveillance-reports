@@ -4,39 +4,62 @@
 # Tables and figures to go in the Regional TB report
 source('d:/users/hiattt/Dropbox/Code/Surveillance reports/Setup.r')
 
+# Inspired by:
+#   
+#   http://gforge.se/2014/01/fast-track-publishing-using-knitr-part-ii/
+
 
 # I can't decide if I pull all this stuff out here or keep it in sequence down below. It seems silly to use markdown and then not incorporate it, doesn't it? Okay I'm putting it here.
 
 whbc <- c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM")
+
+runprofile()
 ```
 
 
-Regional TB report `r yr`
+Regional TB report `r yr + 1`
 ========================================================
 
-Abstract
+Abstract 
 --------------------------------------------------------
-
-### Background
-
-### Methods
-
-### Results
-
-### Conclusion
+(probably remove this section)
 
 Introduction
 --------------------------------------------------------
 
-This report is the first in a series of reports.
+Tuberculosis in the Western Pacific Region
 
-Methods
+Burden
 --------------------------------------------------------
 
-Data were collected through an on-line data collection system.
+```{r m.notif.data, echo=FALSE, include=FALSE}
 
-Results
---------------------------------------------------------
+figCount <- incCount(figCount, "m.notif")
+
+# -------------------------------------------------
+# Notification data
+# -------------------------------------------------
+
+mc <- subset(tb, year==yr & g_whoregion=="WPR", select=c(country, iso2, iso3, g_whoregion, c_tot_newrel_100k))
+
+
+mc$cat <- cut(round(mc$c_tot_newrel_100k,0), c(0, 10, 50, 100, 200, Inf), c('0–9', '10–49', '50–99', '100–199', '>=200'), right=FALSE)
+
+
+mc1 <- WHOmap.print(mc, legend.title= "TB cases per \n100 000 population", copyright=FALSE, show=FALSE, zoom="WPR")
+```
+
+<a id="m.notif"></a> 
+#### `r I(pasteLabel("Figure", figCount, "m.notif", insLink=FALSE))` New and relapse rates per 100 000, `r yr`.
+```{r m.notif, echo=FALSE, fig.width=11}
+
+# -------------------------------------------------
+# Notification map
+# -------------------------------------------------
+
+mc1
+```
+
 
 ```{r agesex.data,  echo=FALSE}
 figCount <- incCount(figCount, "f.agesex.bar")
@@ -78,7 +101,7 @@ age$age <- factor(age$age, c("014", "1524", "2534", "3544", "4554", "5564", "65"
 #### `r I(pasteLabel("Figure", figCount, "f.agesex.bar", insLink=FALSE))` Smear-positive notification rates by age and sex in the Region and in seven countries with a high burden of TB, `r yr`.
 ``` {r f.agesex.bar, echo=FALSE, fig.width=11, fig.height=11, warning=FALSE}
 
-p2 <- ggplot(subset(age, year==yr), aes(age, new_sp_100k, fill=sex)) + geom_bar(stat="identity", position="dodge") + facet_wrap(~sh.name, scales='free_y', ncol=2) + theme_few() + scale_fill_brewer(type="qual", palette=3) + xlab("Age group")
+p2 <- ggplot(subset(age, year==yr), aes(age, new_sp_100k, fill=sex)) + geom_bar(stat="identity", position="dodge") + facet_wrap(~sh.name, scales='free_y', ncol=2) + theme_few() + scale_fill_brewer('Sex', type="qual", palette=3) + xlab("Age group")
 
 p2 + scale_y_continuous("New smear-positive cases per 100 000")
 
@@ -89,7 +112,7 @@ p2 + scale_y_continuous("New smear-positive cases per 100 000")
 #### `r I(pasteLabel("Figure", figCount, "f.agesex", insLink=FALSE))` Trends of notification rates of new smear-positive TB cases in specific age and sex groups, `r yr`.
 ``` {r f.agesex, echo=FALSE, warning=FALSE, fig.width=11, fig.height=15}
 
-p1 <- ggplot(age, aes(year, new_sp_100k, color=age)) + geom_line() + facet_grid(sh.name~sex, scales='free_y') + theme_few() + scale_x_continuous("", breaks = pretty_breaks()) + scale_color_brewer(type="seq", palette=4)
+p1 <- ggplot(age, aes(year, new_sp_100k, color=age)) + geom_line() + facet_grid(sh.name~sex, scales='free_y') + theme_few() + scale_x_continuous("", breaks = pretty_breaks()) + scale_color_brewer("Age group", type="seq", palette=4)
 
 p1 + scale_y_continuous("New smear-positive cases per 100 000")
 # p1 + scale_y_log10("New smear-positive cases per 100 000")                                                                                                                                                        
@@ -207,7 +230,7 @@ cat(postDocInsert, sep = "\n")
 
 
 
-Discussion
+Editorial Note
 --------------------------------------------------------
 
 Annex
