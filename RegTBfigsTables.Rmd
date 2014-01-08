@@ -32,6 +32,80 @@ Tuberculosis in the Western Pacific Region
 Burden
 --------------------------------------------------------
 
+```{r t.notif.data, echo=FALSE, warning=FALSE}
+tableCount <- incCount(tableCount, "t.notif")
+
+# Notification table
+tbb <- subset(n, year==yr & g_whoregion=="WPR", select=c('country', 'g_whoregion', 'g_hbc22', 'c_notified', "new_sp", "new_sn", "new_su", "new_ep", "new_oth", "ret_rel", 'c_newinc', "c_ret", "newret_oth", "new_labconf", 'c_new'))
+
+tbb$new.pulm <- .rowsums(tbb[c('new_sp', 'new_sn', 'new_su')])
+
+tbb <- tbb[order(tbb$country),]
+names(tbb)[names(tbb)=='country'] <- 'area'
+
+# make aggregate row
+tbbr <- aggregate(tbb[4:ncol(tbb)], by=list(area=tbb$g_whoregion), FUN=sum, na.rm=TRUE)
+
+
+# combine together
+tbc <- rbind(tbb[tbb$g_whoregion=='WPR', c(1, 4:ncol(tbb))], tbbr[tbbr$area=='WPR',]) # , tbbh, tbbga
+
+# Fill in data for countries not reporting lab confirmed (see below too)
+tbc$new_labconf2 <- ifelse(is.na(tbc$new_labconf), tbc$new_sp, tbc$new_labconf)
+
+# calculate and format vars
+tbc$ret_nrel <- tbc$c_ret - tbc$ret_rel
+tbc$newpulm_lab_pct <- tbc$new_labconf2 / tbc$new.pulm * 100
+
+for(var in 2:ncol(tbc)){
+  tbc[var] <- rounder(tbc[[var]])
+}
+tbc[is.na(tbc$newpulm_lab_pct), 'newpulm_lab_pct'] <-  "--"
+# rename
+tbc <- .shortnames(tbc, col='area')
+
+# Add footnote for countries not reporting Lab confirmed (Thailand)
+footnote.b <- ifelse(any(is.na(tbc$new_labconf) & !is.na(tbc$new_sp)), paste('(b) LABORATORY CONFIRMED data for', paste(subset(tbc, is.na(new_labconf), 'area'), collapse=', '), 'refer to smear-positive cases only. Data on cases that were laboratory confirmed using other methods were not reported.'), "")
+tbc$new_labconf2 <- ifelse(is.na(tbc$new_labconf) & !is.na(tbc$new_sp), glue(tbc$new_sp, "(b)"), tbc$new_labconf2)
+
+tbm <- xtable(tbc[c("area", "c_notified", "new_sp", "new_sn", "new_su", "new_ep", "new_oth", "new_labconf2", "newpulm_lab_pct", "ret_rel", "ret_nrel", "c_newinc")])
+digits(tbm) <- 0
+
+
+```
+
+In `r yr`, national TB control programmes (NTPs) reported `r cnotw <- sum(tb[tb$year==yr & tb$g_whoregion=="WPR", "c_notified"], na.rm=TRUE) ; round(cnotw / 1e6, 1)` million people with TB in the region making up `r round(cnotw / sum(tb[tb$year==yr, "c_notified"], na.rm=TRUE) * 100, 0)`% of the global burden. Of these cases `r nrw <- sum(tb[tb$year==yr & tb$g_whoregion=="WPR", "tot_newrel"], na.rm=TRUE) ; round(nrw / cnotw * 100, 0)`% were new episodes of TB. Within the region China accounts for `r round(sum(tb[tb$year==yr & tb$iso2=="CN", "tot_newrel"], na.rm=TRUE) / nrw * 100, 0)`% of the caseload with the Philippines and Viet Nam following with `r round(sum(tb[tb$year==yr & tb$iso2=="PH", "tot_newrel"], na.rm=TRUE) / nrw * 100, 0)`% and `r round(sum(tb[tb$year==yr & tb$iso2=="VN", "tot_newrel"], na.rm=TRUE) / nrw * 100, 0)`% respectively.
+
+And also as seen in `r I(pasteLabel("Table", tableCount, "t.notif"))` the trend is evident.
+
+<a id="t.notif"></a> 
+#### `r I(pasteLabel("Table", tableCount, "t.notif", insLink=FALSE))` Case notifications, `r yr`.
+```{r t.notif, echo=FALSE, results='asis'}
+
+print(tbm, type="html", include.rownames=FALSE, include.colnames=F, html.table.attributes="border=0 rules=rows width=900 cellpadding=5", 
+      add.to.row=list(pos=list(0,37), command=c(
+"<TR> <TD colspan=2></TD> 
+  <TH colspan=7>NEW CASES</TH> 
+  <TH colspan=2>RETREATMENT CASES</TH> 
+  <TD colspan=1></TD> </TR> 
+  <TR> <TD></TD> <TD>TOTAL<br> NOTIFIED</TD> 
+  <TD>SMEAR-<br>POSITIVE</TD> 
+  <TD>SMEAR-<br>NEGATIVE</TD> 
+  <TD>SMEAR NOT DONE</TD>
+  <TD>EXTRA-<br>PULMONARY</TD> 
+  <TD>CASE TYPE<br> UNKNOWN</TD> 
+  <TD>PULMONARY CASES LABORATORY CONFIRMED</TD> 
+  <TD>PERCENTAGE OF PULMONARY CASES LABORATORY CONFIRMED</TD>   
+  <TD>RELAPSE</TD> 
+  <TD>RETREATMENT<br>EXCL. RELAPSE</TD> 
+  <TD>NEW AND<br>RELAPSE(a)</TD> 
+ </TR>", 
+  glue("<TR> <TD colspan=12>Blank cells indicate data not reported. -- indicates values that cannot be calculated.<br>
+(a) NEW AND RELAPSE includes cases for which the treatment history is unknown.<br>", footnote.b,"</TD></TR>"))))
+
+```
+
+
 ```{r m.notif.data, echo=FALSE, include=FALSE}
 
 figCount <- incCount(figCount, "m.notif")
@@ -50,8 +124,8 @@ mc1 <- WHOmap.print(mc, legend.title= "TB cases per \n100 000 population", copyr
 ```
 
 <a id="m.notif"></a> 
-#### `r I(pasteLabel("Figure", figCount, "m.notif", insLink=FALSE))` New and relapse rates per 100 000, `r yr`.
-```{r m.notif, echo=FALSE, fig.width=11}
+#### `r I(pasteLabel("Figure", figCount, "m.notif", insLink=FALSE))` New and relapse rates per 100 000 population in countries and areas of the Western Pacific Region, `r yr`.
+```{r m.notif, echo=FALSE, fig.width=5, height=5}
 
 # -------------------------------------------------
 # Notification map
@@ -121,112 +195,9 @@ p1 + scale_y_continuous("New smear-positive cases per 100 000")
 
 As seen in `r I(pasteLabel("Figure", figCount, "f.agesex"))` the trend is evident.
 
-```{r t.notif.num, echo=FALSE}
-tableCount <- incCount(tableCount, "t.notif")
-```
-
-And also as seen in `r I(pasteLabel("Table", tableCount, "t.notif"))` the trend is evident.
-
-<a id="t.notif"></a> 
-#### `r I(pasteLabel("Table", tableCount, "t.notif", insLink=FALSE))` Case notifications, `r yr`.
-```{r t.notif, echo=FALSE, results='asis', warning=FALSE}
-
-# Notification table
-tbb <- subset(n, year==thisyear-1, select=c('country', 'g_whoregion', 'g_hbc22', 'c_notified', "new_sp", "new_sn", "new_su", "new_ep", "new_oth", "ret_rel", 'c_newinc', "c_ret", "newret_oth", "new_labconf", 'c_new'))
-
-tbb$new.pulm <- .rowsums(tbb[c('new_sp', 'new_sn', 'new_su')])
-
-tbb <- tbb[order(tbb$country),]
-names(tbb)[names(tbb)=='country'] <- 'area'
-
-# make aggregate rows
-tbbh <- aggregate(tbb[4:ncol(tbb)], by=list(area=tbb$g_hbc22), FUN=sum, na.rm=TRUE)
-tbbh <- tbbh[tbbh$area=='high',]
-tbbh$area <- 'High-burden countries'
-tbbr <- aggregate(tbb[4:ncol(tbb)], by=list(area=tbb$g_whoregion), FUN=sum, na.rm=TRUE)
-tbbg <- tbb; tbbg$area <- 'Global'
-tbbga <- aggregate(tbbg[4:ncol(tbb)], by=list(area=tbbg$area), FUN=sum, na.rm=TRUE)
-
-# combine together
-tbc <- rbind(tbb[tbb$g_whoregion=='WPR', c(1, 4:ncol(tbb))], tbbr[tbbr$area=='WPR',]) # , tbbh, tbbga
-
-
-
-# Fill in data for countries not reporting lab confirmed (see below too)
-tbc$new_labconf2 <- ifelse(is.na(tbc$new_labconf), tbc$new_sp, tbc$new_labconf)
-
-# calculate and format vars
-# tbc$labconf <- rowSums(tbc[c('new_labconf2', 'ret_labconf')]) 
-# tbc$notif_lab <- tbc$labconf / tbc$c_notified_lab * 100
-tbc$ret_nrel <- tbc$c_ret - tbc$ret_rel
-tbc$newpulm_lab_pct <- tbc$new_labconf2 / tbc$new.pulm * 100
-
-
-for(var in 2:ncol(tbc)){
-  tbc[var] <- rounder(tbc[[var]])
-}
-tbc[is.na(tbc$newpulm_lab_pct), 'newpulm_lab_pct'] <- "–"
-# rename
-tbc <- .shortnames(tbc, col='area')
-
-# Add footnote for countries not reporting Lab confirmed (Thailand)
-footnote.b <- ifelse(any(is.na(tbc$new_labconf) & !is.na(tbc$new_sp)), paste('(b) LABORATORY CONFIRMED data for', paste(subset(tbc, is.na(new_labconf), 'area'), collapse=', '), 'refer to smear-positive cases only. Data on cases that were laboratory confirmed using other methods were not reported.'), "")
-tbc$new_labconf2 <- ifelse(is.na(tbc$new_labconf) & !is.na(tbc$new_sp), glue(tbc$new_sp, "(b)"), tbc$new_labconf2)
-
-tbm <- xtable(tbc[c("area", "c_notified", "new_sp", "new_sn", "new_su", "new_ep", "new_oth", "new_labconf2", "newpulm_lab_pct", "ret_rel", "ret_nrel", "c_newinc")])
-digits(tbm) <- 0
-
-print(tbm, type="html", include.rownames=FALSE, include.colnames=F, html.table.attributes="border=0 rules=rows width=900 cellpadding=5", 
-      add.to.row=list(pos=list(0,37), command=c(
-"<TR> <TD colspan=2></TD> 
-  <TH colspan=7>NEW CASES</TH> 
-  <TH colspan=2>RETREATMENT CASES</TH> 
-  <TD colspan=1></TD> </TR> 
-  <TR> <TD></TD> <TD>TOTAL<br> NOTIFIED</TD> 
-  <TD>SMEAR-<br>POSITIVE</TD> 
-  <TD>SMEAR-<br>NEGATIVE</TD> 
-  <TD>SMEAR NOT DONE</TD>
-  <TD>EXTRA-<br>PULMONARY</TD> 
-  <TD>CASE TYPE<br> UNKNOWN</TD> 
-  <TD>PULMONARY CASES LABORATORY CONFIRMED</TD> 
-  <TD>PERCENTAGE OF PULMONARY CASES LABORATORY CONFIRMED</TD>   
-  <TD>RELAPSE</TD> 
-  <TD>RETREATMENT<br>EXCL. RELAPSE</TD> 
-  <TD>NEW AND<br>RELAPSE(a)</TD> 
- </TR>", 
-	glue("<TR> <TD colspan=12>Blank cells indicate data not reported.<br>
-(a) NEW AND RELAPSE includes cases for which the treatment history is unknown.<br>", footnote.b,"</TD></TR>"))))
-
-```
-
-
 
 
 And also as seen in `r I(pasteLabel("Table", tableCount, "t.notif"))` the trend is evident.
-
-<a id="t.blogPostDocs"></a> 
-```{r test1, echo=FALSE, results='asis'}
-postDocBlogs <- data.frame(PD = c("p1", "p2", "p3"), NBlog = c(4, 10, 2), Year = c(1, 
-    4, 2))
-
-postDocInsert <- tableCat(postDocBlogs)
-```
-
-``` {r test2, echo=FALSE, results='asis'}
-cat(postDocInsert, sep = "\n")
-
-# Stuff I don't want to forget
-#### `r I(pasteLabel("Table", tableCount, "t.blogPostDocs", insLink=FALSE))` Case rates per 100 000 population, `r yr`.
-# 
-# Overall header
-# 
-# First Header  | Second Header
-# ------------- | -------------
-# Content Cell  | Content Cell
-# Content Cell  | Content Cell
-
-
-```
 
 
 

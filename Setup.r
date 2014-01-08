@@ -11,7 +11,7 @@ start <- Sys.time()
 source("d:/users/hiattt/Dropbox/Code/R/.Rprofile")
 
 # SETTINGS. Change these three things as appropriate
-thisyear <- as.numeric(format(Sys.time(),"%Y")) # This refers to the report year
+thisyear <- as.numeric(format(Sys.time(),"%Y")) - ifelse(as.numeric(format(Sys.time(),"%m")) < 6, 1, 0) # This refers to the report year
 basefolder <- "d:/users/hiattt/Google Drive/Work files/Global TB report/Tables and Figures"
 
 # Set-up
