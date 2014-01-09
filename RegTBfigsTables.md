@@ -20,14 +20,15 @@ Burden
 
 
 
-In 2012, national TB control programmes (NTPs) reported 1.4 million people with TB in the region making up 23% of the global burden. Of these cases 97% were new episodes of TB. Within the region China accounts for 65% of the caseload with the Philippines and Viet Nam following with 16% and 7% respectively.
 
-And also as seen in [Table 1](#t.notif) the trend is evident.
+
+
+In 2012, national TB control programmes (NTPs) reported 1.4 million people with TB in the region making up 23% of the global burden ([Table 1](#t.notif)). Of these cases 97% were new episodes of TB (either new or relapse cases). Within the region China accounts for 65% of the caseload with the Philippines and Viet Nam following with 16% and 7% respectively. TB notification rates vary in the region with the highest rates found in Kiribati, Papua New Guinea, Marshall Islands and Cambodia ([Figure 1](#m.notif)). 
 
 <a id="t.notif"></a> 
-#### Table 1 Case notifications, 2012.
+#### Table 1. Case notifications, 2012.
 <!-- html table generated in R 2.15.3 by xtable 1.7-1 package -->
-<!-- Wed Jan 08 16:01:53 2014 -->
+<!-- Thu Jan 09 15:20:42 2014 -->
 <TABLE border=0 rules=rows width=900 cellpadding=5>
   <TR> <TD colspan=2></TD> 
   <TH colspan=7>NEW CASES</TH> 
@@ -83,8 +84,6 @@ And also as seen in [Table 1](#t.notif) the trend is evident.
   <TR> <TD> WPR </TD> <TD> 1 410 835 </TD> <TD> 520 391 </TD> <TD> 714 790 </TD> <TD> 13 288 </TD> <TD> 72 377 </TD> <TD> 3 287 </TD> <TD> 544 482 </TD> <TD> 44 </TD> <TD> 50 348 </TD> <TD> 35 122 </TD> <TD> 1 375 713 </TD> </TR>
    <TR> <TD colspan=12>Blank cells indicate data not reported. -- indicates values that cannot be calculated.<br>
 (a) NEW AND RELAPSE includes cases for which the treatment history is unknown.<br></TD></TR> </TABLE>
-
-
 
 
 

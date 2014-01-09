@@ -1,4 +1,5 @@
-/* Set the main font to Calibri, same
+/* From: http://gforge.se/2014/01/fast-track-publishing-using-knitr-part-ii/
+Set the main font to Calibri, same
    as My Word 2010 uses. Also set the
    default font size to 11pt.
  
@@ -23,12 +24,17 @@ p {
   margin-bottom: 10pt;
 }
  
-/* Center the table and add top/bottom margins */
-table{
-  margin: auto;
-  margin-top: 1em;
-  margin-bottom: 1em;
-  border: none;
+/* Table style from here http://blogs.cetis.ac.uk/adam/2013/10/25/changing-style-knitr-and-markdown-in-rstudio/ */
+table {
+  max-width: 95%;
+  border: 1px solid #ccc;
+}
+th {
+  background-color: #dcdcdc;
+  color: #000000;
+}
+td {
+  background-color: #dcdcdc;
 }
  
 /* The tr padding/margin 0 is important for table
