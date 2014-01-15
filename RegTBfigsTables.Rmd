@@ -28,15 +28,32 @@ Regional TB report `r yr + 1`
 
 Abstract 
 --------------------------------------------------------
-(probably remove this section)
+
+### Background
+
+### Methods
+
+### Results
+
+### Conclusion
+
 
 Introduction
 --------------------------------------------------------
 
-Tuberculosis in the Western Pacific Region
+The Western Pacific Region has seen significant gains in the fight against tuberculosis (TB) in the last decade with estimated incidence rates 
 
-Burden
+Methods
 --------------------------------------------------------
+
+Data were collected through an on-line data collection system.
+
+
+Results
+--------------------------------------------------------
+
+
+### Case notification
 
 ```{r t.notif.data, echo=FALSE, warning=FALSE}
 tableCount <- incCount(tableCount, "t.notif")
@@ -95,9 +112,11 @@ mc$cat <- cut(round(mc$c_tot_newrel_100k,0), c(0, 10, 50, 100, 200, Inf), c('0�
 
 
 mc1 <- WHOmap.print(mc, legend.title= "TB cases per \n100 000 population", copyright=FALSE, show=FALSE, zoom="WPR")
+
+
 ```
 
-In `r yr`, national TB control programmes (NTPs) reported `r cnotw <- sum(tb[tb$year==yr & tb$g_whoregion=="WPR", "c_notified"], na.rm=TRUE) ; round(cnotw / 1e6, 1)` million people with TB in the region making up `r round(cnotw / sum(tb[tb$year==yr, "c_notified"], na.rm=TRUE) * 100, 0)`% of the global burden (`r I(pasteLabel("Table", tableCount, "t.notif"))`). Of these cases `r nrw <- sum(tb[tb$year==yr & tb$g_whoregion=="WPR", "tot_newrel"], na.rm=TRUE) ; round(nrw / cnotw * 100, 0)`% were new episodes of TB (either new or relapse cases). Within the region China accounts for `r round(sum(tb[tb$year==yr & tb$iso2=="CN", "tot_newrel"], na.rm=TRUE) / nrw * 100, 0)`% of the caseload with the Philippines and Viet Nam following with `r round(sum(tb[tb$year==yr & tb$iso2=="PH", "tot_newrel"], na.rm=TRUE) / nrw * 100, 0)`% and `r round(sum(tb[tb$year==yr & tb$iso2=="VN", "tot_newrel"], na.rm=TRUE) / nrw * 100, 0)`% respectively. TB notification rates vary in the region with the highest rates found in `r hnr <- .maxplus(tb[tb$year==yr & tb$g_whoregion=="WPR", c("country", "c_tot_newrel_100k")], 'c_tot_newrel_100k', 4) ; paste(paste(hnr[1:3,1], collapse=", "), "and", hnr[4,1])` (`r I(pasteLabel("Figure", figCount, "m.notif"))`). 
+In `r yr`, national TB control programmes (NTPs) reported `r cnotw <- sum(tb[tb$year==yr & tb$g_whoregion=="WPR", "c_notified"], na.rm=TRUE) ; round(cnotw / 1e6, 1)` million people with TB in the region (`r I(pasteLabel("Table", tableCount, "t.notif"))`) making up `r round(cnotw / sum(tb[tb$year==yr, "c_notified"], na.rm=TRUE) * 100, 0)`% of the global burden. Of these cases `r nrw <- sum(tb[tb$year==yr & tb$g_whoregion=="WPR", "tot_newrel"], na.rm=TRUE) ; round(nrw / cnotw * 100, 0)`% were new episodes of TB (either new or relapse cases). Within the region China accounts for `r round(sum(tb[tb$year==yr & tb$iso2=="CN", "tot_newrel"], na.rm=TRUE) / nrw * 100, 0)`% of the caseload with the Philippines and Viet Nam following with `r round(sum(tb[tb$year==yr & tb$iso2=="PH", "tot_newrel"], na.rm=TRUE) / nrw * 100, 0)`% and `r round(sum(tb[tb$year==yr & tb$iso2=="VN", "tot_newrel"], na.rm=TRUE) / nrw * 100, 0)`% respectively. TB notification rates vary substantially in the region with the highest rates found in `r hnr <- .maxplus(tb[tb$year==yr & tb$g_whoregion=="WPR", c("country", "c_tot_newrel_100k")], 'c_tot_newrel_100k', 4) ; paste(paste(hnr[1:3,1], collapse=", "), "and", hnr[4,1])` (`r I(pasteLabel("Figure", figCount, "m.notif"))`). 
 
 <a id="t.notif"></a> 
 #### `r I(pasteLabel("Table", tableCount, "t.notif", insLink=FALSE))`. Case notifications, `r yr`.
@@ -139,6 +158,7 @@ print(tbm, type="html", include.rownames=FALSE, include.colnames=F, html.table.a
 mc1
 ```
 
+## Age and sex
 
 ```{r agesex.data,  echo=FALSE}
 figCount <- incCount(figCount, "f.agesex.bar")
@@ -172,9 +192,18 @@ age <- subset(agd, (iso3 %in% whbc | area=="WPR") & age!="u" & age %nin% c("04",
 age$sex <- factor(age$sex, levels=c("m", "f"), labels=c("Male", "Female"))
 age$sh.name <- factor(age$iso3, c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM", "WPR"), c("Cambodia", "China", "Lao PDR", "Mongolia", "PNG", "Philippines", "Viet Nam", "WPR"))
 age[is.na(age$sh.name), 'sh.name'] <- "WPR"
-age$age <- factor(age$age, c("014", "1524", "2534", "3544", "4554", "5564", "65"), c("0–14", "15–24", "25–34", "35–44", "45–54", "55–64", "< 64"))
+age$age <- factor(age$age, c("014", "1524", "2534", "3544", "4554", "5564", "65"), c("0–14", "15–24", "25–34", "35–44", "45–54", "55–64", "\u2265 65"))
+
+df <- data.frame(a=1:5, b=factor(1:5, labels=c(1:4, "\u2265 5")), c=10:14)
+
+ggplot(df, aes(a,c, color=b)) + geom_point()
+ggplot(df, aes(a,c, color=b)) + geom_point() + scale_color_brewer(labels=c(1:4, "\u2265 5"))
+
+
 
 ```
+
+The age distribution in `r yr` follows an increasing pattern characteristic of an aging epidemic for all high-burden countries except Mongolia and Papua New Guinea (`r I(pasteLabel("Figure", figCount, "f.agesex.bar"))`). Rates among females is less similar with rates in the `r "\u2265 65"` category lower than their younger counter-parts in many settings.
 
 <a id="f.agesex.bar"></a> 
 #### `r I(pasteLabel("Figure", figCount, "f.agesex.bar", insLink=FALSE))` Smear-positive notification rates by age and sex in the Region and in seven countries with a high burden of TB, `r yr`.
@@ -206,7 +235,7 @@ And also as seen in `r I(pasteLabel("Table", tableCount, "t.notif"))` the trend 
 
 
 
-Editorial Note
+Discussion
 --------------------------------------------------------
 
 Annex

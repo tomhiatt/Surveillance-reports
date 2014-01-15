@@ -7,28 +7,45 @@ Regional TB report 2013
 
 Abstract 
 --------------------------------------------------------
-(probably remove this section)
+
+### Background
+
+### Methods
+
+### Results
+
+### Conclusion
+
 
 Introduction
 --------------------------------------------------------
 
-Tuberculosis in the Western Pacific Region
+The Western Pacific Region has seen significant gains in the fight against tuberculosis (TB) in the last decade with estimated incidence rates 
 
-Burden
+Methods
+--------------------------------------------------------
+
+Data were collected through an on-line data collection system.
+
+
+Results
 --------------------------------------------------------
 
 
+### Case notification
 
 
 
 
 
-In 2012, national TB control programmes (NTPs) reported 1.4 million people with TB in the region making up 23% of the global burden ([Table 1](#t.notif)). Of these cases 97% were new episodes of TB (either new or relapse cases). Within the region China accounts for 65% of the caseload with the Philippines and Viet Nam following with 16% and 7% respectively. TB notification rates vary in the region with the highest rates found in Kiribati, Papua New Guinea, Marshall Islands and Cambodia ([Figure 1](#m.notif)). 
+
+
+In 2012, national TB control programmes (NTPs) reported 1.4 million people with TB in the region ([Table 1](#t.notif)) making up 23% of the global burden. Of these cases 97% were new episodes of TB (either new or relapse cases). Within the region China accounts for 65% of the caseload with the Philippines and Viet Nam following with 16% and 7% respectively. TB notification rates vary substantially in the region with the highest rates found in Kiribati, Papua New Guinea, Marshall Islands and Cambodia ([Figure 1](#m.notif)). 
 
 <a id="t.notif"></a> 
 #### Table 1. Case notifications, 2012.
-<!-- html table generated in R 2.15.3 by xtable 1.7-1 package -->
-<!-- Thu Jan 09 15:20:42 2014 -->
+<!-- html table generated in R 3.0.2 by xtable 1.7-1 package -->
+<!-- Wed Jan 15 17:00:31 2014 -->
 <TABLE border=0 rules=rows width=900 cellpadding=5>
   <TR> <TD colspan=2></TD> 
   <TH colspan=7>NEW CASES</TH> 
@@ -93,9 +110,12 @@ In 2012, national TB control programmes (NTPs) reported 1.4 million people with 
 ![plot of chunk m.notif](figure/m_notif.png) 
 
 
+## Age and sex
 
 
 
+
+The age distribution in 2012 follows an increasing pattern characteristic of an aging epidemic for all high-burden countries except Mongolia and Papua New Guinea ([Figure 2](#f.agesex.bar)). Rates among females is less similar with rates in the ≥ 65 category lower than their younger counter-parts in many settings.
 
 <a id="f.agesex.bar"></a> 
 #### Figure 2 Smear-positive notification rates by age and sex in the Region and in seven countries with a high burden of TB, 2012.
@@ -115,7 +135,7 @@ And also as seen in [Table 1](#t.notif) the trend is evident.
 
 
 
-Editorial Note
+Discussion
 --------------------------------------------------------
 
 Annex
