@@ -45,7 +45,7 @@ In 2012, national TB control programmes (NTPs) reported 1.4 million people with 
 <a id="t.notif"></a> 
 #### Table 1. Case notifications, 2012.
 <!-- html table generated in R 3.0.2 by xtable 1.7-1 package -->
-<!-- Wed Jan 15 17:00:31 2014 -->
+<!-- Fri Jan 17 15:30:54 2014 -->
 <TABLE border=0 rules=rows width=900 cellpadding=5>
   <TR> <TD colspan=2></TD> 
   <TH colspan=7>NEW CASES</TH> 

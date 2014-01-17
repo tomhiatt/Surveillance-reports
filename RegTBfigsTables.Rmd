@@ -194,10 +194,6 @@ age$sh.name <- factor(age$iso3, c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM
 age[is.na(age$sh.name), 'sh.name'] <- "WPR"
 age$age <- factor(age$age, c("014", "1524", "2534", "3544", "4554", "5564", "65"), c("0–14", "15–24", "25–34", "35–44", "45–54", "55–64", "\u2265 65"))
 
-df <- data.frame(a=1:5, b=factor(1:5, labels=c(1:4, "\u2265 5")), c=10:14)
-
-ggplot(df, aes(a,c, color=b)) + geom_point()
-ggplot(df, aes(a,c, color=b)) + geom_point() + scale_color_brewer(labels=c(1:4, "\u2265 5"))
 
 
 
