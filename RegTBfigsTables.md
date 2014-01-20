@@ -45,7 +45,7 @@ In 2012, national TB control programmes (NTPs) reported 1.4 million people with 
 <a id="t.notif"></a> 
 #### Table 1. Case notifications, 2012.
 <!-- html table generated in R 3.0.2 by xtable 1.7-1 package -->
-<!-- Fri Jan 17 15:30:54 2014 -->
+<!-- Mon Jan 20 22:18:36 2014 -->
 <TABLE border=0 rules=rows width=900 cellpadding=5>
   <TR> <TD colspan=2></TD> 
   <TH colspan=7>NEW CASES</TH> 
@@ -110,6 +110,12 @@ In 2012, national TB control programmes (NTPs) reported 1.4 million people with 
 ![plot of chunk m.notif](figure/m_notif.png) 
 
 
+
+<a id="f.notif.trend"></a> 
+#### Figure NA Case notification rates per 100 000 population in countries and areas of the Western Pacific Region, 2000--2012.
+![plot of chunk f.notif.trend](figure/f_notif_trend.png) 
+
+
 ## Age and sex
 
 
@@ -131,12 +137,25 @@ As seen in [Figure 3](#f.agesex) the trend is evident.
 
 
 
-And also as seen in [Table 1](#t.notif) the trend is evident.
+## Treatment outcomes
+
+<a id="f.txout.bar"></a> 
+#### Figure NA Treatment outcomes for new smear-positive cases in the Region, 2000--2011.
+![plot of chunk f.txout.bar](figure/f_txout_bar1.png) ![plot of chunk f.txout.bar](figure/f_txout_bar2.png) ![plot of chunk f.txout.bar](figure/f_txout_bar3.png) 
+
+
 
 
 
 Discussion
 --------------------------------------------------------
+
+<a id="f.est.data"></a> 
+#### Figure NA Treatment outcomes for new smear-positive cases in the Region, 2000--2011.
+![plot of chunk f.est.data](figure/f_est_data.png) 
+
+
+
 
 Annex
 --------------------------------------------------------

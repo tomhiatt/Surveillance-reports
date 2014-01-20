@@ -20,6 +20,41 @@ opts_chunk$set(dev="png",
 whbc <- c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM")
 
 runprofile()
+
+# theme_report <- function(base_size=12, base_family=""){
+# 
+#   theme_bw(base_size=base_size, base_family=base_family) +
+#         theme(
+#             line = element_line(colour = gray),
+#             rect = element_rect(fill = "white", colour = NA),
+#             text = element_text(colour = "black"),
+#             axis.ticks = element_line(colour = gray),
+#             legend.key = element_rect(colour = NA),
+#             panel.border = element_rect(colour = gray),
+#             panel.grid = element_blank(),
+#             strip.background = element_rect(fill="white", colour=NA)
+#             )
+# }
+
+theme_report <- function(base_size=12, base_family="") {
+    colors <- ggthemes_data$few
+    gray <- colors$medium['gray']
+    black <- colors$dark['black']
+    theme_bw(base_size=base_size, base_family=base_family) +
+        theme(
+            line = element_line(colour = gray),
+            rect = element_rect(fill = "white", colour = NA),
+            text = element_text(colour = black),
+            axis.ticks.x = element_line(colour = gray),
+            axis.ticks.y = element_blank(),
+            legend.key = element_rect(colour = NA),
+            ## Examples do not use grid lines
+            panel.border = element_rect(colour = gray),
+            panel.grid.major.x = element_blank(),
+            panel.grid.minor = element_blank(),
+            strip.background = element_rect(fill="white", colour=NA)
+            )
+}
 ```
 
 
@@ -158,6 +193,27 @@ print(tbm, type="html", include.rownames=FALSE, include.colnames=F, html.table.a
 mc1
 ```
 
+
+<a id="f.notif.trend"></a> 
+#### `r I(pasteLabel("Figure", figCount, "f.notif.trend", insLink=FALSE))` Case notification rates per 100 000 population in countries and areas of the Western Pacific Region, 2000--`r yr`.
+```{r f.notif.trend, echo=FALSE, fig.width=7, height=5}
+
+# -------------------------------------------------
+# Notification trends
+# -------------------------------------------------
+
+nota <- subset(tb, year >= 2000 & g_whoregion=="WPR", c(year, tot_newrel, new_sp, e_pop_num))
+
+notb <- aggregate(nota[2:ncol(nota)], by=list(year=nota$year), FUN=sum, na.rm=TRUE)
+
+notb$`All forms of TB` <- notb$tot_newrel / notb$e_pop_num * 1e5
+notb$`New smear-positive` <- notb$new_sp / notb$e_pop_num * 1e5
+notc <- melt(notb[c("year", "New smear-positive", "All forms of TB")], id=1)
+
+ggplot(notc, aes(year, value, color=variable, ymin=0)) + geom_line(size=1) + theme_few() + scale_x_continuous("", breaks = pretty_breaks()) + scale_y_continuous("TB cases per 100 000", breaks = pretty_breaks()) + theme(legend.position="none") + geom_text(data=subset(notc, year==max(notc$year)), aes(label=variable), hjust=1.1, vjust=3) + scale_color_brewer(type="qual", palette=6)
+
+```
+
 ## Age and sex
 
 ```{r agesex.data,  echo=FALSE}
@@ -205,7 +261,7 @@ The age distribution in `r yr` follows an increasing pattern characteristic of a
 #### `r I(pasteLabel("Figure", figCount, "f.agesex.bar", insLink=FALSE))` Smear-positive notification rates by age and sex in the Region and in seven countries with a high burden of TB, `r yr`.
 ``` {r f.agesex.bar, echo=FALSE, fig.width=11, fig.height=11, warning=FALSE}
 
-p2 <- ggplot(subset(age, year==yr), aes(age, new_sp_100k, fill=sex)) + geom_bar(stat="identity", position="dodge") + facet_wrap(~sh.name, scales='free_y', ncol=2) + theme_few() + scale_fill_brewer('Sex', type="qual", palette=3) + xlab("Age group")
+p2 <- ggplot(subset(age, year==yr), aes(age, new_sp_100k, fill=sex)) + geom_bar(stat="identity", position="dodge") + facet_wrap(~sh.name, scales='free_y', ncol=2)   + theme_few() + scale_fill_brewer('Sex', type="qual", palette=6) + xlab("Age group") 
 
 p2 + scale_y_continuous("New smear-positive cases per 100 000")
 
@@ -227,12 +283,75 @@ As seen in `r I(pasteLabel("Figure", figCount, "f.agesex"))` the trend is eviden
 
 
 
-And also as seen in `r I(pasteLabel("Table", tableCount, "t.notif"))` the trend is evident.
+## Treatment outcomes
+
+<a id="f.txout.bar"></a> 
+#### `r I(pasteLabel("Figure", figCount, "f.txout.bar", insLink=FALSE))` Treatment outcomes for new smear-positive cases in the Region, 2000--`r yr-1`.
+``` {r f.txout.bar, echo=FALSE, fig.width=7}
+
+tra <- subset(tb, year %in% 2000:(yr-1), select=c(year, new_sp_coh, new_sp_cur, new_sp_cmplt, new_sp_died, new_sp_fail, new_sp_def))
+
+trb <- aggregate(tra[2:ncol(tra)], by=list(year=tra$year), FUN=sum, na.rm=TRUE)
+
+trb$Success <- (trb$new_sp_cur + trb$new_sp_cmplt) / trb$new_sp_coh * 100
+trb$Died <- trb$new_sp_died / trb$new_sp_coh * 100
+trb$Failed <- trb$new_sp_fail / trb$new_sp_coh * 100
+trb$Defaulted <- trb$new_sp_def / trb$new_sp_coh * 100
+trb$`Not evaluated` <- (trb$new_sp_coh - (trb$new_sp_cur + trb$new_sp_cmplt + trb$new_sp_died + trb$new_sp_fail + trb$new_sp_def)) / trb$new_sp_coh * 100
+
+trc <- melt(trb[c("year", "Success", "Died", "Failed", "Defaulted", "Not evaluated")], id=1)
+
+ggplot(trc, aes(year, value, fill=variable)) + geom_bar(stat="identity", position="stack") + theme_few() + scale_fill_brewer('Outcome', type="qual", palette=6) + xlab("") + scale_y_continuous("Percent of cohort") + coord_cartesian(ylim=c(60,100))
+
+trd <- trc
+trd$type <- ifelse(trd$variable=="Success", "Favourable", "Unfavourable")
+
+ggplot(trd, aes(year, value, color=variable)) + geom_line(size=1, ) + facet_wrap(~type, scales="free_y", ncol=1) + theme_few() + scale_fill_brewer('Outcome', type="qual", palette=6) + scale_x_continuous("", breaks = pretty_breaks()) + scale_y_continuous("Percent of cohort", expand=c(0.1,0)) 
+
+ggplot(trd[trd$year > 2006, ], aes(year, value, color=variable)) + geom_line(size=1, ) + facet_wrap(~type, scales="free_y", ncol=1) + theme_few() + scale_fill_brewer('Outcome', type="qual", palette=6) + scale_x_continuous("", breaks = pretty_breaks()) + scale_y_continuous("Percent of cohort", expand=c(0.6,0)) 
+
+```
+
 
 
 
 Discussion
 --------------------------------------------------------
+
+<a id="f.est.data"></a> 
+#### `r I(pasteLabel("Figure", figCount, "f.est.data", insLink=FALSE))` Treatment outcomes for new smear-positive cases in the Region, 2000--`r yr-1`.
+``` {r f.est.data, echo=FALSE, fig.width=7, fig.height=4}
+
+eget <- c("year", "e_pop_num", "e_inc_100k", "e_inc_100k_lo", "e_inc_100k_hi", "e_prev_100k", "e_prev_100k_lo", "e_prev_100k_hi", "e_mort_exc_tbhiv_100k", "e_mort_exc_tbhiv_100k_lo", "e_mort_exc_tbhiv_100k_hi")
+
+esta <- subset(araw, year >=1990 & group_name=="WPR", select=eget)
+estb <- tb[tb$year>=1990 & tb$g_whoregion=="WPR", c("year", "tot_newrel")]
+estc <- aggregate(estb["tot_newrel"], by=list(year=estb$year), FUN=sum, na.rm=TRUE)
+
+estd <- merge(esta, estc)
+
+estd$c_tot_newrel_100k <- estd$tot_newrel / estd$e_pop_num * 1e5
+
+estf <- NULL
+for(var in c("inc", "prev", "mort_exc_tbhiv")){
+  df <- subset(estd, select=c("year", glue("e_", var, "_100k"), glue("e_", var, "_100k_lo"), glue("e_", var, "_100k_hi")))
+  names(df) <- c("year", "best", "lo", "hi")
+  df$var <- var
+  estf <- rbind(estf, df)
+}
+
+estg <- estd[c("year", "c_tot_newrel_100k")]
+estg$var <- "inc"
+
+esth <- merge(estf, estg, all.x=TRUE)
+esth$var <- factor(esth$var, levels=c("inc", "prev", "mort_exc_tbhiv"), labels=c("Incidence", "Prevalence", "Mortality (excluding HIV)"))
+
+ggplot(esth, aes(year, best, fill=var, ymin=0)) + geom_line(size=1, aes(color=var)) + geom_ribbon(aes (year, best, ymin=lo, ymax=hi), alpha=0.2) + theme_report() + facet_wrap(~var, scales="free_y") + theme(legend.position="none") + scale_x_continuous("", minor_breaks=seq(1990, yr, 1)) + scale_y_continuous(breaks=pretty_breaks()) + ylab("Rate per 100 000 population")
+
+#breaks=c(seq(1990, 2010, 5), yr), labels=c(seq(1990, 2005, 5),"", yr)
+```
+
+
 
 Annex
 --------------------------------------------------------
