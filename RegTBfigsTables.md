@@ -40,12 +40,12 @@ Results
 
 
 
-In 2012, national TB control programmes (NTPs) reported 1.4 million people with TB in the region ([Table 1](#t.notif)) making up 23% of the global burden. Of these cases 97% were new episodes of TB (either new or relapse cases). Within the region China accounts for 65% of the caseload with the Philippines and Viet Nam following with 16% and 7% respectively. TB notification rates vary substantially in the region with the highest rates found in Kiribati, Papua New Guinea, Marshall Islands and Cambodia ([Figure 1](#m.notif)). 
+In 2012, national TB control programmes (NTPs) reported 1.4 million people with TB in the region ([Table 1](#t-notif)) making up 23% of the global burden. Of these cases 97% were new episodes of TB (either new or relapse cases). Within the region China accounts for 65% of the caseload with the Philippines and Viet Nam following with 16% and 7% respectively. TB notification rates vary substantially in the region with the highest rates found in Kiribati, Papua New Guinea, Marshall Islands and Cambodia ([Figure 1](#m-notif)). 
 
-<a id="t.notif"></a> 
+<a id="t-notif"></a> 
 #### Table 1. Case notifications, 2012.
 <!-- html table generated in R 3.0.2 by xtable 1.7-1 package -->
-<!-- Mon Jan 20 22:18:36 2014 -->
+<!-- Wed Jan 22 12:29:01 2014 -->
 <TABLE border=0 rules=rows width=900 cellpadding=5>
   <TR> <TD colspan=2></TD> 
   <TH colspan=7>NEW CASES</TH> 
@@ -105,15 +105,19 @@ In 2012, national TB control programmes (NTPs) reported 1.4 million people with 
 
 
 
-<a id="m.notif"></a> 
+<a id="m-notif"></a> 
 #### Figure 1 New and relapse rates per 100 000 population in countries and areas of the Western Pacific Region, 2012.
-![plot of chunk m.notif](figure/m_notif.png) 
+![plot of chunk m-notif](figure/m-notif.png) 
 
 
 
-<a id="f.notif.trend"></a> 
-#### Figure NA Case notification rates per 100 000 population in countries and areas of the Western Pacific Region, 2000--2012.
-![plot of chunk f.notif.trend](figure/f_notif_trend.png) 
+
+
+
+
+<a id="f-notif-trend"></a> 
+#### Figure 2 Case notification rates per 100 000 population in countries and areas of the Western Pacific Region, 2000--2012.
+![plot of chunk f-notif-trend](figure/f-notif-trend.png) 
 
 
 ## Age and sex
@@ -121,28 +125,42 @@ In 2012, national TB control programmes (NTPs) reported 1.4 million people with 
 
 
 
-The age distribution in 2012 follows an increasing pattern characteristic of an aging epidemic for all high-burden countries except Mongolia and Papua New Guinea ([Figure 2](#f.agesex.bar)). Rates among females is less similar with rates in the ≥ 65 category lower than their younger counter-parts in many settings.
+The age distribution in 2012 follows an increasing pattern characteristic of an aging epidemic for all high-burden countries except Mongolia and Papua New Guinea ([Figure 3](#f-agesex-bar)). Rates among females is less similar with rates in the ≥ 65 category lower than their younger counter-parts in many settings.
 
-<a id="f.agesex.bar"></a> 
-#### Figure 2 Smear-positive notification rates by age and sex in the Region and in seven countries with a high burden of TB, 2012.
-![plot of chunk f.agesex.bar](figure/f_agesex_bar.png) 
-
-
-<a id="f.agesex"></a> 
-#### Figure 3 Trends of notification rates of new smear-positive TB cases in specific age and sex groups, 2012.
-![plot of chunk f.agesex](figure/f_agesex.png) 
+<a id="f-agesex-bar"></a> 
+#### Figure 3 Smear-positive notification rates by age and sex in the Region and in seven countries with a high burden of TB, 2012.
+![plot of chunk f-agesex-bar](figure/f-agesex-bar.png) 
 
 
-As seen in [Figure 3](#f.agesex) the trend is evident.
+<a id="f-agesex"></a> 
+#### Figure 4 Trends of notification rates of new smear-positive TB cases in specific age and sex groups, 2012.
+![plot of chunk f-agesex](figure/f-agesex.png) 
+
+
+As seen in [Figure 4](#f-agesex) the trend is evident.
 
 
 
 ## Treatment outcomes
 
-<a id="f.txout.bar"></a> 
-#### Figure NA Treatment outcomes for new smear-positive cases in the Region, 2000--2011.
-![plot of chunk f.txout.bar](figure/f_txout_bar1.png) ![plot of chunk f.txout.bar](figure/f_txout_bar2.png) ![plot of chunk f.txout.bar](figure/f_txout_bar3.png) 
 
+
+
+
+<a id="f-txout-bar"></a> 
+#### Figure 5 Treatment outcomes for new smear-positive cases in the Region, 2000--2011.
+![plot of chunk f-txout-bar](figure/f-txout-bar1.png) ![plot of chunk f-txout-bar](figure/f-txout-bar2.png) ![plot of chunk f-txout-bar](figure/f-txout-bar3.png) 
+
+
+## TB/HIV
+
+
+
+
+
+<a id="f-tbhiv"></a> 
+#### Figure 6 Progress in TB/HIV activities in seven countries in the Region with a high burden of TB, 2005--2012.
+![plot of chunk f-tbhiv](figure/f-tbhiv.png) 
 
 
 
@@ -150,9 +168,13 @@ As seen in [Figure 3](#f.agesex) the trend is evident.
 Discussion
 --------------------------------------------------------
 
-<a id="f.est.data"></a> 
-#### Figure NA Treatment outcomes for new smear-positive cases in the Region, 2000--2011.
-![plot of chunk f.est.data](figure/f_est_data.png) 
+
+
+
+
+<a id="f-est"></a> 
+#### Figure 7 Treatment outcomes for new smear-positive cases in the Region, 2000--2011.
+![plot of chunk f-est](figure/f-est.png) 
 
 
 
@@ -161,3 +183,7 @@ Annex
 --------------------------------------------------------
 
 The annex will go here.
+
+
+
+
