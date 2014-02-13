@@ -86,7 +86,7 @@ Results
 tableCount <- incCount(tableCount, "t-notif")
 
 # Notification table
-tbb <- subset(n, year==yr & g_whoregion=="WPR", select=c('country', 'g_whoregion', 'g_hbc22', 'c_notified', "new_sp", "new_sn", "new_su", "new_ep", "new_oth", "ret_rel", 'c_newinc', "c_ret", "newret_oth", "new_labconf", 'c_new'))
+tbb <- subset(n, year==yr & g_whoregion=="WPR", select=c('country', 'g_whoregion', 'g_hbc22', 'c_notified', "new_sp", "new_sn", "new_su", "new_ep", "new_oth", "ret_rel", 'c_newinc', "c_ret", "newret_oth", "new_labconf", 'c_new', "e_pop_num"))
 
 tbb$new.pulm <- .rowsums(tbb[c('new_sp', 'new_sn', 'new_su')])
 
@@ -106,19 +106,21 @@ tbc$new_labconf2 <- ifelse(is.na(tbc$new_labconf), tbc$new_sp, tbc$new_labconf)
 # calculate and format vars
 tbc$ret_nrel <- tbc$c_ret - tbc$ret_rel
 tbc$newpulm_lab_pct <- tbc$new_labconf2 / tbc$new.pulm * 100
+tbc$tot_newrel_100k <- tbc$c_newinc / tbc$e_pop_num * 1e5
 
 for(var in 2:ncol(tbc)){
   tbc[var] <- rounder(tbc[[var]])
 }
 tbc[is.na(tbc$newpulm_lab_pct), 'newpulm_lab_pct'] <-  "--"
+tbc[is.na(tbc$tot_newrel_100k), 'newpulm_lab_pct'] <-  "--"
 # rename
 tbc <- .shortnames(tbc, col='area')
 
-# Add footnote for countries not reporting Lab confirmed (Thailand)
+# Add footnote for countries not reporting Lab confirmed 
 footnote.b <- ifelse(any(is.na(tbc$new_labconf) & !is.na(tbc$new_sp)), paste('(b) LABORATORY CONFIRMED data for', paste(subset(tbc, is.na(new_labconf), 'area'), collapse=', '), 'refer to smear-positive cases only. Data on cases that were laboratory confirmed using other methods were not reported.'), "")
 tbc$new_labconf2 <- ifelse(is.na(tbc$new_labconf) & !is.na(tbc$new_sp), glue(tbc$new_sp, "(b)"), tbc$new_labconf2)
 
-tbm <- xtable(tbc[c("area", "c_notified", "new_sp", "new_sn", "new_su", "new_ep", "new_oth", "new_labconf2", "newpulm_lab_pct", "ret_rel", "ret_nrel", "c_newinc")])
+tbm <- xtable(tbc[c("area", "c_notified", "tot_newrel_100k", "new_sp", "new_sn", "new_su", "new_ep", "new_oth", "new_labconf2", "newpulm_lab_pct", "ret_rel", "ret_nrel", "c_newinc")])
 digits(tbm) <- 0
 
 
@@ -147,11 +149,12 @@ In `r yr`, national TB control programmes (NTPs) reported `r cnotw <- sum(tb[tb$
 
 print(tbm, type="html", include.rownames=FALSE, include.colnames=F, html.table.attributes="border=0 rules=rows width=900 cellpadding=5", 
       add.to.row=list(pos=list(0,37), command=c(
-"<TR> <TD colspan=2></TD> 
+"<TR> <TD colspan=3></TD> 
   <TH colspan=7>NEW CASES</TH> 
   <TH colspan=2>RETREATMENT CASES</TH> 
   <TD colspan=1></TD> </TR> 
-  <TR> <TD></TD> <TD>TOTAL<br> NOTIFIED</TD> 
+  <TR> <TD></TD> <TD>TOTAL NOTIFIED</TD>
+  <TD>TOTAL NOTIFIED PER 100 000</TD>
   <TD>SMEAR-<br>POSITIVE</TD> 
   <TD>SMEAR-<br>NEGATIVE</TD> 
   <TD>SMEAR NOT DONE</TD>
@@ -163,7 +166,7 @@ print(tbm, type="html", include.rownames=FALSE, include.colnames=F, html.table.a
   <TD>RETREATMENT<br>EXCL. RELAPSE</TD> 
   <TD>NEW AND<br>RELAPSE(a)</TD> 
  </TR>", 
-  glue("<TR> <TD colspan=12>Blank cells indicate data not reported. -- indicates values that cannot be calculated.<br>
+  glue("<TR> <TD colspan=13>Blank cells indicate data not reported. -- indicates values that cannot be calculated.<br>
 (a) NEW AND RELAPSE includes cases for which the treatment history is unknown.<br>", footnote.b,"</TD></TR>"))))
 
 ```
@@ -294,7 +297,7 @@ trc <- melt(trb[c("year", "Success", "Died", "Failed", "Defaulted", "Not evaluat
 #### `r I(pasteLabel("Figure", figCount, "f-txout-bar", insLink=FALSE))` Treatment outcomes for new smear-positive cases in the Region, 2000--`r yr-1`.
 ``` {r f-txout-bar, fig.width=7}
 
-ggplot(trc, aes(year, value, fill=variable)) + geom_bar(stat="identity", position="stack") + theme_report() + scale_fill_brewer('Outcome', type="qual", palette=6) + xlab("") + scale_y_continuous("Percent of cohort") + coord_cartesian(ylim=c(60,100))
+ggplot(trc, aes(year, value, fill=variable)) + geom_bar(stat="identity", position="stack") + theme_report() + scale_fill_brewer('Outcome', type="qual", palette=6) + xlab("") + scale_y_continuous("Percent of cohort") + coord_cartesian(ylim=c(60,100)) + guides(fill = guide_legend(reverse = TRUE))
 
 trd <- trc
 trd$type <- ifelse(trd$variable=="Success", "Favourable", "Unfavourable")
@@ -311,7 +314,12 @@ ggplot(trd[trd$year > 2006, ], aes(year, value, color=variable)) + geom_line(siz
 
 figCount <- incCount(figCount, "f-tbhiv")
 
-tha <- subset(tb, year >= 2005 & g_whoregion=="WPR" & iso3 %in% whbc, select=c("country", "year", "iso3", "g_hbc22", "g_hbhiv63", "c_notified", "hivtest", "hivtest_pos", "hiv_cpt", "hiv_art", "hivtest_pct_numerator", "hivtest_pct_denominator", "hivtest_pos_pct_numerator", "hivtest_pos_pct_denominator", "hiv_cpt_pct_numerator", "hiv_cpt_pct_denominator", "hiv_art_pct_numerator", "hiv_art_pct_denominator"))
+tha1 <- subset(tb, year >= 2005 & g_whoregion=="WPR" & iso3 %in% whbc, select=c("country", "year", "iso3", "g_hbc22", "g_hbhiv63", "c_notified", "hivtest", "hivtest_pos", "hiv_cpt", "hiv_art", "hivtest_pct_numerator", "hivtest_pct_denominator", "hivtest_pos_pct_numerator", "hivtest_pos_pct_denominator", "hiv_cpt_pct_numerator", "hiv_cpt_pct_denominator", "hiv_art_pct_numerator", "hiv_art_pct_denominator"))
+
+tha2 <- aggregate(tha1[6:ncol(tha1)], by=list(year=tha1$year), FUN=sum, na.rm=TRUE)
+tha2[c("country", "iso3")] <- "WPR"
+tha2[c("g_hbc22", "g_hbhiv63")] <- NA
+tha <- rbind(tha1, tha2)
 
 tha$test <- tha$hivtest_pct_numerator / tha$hivtest_pct_denominator * 100
 tha$pos <- tha$hivtest_pos_pct_numerator / tha$hivtest_pos_pct_denominator * 100
@@ -322,7 +330,7 @@ thb <- melt(tha[c("iso3", "year", "test", "pos", "cpt", "art")], id=1:2)
 
 thb$variable <- factor(thb$variable, levels=c("test", "pos", "cpt", "art"), labels=c("HIV testing \namong TB patients", "HIV-positive among \nTB patients tested", "CPT coverage \namong co-infected", "ART coverage \namong co-infected"))
 
-thb$country <- factor(thb$iso3, c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM"), c("Cambodia", "China", "Lao PDR", "Mongolia", "PNG", "Philippines", "Viet Nam"))
+thb$country <- factor(thb$iso3, c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM", "WPR"), c("Cambodia", "China", "Lao PDR", "Mongolia", "PNG", "Philippines", "Viet Nam", "WPR"))
 
 ```
 
@@ -372,7 +380,7 @@ esth$var <- factor(esth$var, levels=c("inc", "prev", "mort_exc_tbhiv"), labels=c
 
 
 <a id="f-est"></a> 
-#### `r I(pasteLabel("Figure", figCount, "f-est", insLink=FALSE))` Treatment outcomes for new smear-positive cases in the Region, 2000--`r yr-1`.
+#### `r I(pasteLabel("Figure", figCount, "f-est", insLink=FALSE))` Tuberculosis case notification rate per 100 000 population, estimated incidence, prevalence and mortality in the Western Pacific Region, 1990--`r yr-1`.
 ``` {r f-est, fig.height=3.5}
 
 ggplot(esth, aes(year, best, fill=var, ymin=0)) + geom_line(size=1, aes(color=var)) + geom_ribbon(aes (year, best, ymin=lo, ymax=hi), alpha=0.2) + geom_line(aes(year, c_tot_newrel_100k), color="black", size=1) + theme_report() + facet_wrap(~var, scales="free_y") + theme(legend.position="none") + scale_x_continuous("", minor_breaks=seq(1990, yr, 1)) + scale_y_continuous(breaks=pretty_breaks()) + ylab("Rate per 100 000 population")
