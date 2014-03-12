@@ -1,7 +1,9 @@
 ```{r setup, echo=FALSE, include=FALSE}
+###################################################
 # Tom Hiatt
-# 19 December 2013
-# Tables and figures to go in the Regional TB report
+# Updated: 12 March 2014
+# Regional TB annual analysis
+###################################################
 source('d:/users/hiattt/Dropbox/Code/Surveillance reports/Setup.r')
 
 # Inspired by:
@@ -138,7 +140,7 @@ mc$cat <- cut(round(mc$c_tot_newrel_100k,0), c(0, 10, 50, 100, 200, Inf), c('0�
 
 mc1 <- WHOmap.print(mc, legend.title= "TB cases per \n100 000 population", copyright=FALSE, show=FALSE, zoom="WPR")
 
-
+write.csv(mc, file=paste0(pasteLabel("D:/Users/hiattt/Dropbox/Code/Surveillance reports/figure data/figure", figCount, "m-notif", insLink=FALSE), ".csv"), row.names=FALSE)
 ```
 
 In `r yr`, national TB control programmes (NTPs) reported `r cnotw <- sum(tb[tb$year==yr & tb$g_whoregion=="WPR", "c_notified"], na.rm=TRUE) ; round(cnotw / 1e6, 1)` million people with TB in the region (`r I(pasteLabel("Table", tableCount, "t-notif"))`) making up `r round(cnotw / sum(tb[tb$year==yr, "c_notified"], na.rm=TRUE) * 100, 0)`% of the global burden. Of these cases `r nrw <- sum(tb[tb$year==yr & tb$g_whoregion=="WPR", "tot_newrel"], na.rm=TRUE) ; round(nrw / cnotw * 100, 0)`% were new episodes of TB (either new or relapse cases). Within the region China accounts for `r round(sum(tb[tb$year==yr & tb$iso2=="CN", "tot_newrel"], na.rm=TRUE) / nrw * 100, 0)`% of the caseload with the Philippines and Viet Nam following with `r round(sum(tb[tb$year==yr & tb$iso2=="PH", "tot_newrel"], na.rm=TRUE) / nrw * 100, 0)`% and `r round(sum(tb[tb$year==yr & tb$iso2=="VN", "tot_newrel"], na.rm=TRUE) / nrw * 100, 0)`% respectively. TB notification rates vary substantially in the region with the highest rates found in `r hnr <- .maxplus(tb[tb$year==yr & tb$g_whoregion=="WPR", c("country", "c_tot_newrel_100k")], 'c_tot_newrel_100k', 4) ; paste(paste(hnr[1:3,1], collapse=", "), "and", hnr[4,1])` (`r I(pasteLabel("Figure", figCount, "m-notif"))`). 
@@ -193,6 +195,7 @@ notb$`All forms of TB` <- notb$tot_newrel / notb$e_pop_num * 1e5
 notb$`New smear-positive` <- notb$new_sp / notb$e_pop_num * 1e5
 notc <- melt(notb[c("year", "New smear-positive", "All forms of TB")], id=1)
 
+write.csv(notc, file=paste0(pasteLabel("D:/Users/hiattt/Dropbox/Code/Surveillance reports/figure data/figure", figCount, "f-notif-trend", insLink=FALSE), ".csv"), row.names=FALSE)
 ```
 
 
@@ -240,9 +243,9 @@ age$sh.name <- factor(age$iso3, c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM
 age[is.na(age$sh.name), 'sh.name'] <- "WPR"
 age$age <- factor(age$age, c("014", "1524", "2534", "3544", "4554", "5564", "65"), c("0–14", "15–24", "25–34", "35–44", "45–54", "55–64", "\u2265 65"))
 
+write.csv(age, file=paste0(pasteLabel("D:/Users/hiattt/Dropbox/Code/Surveillance reports/figure data/figure", figCount, "f-agesex-bar", insLink=FALSE), ".csv"), row.names=FALSE)
 
-
-
+write.csv(age, file=paste0(pasteLabel("D:/Users/hiattt/Dropbox/Code/Surveillance reports/figure data/figure", figCount, "f-agesex", insLink=FALSE), ".csv"), row.names=FALSE)
 ```
 
 The age distribution in `r yr` follows an increasing pattern characteristic of an aging epidemic for all high-burden countries except Mongolia and Papua New Guinea (`r I(pasteLabel("Figure", figCount, "f-agesex-bar"))`). Rates among females is less similar with rates in the `r "\u2265 65"` category lower than their younger counter-parts in many settings.
@@ -290,6 +293,8 @@ trb$Defaulted <- trb$new_sp_def / trb$new_sp_coh * 100
 trb$`Not evaluated` <- (trb$new_sp_coh - (trb$new_sp_cur + trb$new_sp_cmplt + trb$new_sp_died + trb$new_sp_fail + trb$new_sp_def)) / trb$new_sp_coh * 100
 
 trc <- melt(trb[c("year", "Success", "Died", "Failed", "Defaulted", "Not evaluated")], id=1)
+
+write.csv(trc, file=paste0(pasteLabel("D:/Users/hiattt/Dropbox/Code/Surveillance reports/figure data/figure", figCount, "f-txout-bar", insLink=FALSE), ".csv"), row.names=FALSE)
 ```
 
 
@@ -332,6 +337,7 @@ thb$variable <- factor(thb$variable, levels=c("test", "pos", "cpt", "art"), labe
 
 thb$country <- factor(thb$iso3, c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM", "WPR"), c("Cambodia", "China", "Lao PDR", "Mongolia", "PNG", "Philippines", "Viet Nam", "WPR"))
 
+write.csv(thb, file=paste0(pasteLabel("D:/Users/hiattt/Dropbox/Code/Surveillance reports/figure data/figure", figCount, "f-tbhiv", insLink=FALSE), ".csv"), row.names=FALSE)
 ```
 
 
@@ -376,6 +382,7 @@ estg$var <- "inc"
 esth <- merge(estf, estg, all.x=TRUE)
 esth$var <- factor(esth$var, levels=c("inc", "prev", "mort_exc_tbhiv"), labels=c("Incidence and notification", "Prevalence", "Mortality (excluding HIV)"))
 
+write.csv(esth, file=paste0(pasteLabel("D:/Users/hiattt/Dropbox/Code/Surveillance reports/figure data/figure", figCount, "f-est", insLink=FALSE), ".csv"), row.names=FALSE)
 ```
 
 
