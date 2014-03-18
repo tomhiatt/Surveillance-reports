@@ -4,14 +4,18 @@
 # Updated: 12 March 2014
 # Regional TB annual analysis
 ###################################################
-source('d:/users/hiattt/Dropbox/Code/Surveillance reports/Setup.r')
 
-# Inspired by:
-#   
-#   http://gforge.se/2014/01/fast-track-publishing-using-knitr-part-ii/
+require("reshape")
+require("ggplot2")
+require("grid")
+require("scales")
+require("xtable")
+require("stringr")
+require("timeSeries")
+require("ggthemes")
 
 
-# I can't decide if I pull all this stuff out here or keep it in sequence down below. It seems silly to use markdown and then not incorporate it, doesn't it? Okay I'm putting it here.
+# Reproducible research process inspired by: http://gforge.se/2014/01/fast-track-publishing-using-knitr-part-ii/
 
 # Global options for knitr
 # change this to 'postscript' for EPS output.
@@ -26,7 +30,7 @@ opts_chunk$set(
 
 whbc <- c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM")
 
-runprofile()
+# runprofile()
 
 # Theme for plots
 theme_report <- function(base_size=12, base_family="") {
@@ -49,6 +53,100 @@ theme_report <- function(base_size=12, base_family="") {
             strip.text = element_text(hjust=0)
             )
 }
+
+########################################################
+# Functions for data formatting
+########################################################
+
+# Simple rounder that just adds in the thousands separator 
+rounder <- function(x, decimals=FALSE) {
+  if(decimals==TRUE){
+    ifelse(is.na(x), NA, ifelse(x==0, 0, ifelse(x < 0.01, "<0.01", ifelse(round(x,2) < 0.1, formatC(round(x,2), format='f', digits=2), ifelse(round(x,1) < 10, formatC(round(x,1), format='f', digits=1), formatC(round(x,0), big.mark=" ", format='d') )))))
+  }
+  else ifelse(is.na(x), NA, ifelse(x==0, 0, ifelse(x < 1, "< 1", formatC(round(x,0), big.mark=" ", format='d'))))
+}
+
+.rowsums <- function(x) { 
+  # This function sums rows ignoring NAs unless all are NA
+  # use it like this
+  # t3c$snu <- .rowsums(t3c[c('new_sn', 'new_su')])
+		tosum <- as.matrix(x)
+		summed <- rowMeans((tosum), na.rm=T) * rowSums(!is.na((tosum)))
+		return(summed)
+}
+
+# Change names to WPSAR convention
+.WPSARnames <- function(d, col='country', ord='no order'){
+  d[col] <- as.character(d[[col]])
+  d[col] <- ifelse(d[[col]]=='China, Hong Kong SAR', 'Hong Kong Special Administrative Region (China)', 
+                   ifelse(d[[col]]=='China, Macao SAR', 'Macao Special Administrative Region (China)', 
+                          ifelse(d[[col]]=='Micronesia (Federated States of)', 'Micronesia, Federated States of', 
+                                 ifelse(d[[col]]=='WPR', 'Western Pacific Region
+', d[[col]]))))
+
+  if(ord %nin% c('wpr')) warning('Not ordering.')
+if(ord=='wpr')  d <- d[match(c("Afghanistan", "Bangladesh", "Brazil", "Cambodia", "China", "DR Congo", "Ethiopia", "India", "Indonesia", "Kenya", "Mozambique",  "Myanmar", "Nigeria", "Pakistan", "Philippines", "Russian Federation", "South Africa", "Thailand", "Uganda", "UR Tanzania", "Viet Nam", "Zimbabwe", "High-burden countries", "AFR", "AMR", "EMR", "EUR", "SEAR", "WPR", "Global"), d[[col]]),]
+
+  return(d)
+}
+  
+########################################################
+# Functions to assist with tables and figure in markdown document (poached from here: http://rmflight.github.io/posts/2012/10/papersinRmd.html)
+########################################################
+
+yr <- as.numeric(format(Sys.time(),"%Y")) - ifelse(as.numeric(format(Sys.time(),"%m")) < 4, 2, 1)
+
+incCount <- function(inObj, useName) {
+  nObj <- length(inObj)
+  useNum <- max(inObj) + 1
+  inObj <- c(inObj, useNum)
+  names(inObj)[nObj + 1] <- useName
+  inObj
+}
+figCount <- c(`_` = 0)
+tableCount <- c(`_` = 0)
+
+# tableCount <- incCount(tableCount, "t.blogPostDocs")
+# tableCount
+
+pasteLabel <- function(preText, inObj, objName, insLink = TRUE) {
+  objNum <- inObj[objName]
+  
+  useText <- paste(preText, objNum, sep = " ")
+  if (insLink) {
+    useText <- paste("[", useText, "](#", objName, ")", sep = "")
+  }
+  useText
+}
+
+tableCat <- function(inFrame) {
+  outText <- paste(names(inFrame), collapse = " | ")
+  outText <- c(outText, paste(rep("---", ncol(inFrame)), collapse = " | "))
+  invisible(apply(inFrame, 1, function(inRow) {
+    outText <<- c(outText, paste(inRow, collapse = " | "))
+  }))
+  return(outText)
+}
+
+# Create directory and Get data
+
+# Create regional report folder if needed.
+# dir.create("./Regional_report")
+if(!any(grep("Regional_report", getwd()))) setwd("./Regional_report")
+
+if(!"data" %in% dir()){
+  dir.create(paste("./data"))
+  stop("Download the notification and treatment outcomes data from 'http://who.int/tb/country/data/download/en/' to './data'.")
+  }
+
+data1 <- dir("./data", full.names=TRUE)
+tb <- NA
+for(i in data1){
+  data3 <- read.csv(i)
+  tb <- merge(tb, data3, all=TRUE)
+}
+
+
 ```
 
 
@@ -88,7 +186,13 @@ Results
 tableCount <- incCount(tableCount, "t-notif")
 
 # Notification table
-tbb <- subset(n, year==yr & g_whoregion=="WPR", select=c('country', 'g_whoregion', 'g_hbc22', 'c_notified', "new_sp", "new_sn", "new_su", "new_ep", "new_oth", "ret_rel", 'c_newinc', "c_ret", "newret_oth", "new_labconf", 'c_new', "e_pop_num"))
+
+tb$c_new <- .rowsums(tb[c("new_sp", "new_sn", "new_su", "new_ep", "new_oth")])
+tb$c_newinc <- .rowsums(tb[c("c_new", "ret_rel", "newret_oth")])
+tb$c_ret <- .rowsums(tb[c("ret_rel", "ret_taf", "ret_tad", "ret_oth")])
+tb$c_notified <- .rowsums(tb[c("c_new", "c_ret", "newret_oth")])
+
+tbb <- subset(tb, year==yr & g_whoregion=="WPR", select=c('country', 'g_whoregion', 'c_notified', "new_sp", "new_sn", "new_su", "new_ep", "new_oth", "ret_rel", 'c_newinc', "c_ret", "newret_oth", "new_labconf", 'c_new', "e_pop_num"))
 
 tbb$new.pulm <- .rowsums(tbb[c('new_sp', 'new_sn', 'new_su')])
 
@@ -96,11 +200,11 @@ tbb <- tbb[order(tbb$country),]
 names(tbb)[names(tbb)=='country'] <- 'area'
 
 # make aggregate row
-tbbr <- aggregate(tbb[4:ncol(tbb)], by=list(area=tbb$g_whoregion), FUN=sum, na.rm=TRUE)
+tbbr <- aggregate(tbb[3:ncol(tbb)], by=list(area=tbb$g_whoregion), FUN=sum, na.rm=TRUE)
 
 
 # combine together
-tbc <- rbind(tbb[tbb$g_whoregion=='WPR', c(1, 4:ncol(tbb))], tbbr[tbbr$area=='WPR',]) # , tbbh, tbbga
+tbc <- rbind(tbb[tbb$g_whoregion=='WPR', c(1, 3:ncol(tbb))], tbbr[tbbr$area=='WPR',]) # , tbbh, tbbga
 
 # Fill in data for countries not reporting lab confirmed (see below too)
 tbc$new_labconf2 <- ifelse(is.na(tbc$new_labconf), tbc$new_sp, tbc$new_labconf)
@@ -115,17 +219,18 @@ for(var in 2:ncol(tbc)){
 }
 tbc[is.na(tbc$newpulm_lab_pct), 'newpulm_lab_pct'] <-  "--"
 tbc[is.na(tbc$tot_newrel_100k), 'newpulm_lab_pct'] <-  "--"
-# rename
-tbc <- .shortnames(tbc, col='area')
 
 # Add footnote for countries not reporting Lab confirmed 
 footnote.b <- ifelse(any(is.na(tbc$new_labconf) & !is.na(tbc$new_sp)), paste('(b) LABORATORY CONFIRMED data for', paste(subset(tbc, is.na(new_labconf), 'area'), collapse=', '), 'refer to smear-positive cases only. Data on cases that were laboratory confirmed using other methods were not reported.'), "")
-tbc$new_labconf2 <- ifelse(is.na(tbc$new_labconf) & !is.na(tbc$new_sp), glue(tbc$new_sp, "(b)"), tbc$new_labconf2)
+tbc$new_labconf2 <- ifelse(is.na(tbc$new_labconf) & !is.na(tbc$new_sp), paste0(tbc$new_sp, "(b)"), tbc$new_labconf2)
 
-tbm <- xtable(tbc[c("area", "c_notified", "tot_newrel_100k", "new_sp", "new_sn", "new_su", "new_ep", "new_oth", "new_labconf2", "newpulm_lab_pct", "ret_rel", "ret_nrel", "c_newinc")])
+# Rename countries
+tbd <- .WPSARnames(tbc[c("area", "c_notified", "tot_newrel_100k", "new_sp", "new_sn", "new_su", "new_ep", "new_oth", "new_labconf2", "newpulm_lab_pct", "ret_rel", "ret_nrel", "c_newinc")], col="area")
+
+tbm <- xtable(tbd)
 digits(tbm) <- 0
 
-
+write.csv(tbm, file=paste0(pasteLabel("D:/Users/hiattt/Dropbox/Code/Surveillance reports/figure data/table", tableCount, "t-notif", insLink=FALSE), ".csv"), row.names=FALSE, na="")
 ```
 
 ```{r m-notif-data, include=FALSE}
@@ -168,8 +273,8 @@ print(tbm, type="html", include.rownames=FALSE, include.colnames=F, html.table.a
   <TD>RETREATMENT<br>EXCL. RELAPSE</TD> 
   <TD>NEW AND<br>RELAPSE(a)</TD> 
  </TR>", 
-  glue("<TR> <TD colspan=13>Blank cells indicate data not reported. -- indicates values that cannot be calculated.<br>
-(a) NEW AND RELAPSE includes cases for which the treatment history is unknown.<br>", footnote.b,"</TD></TR>"))))
+  paste0("<TR> <TD colspan=13>Blank cells indicate data not reported. -- indicates values that cannot be calculated.<br>
+(a) NEW AND RELAPSE includes cases for which the treatment history is unknown.<br>Data reported as of 1 October 2013. See ANNEX 4 of Global Tuberculosis Report, 2013.<br>", footnote.b,"</TD></TR>"))))
 
 ```
 
@@ -304,12 +409,7 @@ write.csv(trc, file=paste0(pasteLabel("D:/Users/hiattt/Dropbox/Code/Surveillance
 
 ggplot(trc, aes(year, value, fill=variable)) + geom_bar(stat="identity", position="stack") + theme_report() + scale_fill_brewer('Outcome', type="qual", palette=6) + xlab("") + scale_y_continuous("Percent of cohort") + coord_cartesian(ylim=c(60,100)) + guides(fill = guide_legend(reverse = TRUE))
 
-trd <- trc
-trd$type <- ifelse(trd$variable=="Success", "Favourable", "Unfavourable")
 
-ggplot(trd, aes(year, value, color=variable)) + geom_line(size=1, ) + facet_wrap(~type, scales="free_y", ncol=1) + theme_report() + scale_fill_brewer('Outcome', type="qual", palette=6) + scale_x_continuous("", breaks = pretty_breaks()) + scale_y_continuous("Percent of cohort", expand=c(0.1,0)) 
-
-ggplot(trd[trd$year > 2006, ], aes(year, value, color=variable)) + geom_line(size=1, ) + facet_wrap(~type, scales="free_y", ncol=1) + theme_report() + scale_fill_brewer('Outcome', type="qual", palette=6) + scale_x_continuous("", breaks = pretty_breaks()) + scale_y_continuous("Percent of cohort", expand=c(0.6,0)) 
 
 ```
 
@@ -370,7 +470,7 @@ estd$c_tot_newrel_100k <- estd$tot_newrel / estd$e_pop_num * 1e5
 
 estf <- NULL
 for(var in c("inc", "prev", "mort_exc_tbhiv")){
-  df <- subset(estd, select=c("year", glue("e_", var, "_100k"), glue("e_", var, "_100k_lo"), glue("e_", var, "_100k_hi")))
+  df <- subset(estd, select=c("year", paste0("e_", var, "_100k"), paste0("e_", var, "_100k_lo"), paste0("e_", var, "_100k_hi")))
   names(df) <- c("year", "best", "lo", "hi")
   df$var <- var
   estf <- rbind(estf, df)
