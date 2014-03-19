@@ -30,7 +30,10 @@ opts_chunk$set(
 
 whbc <- c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM")
 
-# runprofile()
+# Create regional report folder if needed.
+# dir.create("./Regional_report") # run this if error below
+if(!any(grep("Regional_report", getwd()))) setwd("./Regional_report")
+
 
 # Theme for plots
 theme_report <- function(base_size=12, base_family="") {
@@ -84,12 +87,19 @@ rounder <- function(x, decimals=FALSE) {
                                  ifelse(d[[col]]=='WPR', 'Western Pacific Region
 ', d[[col]]))))
 
-  if(ord %nin% c('wpr')) warning('Not ordering.')
+  if(!ord %in% c('wpr')) warning('Not ordering.')
 if(ord=='wpr')  d <- d[match(c("Afghanistan", "Bangladesh", "Brazil", "Cambodia", "China", "DR Congo", "Ethiopia", "India", "Indonesia", "Kenya", "Mozambique",  "Myanmar", "Nigeria", "Pakistan", "Philippines", "Russian Federation", "South Africa", "Thailand", "Uganda", "UR Tanzania", "Viet Nam", "Zimbabwe", "High-burden countries", "AFR", "AMR", "EMR", "EUR", "SEAR", "WPR", "Global"), d[[col]]),]
 
   return(d)
 }
-  
+
+########################################################
+# Functions for maps
+########################################################
+
+source("./MapFunctions.r")
+load("gparts.Rdata")
+
 ########################################################
 # Functions to assist with tables and figure in markdown document (poached from here: http://rmflight.github.io/posts/2012/10/papersinRmd.html)
 ########################################################
@@ -130,10 +140,6 @@ tableCat <- function(inFrame) {
 
 # Create directory and Get data
 
-# Create regional report folder if needed.
-# dir.create("./Regional_report")
-if(!any(grep("Regional_report", getwd()))) setwd("./Regional_report")
-
 if(!"data" %in% dir()){
   dir.create(paste("./data"))
   stop("Download the notification and treatment outcomes data from 'http://who.int/tb/country/data/download/en/' to './data'.")
@@ -146,6 +152,21 @@ for(i in data1){
   tb <- merge(tb, data3, all=TRUE)
 }
 
+# Add needed variables
+tb$g_hbc22 <- ifelse(tb$iso3 %in% c("AFG", "BGD", "BRA", "CHN", "COD", "ETH", "IDN", "IND", "KEN", "KHM", "MMR", "MOZ", "NGA", "PAK", "PHL", "RUS", "THA", "TZA", "UGA", "VNM", "ZAF", "ZWE"), "high", "low")
+
+tb$c_new <- .rowsums(tb[c("new_sp", "new_sn", "new_su", "new_ep", "new_oth")])
+tb$c_newinc <- .rowsums(tb[c("c_new", "ret_rel", "newret_oth")])
+tb$c_ret <- .rowsums(tb[c("ret_rel", "ret_taf", "ret_tad", "ret_oth")])
+tb$c_notified <- .rowsums(tb[c("c_new", "c_ret", "newret_oth")])
+
+tb$c_tot_newrel_100k <- tb$tot_newrel / tb$e_pop_num * 1e5
+
+# Get population data (available from UN population division. http://esa.un.org/unpd/wpp/unpp/panel_population.htm) and formatted TB/HIV data and estimates for the WHO Western Pacific Region.
+
+load("./addata.Rdata")
+
+tb <- merge(tb, tbhiv[c(3,4,13:20)], all=TRUE)
 
 ```
 
@@ -187,11 +208,6 @@ tableCount <- incCount(tableCount, "t-notif")
 
 # Notification table
 
-tb$c_new <- .rowsums(tb[c("new_sp", "new_sn", "new_su", "new_ep", "new_oth")])
-tb$c_newinc <- .rowsums(tb[c("c_new", "ret_rel", "newret_oth")])
-tb$c_ret <- .rowsums(tb[c("ret_rel", "ret_taf", "ret_tad", "ret_oth")])
-tb$c_notified <- .rowsums(tb[c("c_new", "c_ret", "newret_oth")])
-
 tbb <- subset(tb, year==yr & g_whoregion=="WPR", select=c('country', 'g_whoregion', 'c_notified', "new_sp", "new_sn", "new_su", "new_ep", "new_oth", "ret_rel", 'c_newinc', "c_ret", "newret_oth", "new_labconf", 'c_new', "e_pop_num"))
 
 tbb$new.pulm <- .rowsums(tbb[c('new_sp', 'new_sn', 'new_su')])
@@ -230,7 +246,7 @@ tbd <- .WPSARnames(tbc[c("area", "c_notified", "tot_newrel_100k", "new_sp", "new
 tbm <- xtable(tbd)
 digits(tbm) <- 0
 
-write.csv(tbm, file=paste0(pasteLabel("D:/Users/hiattt/Dropbox/Code/Surveillance reports/figure data/table", tableCount, "t-notif", insLink=FALSE), ".csv"), row.names=FALSE, na="")
+write.csv(tbm, file=paste0(pasteLabel("./figure data/table", tableCount, "t-notif", insLink=FALSE), ".csv"), row.names=FALSE, na="")
 ```
 
 ```{r m-notif-data, include=FALSE}
@@ -239,13 +255,11 @@ figCount <- incCount(figCount, "m-notif")
 
 mc <- subset(tb, year==yr & g_whoregion=="WPR", select=c(country, iso2, iso3, g_whoregion, c_tot_newrel_100k))
 
-
-mc$cat <- cut(round(mc$c_tot_newrel_100k,0), c(0, 10, 50, 100, 200, Inf), c('0–9', '10–49', '50–99', '100–199', '>=200'), right=FALSE)
-
+mc$cat <- cut(round(mc$c_tot_newrel_100k,0), c(0, 10, 50, 100, 200, Inf), c('0–9', '10–49', '50–99', '100–199', '>199'), right=FALSE)
 
 mc1 <- WHOmap.print(mc, legend.title= "TB cases per \n100 000 population", copyright=FALSE, show=FALSE, zoom="WPR")
 
-write.csv(mc, file=paste0(pasteLabel("D:/Users/hiattt/Dropbox/Code/Surveillance reports/figure data/figure", figCount, "m-notif", insLink=FALSE), ".csv"), row.names=FALSE)
+write.csv(mc, file=paste0(pasteLabel("./figure data/figure", figCount, "m-notif", insLink=FALSE), ".csv"), row.names=FALSE)
 ```
 
 In `r yr`, national TB control programmes (NTPs) reported `r cnotw <- sum(tb[tb$year==yr & tb$g_whoregion=="WPR", "c_notified"], na.rm=TRUE) ; round(cnotw / 1e6, 1)` million people with TB in the region (`r I(pasteLabel("Table", tableCount, "t-notif"))`) making up `r round(cnotw / sum(tb[tb$year==yr, "c_notified"], na.rm=TRUE) * 100, 0)`% of the global burden. Of these cases `r nrw <- sum(tb[tb$year==yr & tb$g_whoregion=="WPR", "tot_newrel"], na.rm=TRUE) ; round(nrw / cnotw * 100, 0)`% were new episodes of TB (either new or relapse cases). Within the region China accounts for `r round(sum(tb[tb$year==yr & tb$iso2=="CN", "tot_newrel"], na.rm=TRUE) / nrw * 100, 0)`% of the caseload with the Philippines and Viet Nam following with `r round(sum(tb[tb$year==yr & tb$iso2=="PH", "tot_newrel"], na.rm=TRUE) / nrw * 100, 0)`% and `r round(sum(tb[tb$year==yr & tb$iso2=="VN", "tot_newrel"], na.rm=TRUE) / nrw * 100, 0)`% respectively. TB notification rates vary substantially in the region with the highest rates found in `r hnr <- .maxplus(tb[tb$year==yr & tb$g_whoregion=="WPR", c("country", "c_tot_newrel_100k")], 'c_tot_newrel_100k', 4) ; paste(paste(hnr[1:3,1], collapse=", "), "and", hnr[4,1])` (`r I(pasteLabel("Figure", figCount, "m-notif"))`). 
@@ -300,7 +314,7 @@ notb$`All forms of TB` <- notb$tot_newrel / notb$e_pop_num * 1e5
 notb$`New smear-positive` <- notb$new_sp / notb$e_pop_num * 1e5
 notc <- melt(notb[c("year", "New smear-positive", "All forms of TB")], id=1)
 
-write.csv(notc, file=paste0(pasteLabel("D:/Users/hiattt/Dropbox/Code/Surveillance reports/figure data/figure", figCount, "f-notif-trend", insLink=FALSE), ".csv"), row.names=FALSE)
+write.csv(notc, file=paste0(pasteLabel("./figure data/figure", figCount, "f-notif-trend", insLink=FALSE), ".csv"), row.names=FALSE)
 ```
 
 
@@ -318,7 +332,7 @@ ggplot(notc, aes(year, value, color=variable, ymin=0)) + geom_line(size=1) + the
 figCount <- incCount(figCount, "f-agesex-bar")
 figCount <- incCount(figCount, "f-agesex")
 
-aga <- merge(subset(n.t, year>1999, select=c("iso3", "country", "year", "g_whoregion", "g_hbc22", "new_sp_m04", "new_sp_m514", "new_sp_m014", "new_sp_m1524", "new_sp_m2534", "new_sp_m3544", "new_sp_m4554", "new_sp_m5564", "new_sp_m65", "new_sp_mu", "new_sp_f04", "new_sp_f514", "new_sp_f014", "new_sp_f1524",  "new_sp_f2534", "new_sp_f3544", "new_sp_f4554", "new_sp_f5564", "new_sp_f65", "new_sp_fu")), subset(p, year>1999, select=c("iso3", "country", "year", "e_pop_m04", "e_pop_m514", "e_pop_m014", "e_pop_m1524", "e_pop_m2534", "e_pop_m3544", "e_pop_m4554", "e_pop_m5564", "e_pop_m65", "e_pop_f04", "e_pop_f514", "e_pop_f014", "e_pop_f1524", "e_pop_f2534", "e_pop_f3544", "e_pop_f4554", "e_pop_f5564", "e_pop_f65")))
+aga <- merge(subset(tb, year>1999, select=c("iso3", "country", "year", "g_whoregion", "g_hbc22", "new_sp_m04", "new_sp_m514", "new_sp_m014", "new_sp_m1524", "new_sp_m2534", "new_sp_m3544", "new_sp_m4554", "new_sp_m5564", "new_sp_m65", "new_sp_mu", "new_sp_f04", "new_sp_f514", "new_sp_f014", "new_sp_f1524",  "new_sp_f2534", "new_sp_f3544", "new_sp_f4554", "new_sp_f5564", "new_sp_f65", "new_sp_fu")), subset(p, year>1999, select=c("iso3", "country", "year", "e_pop_m04", "e_pop_m514", "e_pop_m014", "e_pop_m1524", "e_pop_m2534", "e_pop_m3544", "e_pop_m4554", "e_pop_m5564", "e_pop_m65", "e_pop_f04", "e_pop_f514", "e_pop_f014", "e_pop_f1524", "e_pop_f2534", "e_pop_f3544", "e_pop_f4554", "e_pop_f5564", "e_pop_f65")))
 
 # Aggregate for region
 agb1 <- aggregate(aga[6:ncol(aga)], by=list(year=aga$year, area=aga$g_whoregion), FUN=sum, na.rm=TRUE)
@@ -342,15 +356,15 @@ agd <- cast(subset(agc, select= -variable), ...~type)
 agd$new_sp_100k <- agd$new_sp / agd$pop * 1e5
 
 # Subset for WPRO
-age <- subset(agd, (iso3 %in% whbc | area=="WPR") & age!="u" & age %nin% c("04", "514"))
+age <- subset(agd, (iso3 %in% whbc | area=="WPR") & age!="u" & !age %in% c("04", "514"))
 age$sex <- factor(age$sex, levels=c("m", "f"), labels=c("Male", "Female"))
 age$sh.name <- factor(age$iso3, c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM", "WPR"), c("Cambodia", "China", "Lao PDR", "Mongolia", "PNG", "Philippines", "Viet Nam", "WPR"))
 age[is.na(age$sh.name), 'sh.name'] <- "WPR"
 age$age <- factor(age$age, c("014", "1524", "2534", "3544", "4554", "5564", "65"), c("0–14", "15–24", "25–34", "35–44", "45–54", "55–64", "\u2265 65"))
 
-write.csv(age, file=paste0(pasteLabel("D:/Users/hiattt/Dropbox/Code/Surveillance reports/figure data/figure", figCount, "f-agesex-bar", insLink=FALSE), ".csv"), row.names=FALSE)
+write.csv(age, file=paste0(pasteLabel("./figure data/figure", figCount, "f-agesex-bar", insLink=FALSE), ".csv"), row.names=FALSE)
 
-write.csv(age, file=paste0(pasteLabel("D:/Users/hiattt/Dropbox/Code/Surveillance reports/figure data/figure", figCount, "f-agesex", insLink=FALSE), ".csv"), row.names=FALSE)
+write.csv(age, file=paste0(pasteLabel("./figure data/figure", figCount, "f-agesex", insLink=FALSE), ".csv"), row.names=FALSE)
 ```
 
 The age distribution in `r yr` follows an increasing pattern characteristic of an aging epidemic for all high-burden countries except Mongolia and Papua New Guinea (`r I(pasteLabel("Figure", figCount, "f-agesex-bar"))`). Rates among females is less similar with rates in the `r "\u2265 65"` category lower than their younger counter-parts in many settings.
@@ -399,7 +413,7 @@ trb$`Not evaluated` <- (trb$new_sp_coh - (trb$new_sp_cur + trb$new_sp_cmplt + tr
 
 trc <- melt(trb[c("year", "Success", "Died", "Failed", "Defaulted", "Not evaluated")], id=1)
 
-write.csv(trc, file=paste0(pasteLabel("D:/Users/hiattt/Dropbox/Code/Surveillance reports/figure data/figure", figCount, "f-txout-bar", insLink=FALSE), ".csv"), row.names=FALSE)
+write.csv(trc, file=paste0(pasteLabel("./figure data/figure", figCount, "f-txout-bar", insLink=FALSE), ".csv"), row.names=FALSE)
 ```
 
 
@@ -419,11 +433,11 @@ ggplot(trc, aes(year, value, fill=variable)) + geom_bar(stat="identity", positio
 
 figCount <- incCount(figCount, "f-tbhiv")
 
-tha1 <- subset(tb, year >= 2005 & g_whoregion=="WPR" & iso3 %in% whbc, select=c("country", "year", "iso3", "g_hbc22", "g_hbhiv63", "c_notified", "hivtest", "hivtest_pos", "hiv_cpt", "hiv_art", "hivtest_pct_numerator", "hivtest_pct_denominator", "hivtest_pos_pct_numerator", "hivtest_pos_pct_denominator", "hiv_cpt_pct_numerator", "hiv_cpt_pct_denominator", "hiv_art_pct_numerator", "hiv_art_pct_denominator"))
+tha1 <- subset(tb, year >= 2005 & g_whoregion=="WPR" & iso3 %in% whbc, select=c("country", "year", "iso3", "g_hbc22", "c_notified", "hivtest", "hivtest_pos", "hiv_cpt", "hiv_art", "hivtest_pct_numerator", "hivtest_pct_denominator", "hivtest_pos_pct_numerator", "hivtest_pos_pct_denominator", "hiv_cpt_pct_numerator", "hiv_cpt_pct_denominator", "hiv_art_pct_numerator", "hiv_art_pct_denominator"))
 
-tha2 <- aggregate(tha1[6:ncol(tha1)], by=list(year=tha1$year), FUN=sum, na.rm=TRUE)
+tha2 <- aggregate(tha1[5:ncol(tha1)], by=list(year=tha1$year), FUN=sum, na.rm=TRUE)
 tha2[c("country", "iso3")] <- "WPR"
-tha2[c("g_hbc22", "g_hbhiv63")] <- NA
+tha2[c("g_hbc22")] <- NA
 tha <- rbind(tha1, tha2)
 
 tha$test <- tha$hivtest_pct_numerator / tha$hivtest_pct_denominator * 100
@@ -437,7 +451,7 @@ thb$variable <- factor(thb$variable, levels=c("test", "pos", "cpt", "art"), labe
 
 thb$country <- factor(thb$iso3, c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM", "WPR"), c("Cambodia", "China", "Lao PDR", "Mongolia", "PNG", "Philippines", "Viet Nam", "WPR"))
 
-write.csv(thb, file=paste0(pasteLabel("D:/Users/hiattt/Dropbox/Code/Surveillance reports/figure data/figure", figCount, "f-tbhiv", insLink=FALSE), ".csv"), row.names=FALSE)
+write.csv(thb, file=paste0(pasteLabel("./figure data/figure", figCount, "f-tbhiv", insLink=FALSE), ".csv"), row.names=FALSE)
 ```
 
 
@@ -460,7 +474,7 @@ figCount <- incCount(figCount, "f-est")
 
 eget <- c("year", "e_pop_num", "e_inc_100k", "e_inc_100k_lo", "e_inc_100k_hi", "e_prev_100k", "e_prev_100k_lo", "e_prev_100k_hi", "e_mort_exc_tbhiv_100k", "e_mort_exc_tbhiv_100k_lo", "e_mort_exc_tbhiv_100k_hi")
 
-esta <- subset(araw, year >=1990 & group_name=="WPR", select=eget)
+# esta <- subset(estimates, year >=1990 & group_name=="WPR", select=eget)
 estb <- tb[tb$year>=1990 & tb$g_whoregion=="WPR", c("year", "tot_newrel")]
 estc <- aggregate(estb["tot_newrel"], by=list(year=estb$year), FUN=sum, na.rm=TRUE)
 
@@ -482,7 +496,7 @@ estg$var <- "inc"
 esth <- merge(estf, estg, all.x=TRUE)
 esth$var <- factor(esth$var, levels=c("inc", "prev", "mort_exc_tbhiv"), labels=c("Incidence and notification", "Prevalence", "Mortality (excluding HIV)"))
 
-write.csv(esth, file=paste0(pasteLabel("D:/Users/hiattt/Dropbox/Code/Surveillance reports/figure data/figure", figCount, "f-est", insLink=FALSE), ".csv"), row.names=FALSE)
+write.csv(esth, file=paste0(pasteLabel("./figure data/figure", figCount, "f-est", insLink=FALSE), ".csv"), row.names=FALSE)
 ```
 
 
