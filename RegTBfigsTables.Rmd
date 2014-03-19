@@ -5,6 +5,34 @@
 # Regional TB annual analysis
 ###################################################
 
+# > sessionInfo()
+# R version 3.0.2 (2013-09-25)
+# Platform: i386-w64-mingw32/i386 (32-bit)
+# 
+# locale:
+# [1] LC_COLLATE=English_United Kingdom.1252 
+# [2] LC_CTYPE=English_United Kingdom.1252   
+# [3] LC_MONETARY=English_United Kingdom.1252
+# [4] LC_NUMERIC=C                           
+# [5] LC_TIME=English_United Kingdom.1252    
+# 
+# attached base packages:
+# [1] grid      stats     graphics  grDevices utils     datasets  methods  
+# [8] base     
+# 
+# other attached packages:
+#  [1] maptools_0.8-27    sp_1.0-14          knitr_1.5         
+#  [4] ggthemes_1.6.0     timeSeries_3010.97 timeDate_3010.98  
+#  [7] stringr_0.6.2      xtable_1.7-1       scales_0.2.3      
+# [10] ggplot2_0.9.3.1    reshape_0.8.4      plyr_1.8          
+# 
+# loaded via a namespace (and not attached):
+#  [1] colorspace_1.2-4   dichromat_2.0-0    digest_0.6.4      
+#  [4] evaluate_0.5.1     foreign_0.8-55     formatR_0.10      
+#  [7] gtable_0.1.2       labeling_0.2       lattice_0.20-23   
+# [10] MASS_7.3-29        munsell_0.4.2      proto_0.3-10      
+# [13] RColorBrewer_1.0-5 reshape2_1.2.2     tools_3.0.2 
+
 require("reshape")
 require("ggplot2")
 require("grid")
@@ -101,7 +129,7 @@ source("./MapFunctions.r")
 load("gparts.Rdata")
 
 ########################################################
-# Functions to assist with tables and figure in markdown document (poached from here: http://rmflight.github.io/posts/2012/10/papersinRmd.html)
+# Functions to assist with tables and figure in markdown document (from here: http://rmflight.github.io/posts/2012/10/papersinRmd.html)
 ########################################################
 
 yr <- as.numeric(format(Sys.time(),"%Y")) - ifelse(as.numeric(format(Sys.time(),"%m")) < 4, 2, 1)
@@ -116,7 +144,6 @@ incCount <- function(inObj, useName) {
 figCount <- c(`_` = 0)
 tableCount <- c(`_` = 0)
 
-# tableCount <- incCount(tableCount, "t.blogPostDocs")
 # tableCount
 
 pasteLabel <- function(preText, inObj, objName, insLink = TRUE) {
@@ -171,7 +198,7 @@ tb <- merge(tb, tbhiv[c(3,4,13:20)], all=TRUE)
 ```
 
 
-Regional TB report `r yr + 1`
+Epidemiology and control of tuberculosis in the Western Pacific Region: analysis of case notification data in 2012
 ========================================================
 
 Abstract 
@@ -358,7 +385,7 @@ agd$new_sp_100k <- agd$new_sp / agd$pop * 1e5
 # Subset for WPRO
 age <- subset(agd, (iso3 %in% whbc | area=="WPR") & age!="u" & !age %in% c("04", "514"))
 age$sex <- factor(age$sex, levels=c("m", "f"), labels=c("Male", "Female"))
-age$sh.name <- factor(age$iso3, c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM", "WPR"), c("Cambodia", "China", "Lao PDR", "Mongolia", "PNG", "Philippines", "Viet Nam", "WPR"))
+age$sh.name <- factor(age$iso3, c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM", "WPR"), c("Cambodia", "China", "Lao People’s \nDemocratic Republic", "Mongolia", "Papua New Guinea", "Philippines", "Viet Nam", "WPR"))
 age[is.na(age$sh.name), 'sh.name'] <- "WPR"
 age$age <- factor(age$age, c("014", "1524", "2534", "3544", "4554", "5564", "65"), c("0–14", "15–24", "25–34", "35–44", "45–54", "55–64", "\u2265 65"))
 
@@ -419,9 +446,9 @@ write.csv(trc, file=paste0(pasteLabel("./figure data/figure", figCount, "f-txout
 
 <a id="f-txout-bar"></a> 
 #### `r I(pasteLabel("Figure", figCount, "f-txout-bar", insLink=FALSE))` Treatment outcomes for new smear-positive cases in the Region, 2000--`r yr-1`.
-``` {r f-txout-bar, fig.width=7}
+``` {r f-txout-bar, fig.width=9}
 
-ggplot(trc, aes(year, value, fill=variable)) + geom_bar(stat="identity", position="stack") + theme_report() + scale_fill_brewer('Outcome', type="qual", palette=6) + xlab("") + scale_y_continuous("Percent of cohort") + coord_cartesian(ylim=c(60,100)) + guides(fill = guide_legend(reverse = TRUE))
+ggplot(trc, aes(year, value, fill=variable)) + geom_bar(stat="identity", position="stack") + theme_report() + scale_fill_brewer('Outcome', type="qual", palette=6) + scale_x_continuous("", breaks=min(trc$year):max(trc$year)) + scale_y_continuous("Percent of cohort") + coord_cartesian(ylim=c(60,100)) + guides(fill = guide_legend(reverse = TRUE))
 
 
 
@@ -449,7 +476,7 @@ thb <- melt(tha[c("iso3", "year", "test", "pos", "cpt", "art")], id=1:2)
 
 thb$variable <- factor(thb$variable, levels=c("test", "pos", "cpt", "art"), labels=c("HIV testing \namong TB patients", "HIV-positive among \nTB patients tested", "CPT coverage \namong co-infected", "ART coverage \namong co-infected"))
 
-thb$country <- factor(thb$iso3, c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM", "WPR"), c("Cambodia", "China", "Lao PDR", "Mongolia", "PNG", "Philippines", "Viet Nam", "WPR"))
+thb$country <- factor(thb$iso3, c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM", "WPR"), c("Cambodia", "China", "Lao \nPeople’s \nDemocratic \nRepublic", "Mongolia", "Papua \nNew \nGuinea", "Philippines", "Viet Nam", "Western \nPacific \nRegion"))
 
 write.csv(thb, file=paste0(pasteLabel("./figure data/figure", figCount, "f-tbhiv", insLink=FALSE), ".csv"), row.names=FALSE)
 ```
