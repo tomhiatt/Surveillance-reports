@@ -60,6 +60,7 @@ whbc <- c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM")
 
 # Create regional report folder if needed.
 # dir.create("./Regional_report") # run this if error below
+# dir.create("./figure data") # run this if error below
 if(!any(grep("Regional_report", getwd()))) setwd("./Regional_report")
 
 
@@ -501,7 +502,8 @@ thb$country <- factor(thb$iso3, c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM
 write.csv(thb, file=paste0(pasteLabel("./figure data/figure", figCount, "f-tbhiv", insLink=FALSE), ".csv"), row.names=FALSE)
 ```
 
-There has been some progress in reporting of information on TB/HIV co-infection and collaborative activities in the last several years. `r I(pasteLabel("Figure", figCount, "f-tbhiv"))` summarizes four basic indicators (HIV testing, HIV positivity rate, CPT coverage and ART coverage) for the seven countries with a high burden of TB. Cambodia reported the most comprehensive data completeness and programmatic progress. The coverage of HIV testing, CPT and ARV progressively increased with a steady decrease in a proportion of HIV positive individuals among TB patients.
+There has been some progress in reporting of information on TB/HIV co-infection and collaborative activities in the last several years. `r I(pasteLabel("Figure", figCount, "f-tbhiv"))` summarizes four basic indicators (HIV testing, HIV positivity rate, co-trimoxazole preventive therapy (CPT) coverage and  antiretroviral 
+therapy (ART) coverage) for the seven countries with a high burden of TB. Cambodia reported the most comprehensive data completeness and programmatic progress. The coverage of HIV testing, CPT and ART progressively increased with a steady decrease in the proportion of HIV positive individuals among TB patients.
 
 <a id="f-tbhiv"></a> 
 #### `r I(pasteLabel("Figure", figCount, "f-tbhiv", insLink=FALSE))` Progress in TB/HIV activities in seven countries in the Western Pacific Region with a high burden of TB, 2005--2012
@@ -549,7 +551,7 @@ write.csv(esth, file=paste0(pasteLabel("./figure data/figure", figCount, "f-est"
 
 Overall, in 2012, countries and areas of the Western Pacific Region reported 1.4 million TB cases (all forms) and a case notification rate of 75 per 100 000 population, a level similar to the past several years.
 
-It has been known that the rapid increase in case notification between 2002 and 2007 was due to several positive programmatic developments in many countries in the Region such as completion and consolidation of the WHO Directly Observed Treatment, Short-course strategy expansion; improvement in case reporting, including electronic reporting systems; and efforts to engage all health care providers.^7 Particularly, renewal of infectious disease-related legislation and the establishment of an internet-based disease notification system in China made a substantial contribution to the progress.^8
+It has been known that the rapid increase in case notification between 2002 and 2007 was due to several positive programmatic developments in many countries in the Region such as completion and consolidation of the WHO DOTS strategy expansion; improvement in case reporting, including electronic reporting systems; and efforts to engage all health care providers.^7 Particularly, renewal of infectious disease-related legislation and the establishment of an internet-based disease notification system in China made a substantial contribution to the progress.^8
 
 Although the case notification for all forms of TB appears to be flat since 2007, it is important to note that the new smear-positive case notification rates demonstrate a clear declining trend (`r I(pasteLabel("Figure", figCount, "f-notif-trend"))`). A possible interpretation is that the true TB incidence has been declining while overall case detection is static because intensified programmatic efforts by national TB programmes for early and increased case detection include smear-negative and extra pulmonary TB. The latest WHO estimates support this explanation with estimated incidence rates showing a consistent, rapidly-declining trend^1 (`r I(pasteLabel("Figure", figCount, "f-est"))`). 
 

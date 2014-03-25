@@ -59,7 +59,7 @@ In 2012, countries and areas in the Region reported 1 410 835 people with TB dis
 <a id="t-notif"></a> 
 #### Table 1. Tuberculosis case notification from countries and areas of the Western Pacific Region, 2012
 <!-- html table generated in R 3.0.2 by xtable 1.7-1 package -->
-<!-- Wed Mar 19 12:30:39 2014 -->
+<!-- Fri Mar 21 15:12:28 2014 -->
 <TABLE border=0 rules=rows width=900 cellpadding=5>
   <TR> <TD colspan=3></TD> 
   <TH colspan=7>NEW CASES</TH> 
@@ -179,7 +179,8 @@ The Region continued observing treatment success rates beyond the target of 85% 
 
 
 
-There has been some progress in reporting of information on TB/HIV co-infection and collaborative activities in the last several years. [Figure 6](#f-tbhiv) summarizes four basic indicators (HIV testing, HIV positivity rate, CPT coverage and ART coverage) for the seven countries with a high burden of TB. Cambodia reported the most comprehensive data completeness and programmatic progress. The coverage of HIV testing, CPT and ARV progressively increased with a steady decrease in a proportion of HIV positive individuals among TB patients.
+There has been some progress in reporting of information on TB/HIV co-infection and collaborative activities in the last several years. [Figure 6](#f-tbhiv) summarizes four basic indicators (HIV testing, HIV positivity rate, co-trimoxazole preventive therapy (CPT) coverage and  antiretroviral 
+therapy (ART) coverage) for the seven countries with a high burden of TB. Cambodia reported the most comprehensive data completeness and programmatic progress. The coverage of HIV testing, CPT and ART progressively increased with a steady decrease in the proportion of HIV positive individuals among TB patients.
 
 <a id="f-tbhiv"></a> 
 #### Figure 6 Progress in TB/HIV activities in seven countries in the Western Pacific Region with a high burden of TB, 2005--2012
@@ -196,7 +197,7 @@ Discussion
 
 Overall, in 2012, countries and areas of the Western Pacific Region reported 1.4 million TB cases (all forms) and a case notification rate of 75 per 100 000 population, a level similar to the past several years.
 
-It has been known that the rapid increase in case notification between 2002 and 2007 was due to several positive programmatic developments in many countries in the Region such as completion and consolidation of the WHO Directly Observed Treatment, Short-course strategy expansion; improvement in case reporting, including electronic reporting systems; and efforts to engage all health care providers.^7 Particularly, renewal of infectious disease-related legislation and the establishment of an internet-based disease notification system in China made a substantial contribution to the progress.^8
+It has been known that the rapid increase in case notification between 2002 and 2007 was due to several positive programmatic developments in many countries in the Region such as completion and consolidation of the WHO DOTS strategy expansion; improvement in case reporting, including electronic reporting systems; and efforts to engage all health care providers.^7 Particularly, renewal of infectious disease-related legislation and the establishment of an internet-based disease notification system in China made a substantial contribution to the progress.^8
 
 Although the case notification for all forms of TB appears to be flat since 2007, it is important to note that the new smear-positive case notification rates demonstrate a clear declining trend ([Figure 2](#f-notif-trend)). A possible interpretation is that the true TB incidence has been declining while overall case detection is static because intensified programmatic efforts by national TB programmes for early and increased case detection include smear-negative and extra pulmonary TB. The latest WHO estimates support this explanation with estimated incidence rates showing a consistent, rapidly-declining trend^1 ([Figure 7](#f-est)). 
 
