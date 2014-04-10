@@ -1,0 +1,184 @@
+```{r setup, echo=FALSE, include=FALSE}
+# ############################################
+# Generate tables and figures for a periodic TB report
+# Tom Hiatt
+# Updated: 10 Apr 2014
+# ############################################
+
+# Define structure of data
+# ----------------------------
+
+# Period to examine and final
+prd.group <- "year"
+prd <- 2013
+
+# Upper and lower aggregate levels
+upper.var <- "all"
+upper.label <- "the Philippines"
+lower.var <- "region"
+lower.label <- "Region"
+
+# Import data
+# ---------------------------
+tb1 <- read.csv("D:/Users/hiattt/Dropbox/STB-PHL/Annual report PHL/PHLraw.csv") 
+
+if(upper.var != "all") tb1 <- subset(tb1, upper.var==upper.label)
+
+# Aggregate data set
+# ---------------------------
+# [replace with something elegant]
+int.vars <- NULL
+for(var in 1:ncol(tb1)){
+  int.vars[var] <- is.integer(tb1[,var]) | is.numeric(tb1[,var])
+}
+
+ltb <- aggregate(tb1[int.vars], by=list(area=tb1[[lower.var]], prd.group=tb1[[prd.group]]), FUN=sum, na.rm=TRUE)
+
+utb <- aggregate(tb1[int.vars], by=list(area=rep(upper.label, nrow(tb1)), prd.group=tb1[[prd.group]]), FUN=sum, na.rm=TRUE)
+
+tb <- rbind(ltb, utb)
+
+# Load necessary packages
+# ---------------------------
+library(ggplot2)
+library(reshape)
+library(ggthemes)
+library(scales)
+
+# Graph theme components
+# ---------------------------
+theme_report <- function(base_size=12, base_family="") {
+    colors <- ggthemes_data$few
+    gray <- colors$medium['gray']
+    black <- colors$dark['black'] # I don't know why these last 3 parts are needed, but they are. List is here: http://docs.ggplot2.org/0.9.2.1/theme.html
+    theme_bw(base_size=base_size, base_family=base_family) +
+        theme(
+            line = element_line(colour = gray),
+            rect = element_rect(fill = "white", colour = NA),
+            text = element_text(colour = black),
+            axis.ticks.x = element_line(colour = gray),
+            axis.ticks.y = element_blank(),
+            legend.key = element_rect(colour = NA),
+            ## Examples do not use grid lines
+            panel.border = element_rect(colour = gray),
+            panel.grid.major.x = element_blank(),
+            panel.grid.minor = element_blank(),
+            strip.background = element_rect(fill="white", colour=NA),
+            strip.text = element_text(hjust=0)
+            )
+}
+
+
+
+```
+
+Tuberculosis in `r upper.label`: analysis of case notification data in `r prd`
+========================================================
+
+1.  Introduction
+--------------------------------------------------------
+
+2.	Accomplishment (Drug susceptible)
+--------------------------------------------------------
+
+### a.	Case notification for all TB cases -2000 to 2013
+
+#### i.	National - by type of TB cases (new smear positive, new smear negative, EP, relapse and re-treatment cases) annually
+
+```{r f-notif-trend, echo=FALSE}
+notb <- subset(utb, prd.group >= 2000, c(prd.group, new_sp, new_sn, ret_rel, new_ep, new_sp, e_pop_num))
+
+notb$tot_newrel <- notb$new_sp + notb$new_sn + notb$ret_rel + notb$new_ep 
+
+notb$`All forms of TB` <- notb$tot_newrel / notb$e_pop_num * 1e5
+notb$`New smear-positive` <- notb$new_sp / notb$e_pop_num * 1e5
+notc <- melt(notb[c("prd.group", "New smear-positive", "All forms of TB")], id=1)
+
+# write.csv(notc, file=paste0(pasteLabel("./figure data/figure", figCount, "f-notif-trend", insLink=FALSE), ".csv"), row.names=FALSE)
+
+ggplot(notc, aes(prd.group, value, color=variable, ymin=0)) + geom_line(size=1) + theme_report() + scale_x_continuous("") + scale_y_continuous("TB cases per 100 000", breaks = pretty_breaks()) + theme(legend.position="none") + geom_text(data=subset(notc, prd.group==max(notc$prd.group)), aes(label=variable), hjust=1.1, vjust=3) + scale_color_brewer(type="qual", palette=6) + ggtitle(paste0("Tuberculosis case notification rate (all forms and new smear-positive) \nper 100 000 population in ", upper.label, ", ", min(notc$prd.group), "–", max(notc$prd.group)))
+
+```
+
+#### ii.	Regional - y type of TB cases (new smear positive, new smear negative, EP, relapse and re-treatment cases) annually
+
+```{r f-notif-trend-lower, echo=FALSE}
+notd <- subset(ltb, prd.group >= 2000, c(area, prd.group, new_sp, new_sn, ret_rel, new_ep, new_sp, e_pop_num))
+
+notd$tot_newrel <- notd$new_sp + notd$new_sn + notd$ret_rel + notd$new_ep 
+
+notd$`All forms of TB` <- notd$tot_newrel / notd$e_pop_num * 1e5
+notd$`New smear-positive` <- notd$new_sp / notd$e_pop_num * 1e5
+note <- melt(notd[c("area", "prd.group", "New smear-positive", "All forms of TB")], id=1)
+
+# write.csv(note, file=paste0(pasteLabel("./figure data/figure", figCount, "f-notif-trend", insLink=FALSE), ".csv"), row.names=FALSE)
+
+ggplot(note, aes(prd.group, value, color=variable, ymin=0)) + geom_line(size=1) + theme_report() + scale_x_continuous("") + scale_y_continuous("TB cases per 100 000", breaks = pretty_breaks()) + theme(legend.position="none") + geom_text(data=subset(note, prd.group==max(note$prd.group)), aes(label=variable), hjust=1.1, vjust=3) + scale_color_brewer(type="qual", palette=6) + ggtitle(paste0("Tuberculosis case notification rate (all forms and new smear-positive) \nper 100 000 population in ", upper.label, ", ", min(note$prd.group), "–", max(note$prd.group)))
+
+```
+
+### b.	Case notification for new smear positive by age and sex annually
+
+#### i.	National
+
+#### ii.	Regional
+
+### c.	Casefinding
+
+#### i.	National - Number of TB symptomatics examined by smear microscopy by year 
+
+#### ii.	Regional - Number of TB symptomatics examined by smear microscopy by year 
+
+#### iii.	Summary of laboratory activities per year per region
+
+1.	Number of TB symptomatics examined
+2.	Number with three sputum specimens
+3.	Number of smear positive
+4.	Positivity rate
+
+### d.	Caseholding
+
+#### i.	National
+
+1.	New smear positive
+2.	New smear negative
+3.	Relapse + Failure + RAD
+
+#### ii.	National
+
+1.	New smear positive
+2.	New smear negative
+3.	Relapse + Failure + RAD
+
+3.	Accomplishment (Drug resistant) 2000 to 2013
+--------------------------------------------------------
+
+### a.	Casefinding
+
+#### i.	National
+
+### b.	Caseholding
+
+#### i.	National 
+
+4.	Accomplishment – Children
+--------------------------------------------------------
+
+5.	Accomplishment – PPMD
+--------------------------------------------------------
+
+6.	Accomplishment – Jails and Prisons
+--------------------------------------------------------
+
+7.	Accomplishment – TB/HIV
+--------------------------------------------------------
+
+8.	Policies
+--------------------------------------------------------
+
+9.	Budget
+--------------------------------------------------------
+
+10.	Partners
+--------------------------------------------------------
+
