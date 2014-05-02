@@ -4,7 +4,7 @@
 # 10 July 2012, revised 28 June 2013
 # -------------------------------------------------
 
-source('d:/users/hiattt/Dropbox/Code/Global TB control Reports/Tables and Figures/2013/Setup.r')
+source('d:/users/hiattt/Dropbox/Code/Surveillance reports/Setup.r')
 
 # This next chunk is for testing
 # --------------------------------------------------------

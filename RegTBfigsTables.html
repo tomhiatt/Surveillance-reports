@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Epidemiology and control of tuberculosis in the Western Pacific Region: analysis of case notification data in 2012</title>
+
+
+
+
+
+<style type="text/css">
+/* From: http://gforge.se/2014/01/fast-track-publishing-using-knitr-part-ii/
+Set the main font to Calibri, same
+   as My Word 2010 uses. Also set the
+   default font size to 11pt.
+ 
+   The maximum width to 35em enhances
+   readability through optimal line
+   length. Note: this setting is ignored
+   by Word/Libre Office*/
+body  {
+   font-family: Calibri;
+   font-size: 11pt;
+   background-color: white;
+   padding-top: 1em;
+   margin: auto;
+   max-width: 35em;
+}
+ 
+/* Set the paragraph margin and
+   padding to 0 except for the bottom */
+p {
+  padding: 0;
+  margin: 0;
+  margin-bottom: 10pt;
+}
+ 
+/* Table style from here http://blogs.cetis.ac.uk/adam/2013/10/25/changing-style-knitr-and-markdown-in-rstudio/ */
+table {
+  max-width: 95%;
+  border: 1px solid #ccc;
+}
+th {
+  background-color: #dcdcdc;
+  color: #000000;
+}
+td {
+  background-color: #dcdcdc;
+}
+ 
+/* The tr padding/margin 0 is important for table
+   import, while the font needs to be specified as
+   font and not font-family/font-size due to limiations
+   in Libre Office */
+td, tr{
+  font: 10pt Arial;
+  padding: 0px;
+  margin: 0px;
+}
+ 
+/* The cell should have a little space to easy reading
+   although this section is mostly ignored by the
+   Libre Office import */
+td {
+  padding: 4px;
+  padding-bottom: 2px;
+}
+ 
+/* Set the headings to correspond to Word-style */
+h1, h2, h3, h4, h5, h6 {
+  margin: 10pt 0pt 0pt 0pt;
+  font-family: Cambria;
+  font-weight: bold;
+}
+ 
+/* h1 has a slightly larger top margins
+   so we re-set that from the other*/
+h1 {
+  margin: 24pt 0pt 0pt 0pt;
+  font-size: 14pt;
+  color: #365F91;
+}
+ 
+ 
+h2 {
+  font-size: 13pt;
+  color: #4F81BD;
+}
+ 
+h3 {
+  font-size: 11pt;
+  color: #4F81BD;
+}
+ 
+h4 {
+  font-size: 11pt;
+  font-weight: bold;
+  font-style: italic;
+  color: #4F81BD;
+}
+ 
+h5 {
+  font-size: 11pt;
+  font-weight: normal;
+  color: #243F5D;
+}
+ 
+h6 {
+  font-size: 11pt;
+  font-weight: normal;
+  font-style: italic;
+  color: #243F5D;
+}
+ 
+/* The following sections are mostly
+   unrelated to Word/Libre Office imports */
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+ 
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+ 
+pre {
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+ 
+pre code {
+   display: block; padding: 0.5em;
+}
+ 
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+ 
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+ 
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+ 
+@media print {
+   * {
+    background: transparent !important;
+	  color: black !important;
+	  filter: none !important;
+	  -ms-filter: none !important;
+   }
+ 
+   body {
+	  font-size:11pt;
+	  max-width:100%;
+   }
+ 
+   a, a:visited {
+	  text-decoration: underline;
+   }
+ 
+   hr {
+	  visibility: hidden;
+	  page-break-before: always;
+   }
+ 
+   pre, blockquote {
+	  padding-right: 1em;
+	  page-break-inside: avoid;
+   }
+ 
+   tr, img {
+	  page-break-inside: avoid;
+   }
+ 
+   img {
+	  max-width: 100% !important;
+   }
+ 
+   @page {
+	  margin-top: 2cm;
+	  margin-bottom: 1.5cm;
+	  margin-left: 3cm;
+	  margin-right: 3cm;
+   }
+ 
+   p, h2, h3 {
+	  orphans: 3; widows: 3;
+   }
+ 
+   h2, h3 {
+	  page-break-after: avoid;
+   }
+}
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style='margin: 24pt 0pt 0pt 0pt;'>Epidemiology and control of tuberculosis in the Western Pacific Region: analysis of case notification data in 2012</h1>
+
+<h3 style='margin: 10pt 0pt 0pt 0pt;'>Tom Hiatt<sup>a</sup> and Nobuyuki Nishikiori<sup>a</sup></h3>
+
+<p><sup>a</sup> Stop TB and Leprosy Elimination, Division of Combating Communicable Diseases, World Health Organization Regional Office for the Western Pacific, Manila, the Philippines.</p>
+
+<p>Correspondence to Tom Hiatt (e-mail: <a href="mailto:hiattt@wpro.who.int">hiattt@wpro.who.int</a>).</p>
+
+<h2 style='margin: 10pt 0pt 0pt 0pt;'>Abstract </h2>
+
+<p>Tuberculosis (TB) control in the World Health Organization (WHO) Western Pacific Region has seen substantial progress in the last decade with a 33% reduction in prevalent TB cases since 2000. The burden remains immense however, and national TB programmes must evolve and adapt to build upon these gains. Through routine surveillance, countries and areas in the Region reported 1.4 million TB cases in 2012. The case notification rate increased in the early 2000s, appears to have stabilized in recent years and is in decline for all forms and new smear-positive cases. The age and sex breakdown for smear-positive TB case rates by country shows generally higher rates with increased age and declining rates over time for all age groups. Treatment success remains high in the Region with 15 countries reaching or maintaining an 85% success rate. HIV testing among TB patients has increased gradually along with a slow decline in the number of HIV-positive patients found.</p>
+
+<p>The trend of TB notification is heavily influenced by programmatic improvements in many countries and rapidly changing demographics. It appears that cases are being found earlier as reflected in declining rates of smear-positive TB with steady rates of TB in all forms. WHO estimates depict a decline in TB incidence in the Region. HIV testing, while still low, has increased substantially in recent years with essential TB/HIV services expanding in many countries.</p>
+
+<p>TB surveillance data, within inherent limitations, is an important source of programmatic and epidemiological information. Careful interpretation of these findings can provide useful insight for programmatic decision-making.</p>
+
+<h2 style='margin: 10pt 0pt 0pt 0pt;'>Introduction</h2>
+
+<p>Significant progress has been made in tuberculosis (TB) control in the World Health Organization (WHO) Western Pacific Region especially in the past decade. The number of prevalent TB patients in the Region fell from 3.6 million in 2000 to 2.4 million in 2012.<sup>1</sup> During the same period, over 10 million patients were diagnosed and treated, and an estimated 800 000 deaths were averted.<sup>2</sup> According to the latest WHO estimates, the Region is on track for achieving the TB-related Millennium Development Goals (MDGs) and other international targets by 2015. However, with 1.4 million TB patients notified annually in the Region and several countries with a persistent substantial disease burden, TB control policies and strategies require continuous evolution to adopt new tools and approaches as well as to address emerging challenges faced by national TB control programmes. In light of the MDG target date approaching, WHO has embarked on an extensive consultative process of developing the new Global TB Strategy after 2015.<sup>3</sup> At this critical period of strategy renewal, a thorough analysis of surveillance data provides valuable information on the current epidemiological situation, programmatic progress and future directions.</p>
+
+<p>This article represents our first attempt to report a regional analysis of TB notification data as an article in the Western Pacific Surveillance and Response Journal. Throughout the year of 2014 and beyond, we plan to conduct a series of further regional analyses on various topics such as subnational data analysis and utilization, the situation of drug-resistant TB, contact investigation and other forms of TB screening activities to stimulate the utilization of surveillance data for informed programme decision-making.</p>
+
+<h2 style='margin: 10pt 0pt 0pt 0pt;'>Methods</h2>
+
+<h3 style='margin: 10pt 0pt 0pt 0pt;'>Data</h3>
+
+<p>Every year, 36 countries and areas in the Region are requested to report TB surveillance data to WHO using a standardized data collection form. Since 2009, a web-based online system has been used for data submission and validation. Collected data covers the following areas: TB case notifications and treatment outcomes, diagnostic and treatment services, drug management, surveillance and surveys of drug-resistance, information on TB/HIV co-infection, infection control, engagement of all care providers and budgets and expenditures for TB control. The full description of methods is available in the Global Tuberculosis Report 2013 and the data sets are available from the WHO global TB database (<a href="http://www.who.int/tb/data">www.who.int/tb/data</a>). Case definitions for TB can be found in the 4th edition of the TB treatment guidelines.<sup>4</sup> In 2013, 30 countries and areas of the Western Pacific Region reported data representing more than 99.9% of the total population. This report described the epidemiological situation and progress in programmatic response with a focus on seven countries with a high burden of TB: Cambodia, China, the Lao People&#39;s Democratic Republic, Mongolia, Papua New Guinea, the Philippines and Viet Nam. (Globally, WHO designates 22 countries with a high burden of TB that include Cambodia, China, the Philippines and Viet Nam. The other three countries: the Lao People&#39;s Democratic Republic, Mongolia and Papua New Guinea are considered priority countries with a high burden of TB in the Western Pacific Region).</p>
+
+<h3 style='margin: 10pt 0pt 0pt 0pt;'>Analysis and reproducibility</h3>
+
+<p>Analysis was conducted by the statistical package R (R Core Team, 2013, Vienna, Austria, <a href="http://www.R-project.org">www.R-project.org</a>). Due to calls for transparent and reproducible research,<sup>5,6</sup> we have published programme code to generate the entire contents of this article including all figures and tables by using R with the knitr package (Yihui Xie, 2013). Readers can download the code (see supplement material) and reproduce all figures and tables under an appropriate personal computing environment. For non-commercial purposes, readers may modify the code to produce figures and tables that are not presented in this article. For instance, readers may wish to produce tables and figures for countries or regions other than the WHO Western Pacific Region.</p>
+
+<h2 style='margin: 10pt 0pt 0pt 0pt;'>Results</h2>
+
+<h3 style='margin: 10pt 0pt 0pt 0pt;'>Case notification</h3>
+
+<p>In 2012, countries and areas in the Region reported 1 410 835 people with TB disease (<a href="#t-notif">Table 1</a>) making up 23% of the global burden. Of these cases, 97.5% (1 375 713) were new episodes of TB disease (either new or relapse cases). Within the Region China accounts for 64% (900 678) of the caseload with the Philippines and Viet Nam following with 16% (230 162) and 7% (103 906), respectively. TB notification rates, expressed as cases per 100 000 population, vary substantially in the Region with the highest rates found in Kiribati, Papua New Guinea, the Marshall Islands, Cambodia and the Philippines (343, 287, 276, 270 and 224 per 100 000 population, respectively (<a href="#t-notif">Table 1</a>, <a href="#m-notif">Figure 1</a>). </p>
+
+<p><a id="t-notif"></a> </p>
+
+<h4 style='margin: 10pt 0pt 0pt 0pt;'>Table 1. Tuberculosis case notification from countries and areas of the Western Pacific Region, 2012</h4>
+
+<!-- html table generated in R 3.0.2 by xtable 1.7-1 package -->
+
+<!-- Fri Mar 21 15:12:28 2014 -->
+
+<TABLE border=0 rules=rows width=900 cellpadding=5>
+  <TR> <TD colspan=3></TD> 
+  <TH colspan=7>NEW CASES</TH> 
+  <TH colspan=2>RETREATMENT CASES</TH> 
+  <TD colspan=1></TD> </TR> 
+  <TR> <TD></TD> <TD>TOTAL NOTIFIED</TD>
+  <TD>TOTAL NOTIFIED PER 100 000</TD>
+  <TD>SMEAR-<br>POSITIVE</TD> 
+  <TD>SMEAR-<br>NEGATIVE</TD> 
+  <TD>SMEAR NOT DONE</TD>
+  <TD>EXTRA-<br>PULMONARY</TD> 
+  <TD>CASE TYPE<br> UNKNOWN</TD> 
+  <TD>PULMONARY CASES LABORATORY CONFIRMED</TD> 
+  <TD>PERCENTAGE OF PULMONARY CASES LABORATORY CONFIRMED</TD>   
+  <TD>RELAPSE</TD> 
+  <TD>RETREATMENT<br>EXCL. RELAPSE</TD> 
+  <TD>NEW AND<br>RELAPSE(a)</TD> 
+ </TR> <TR> <TD> American Samoa </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD> &ndash; </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> </TR>
+  <TR> <TD> Australia </TD> <TD> 1 325 </TD> <TD> 6 </TD> <TD> 290 </TD> <TD> 330 </TD> <TD> 78 </TD> <TD> 498 </TD> <TD> 63 </TD> <TD> 667 </TD> <TD> 96 </TD> <TD> 26 </TD> <TD> 20 </TD> <TD> 1 305 </TD> </TR>
+  <TR> <TD> Brunei Darussalam </TD> <TD> 243 </TD> <TD> 59 </TD> <TD> 119 </TD> <TD> 51 </TD> <TD> 28 </TD> <TD> 31 </TD> <TD> 0 </TD> <TD> 166 </TD> <TD> 84 </TD> <TD> 14 </TD> <TD> 0 </TD> <TD> 243 </TD> </TR>
+  <TR> <TD> Cambodia </TD> <TD> 40 258 </TD> <TD> 270 </TD> <TD> 14 838 </TD> <TD> 8 509 </TD> <TD> 0 </TD> <TD> 15 290 </TD> <TD> 0 </TD> <TD> 14 838 </TD> <TD> 64 </TD> <TD> 446 </TD> <TD> 73 </TD> <TD> 40 185 </TD> </TR>
+  <TR> <TD> China </TD> <TD> 900 678 </TD> <TD> 65 </TD> <TD> 316 332 </TD> <TD> 533 977 </TD> <TD> 2 073 </TD> <TD> 6 479 </TD> <TD> 0 </TD> <TD> 316 332 </TD> <TD> 37 </TD> <TD> 31 784 </TD> <TD> 10 033 </TD> <TD> 890 645 </TD> </TR>
+  <TR> <TD> Hong Kong Special Administrative Region (China) </TD> <TD> 4 969 </TD> <TD> 67 </TD> <TD> 1 463 </TD> <TD> 2 004 </TD> <TD> 202 </TD> <TD> 817 </TD> <TD> 0 </TD> <TD> 2 704 </TD> <TD> 74 </TD> <TD> 323 </TD> <TD> 160 </TD> <TD> 4 809 </TD> </TR>
+  <TR> <TD> Macao Special Administrative Region (China) </TD> <TD> 406 </TD> <TD> 73 </TD> <TD> 156 </TD> <TD> 137 </TD> <TD> 2 </TD> <TD> 31 </TD> <TD> 0 </TD> <TD> 241 </TD> <TD> 82 </TD> <TD> 26 </TD> <TD> 2 </TD> <TD> 404 </TD> </TR>
+  <TR> <TD> Cook Islands </TD> <TD> 1 </TD> <TD> 5 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> &ndash; </TD> <TD> 1 </TD> <TD> 0 </TD> <TD> 1 </TD> </TR>
+  <TR> <TD> Fiji </TD> <TD> 218 </TD> <TD> 24 </TD> <TD> 111 </TD> <TD> 54 </TD> <TD> 0 </TD> <TD> 40 </TD> <TD> 0 </TD> <TD> 165 </TD> <TD> 100 </TD> <TD> 5 </TD> <TD> 8 </TD> <TD> 210 </TD> </TR>
+  <TR> <TD> French Polynesia </TD> <TD> 50 </TD> <TD> 18 </TD> <TD> 26 </TD> <TD> 10 </TD> <TD> 0 </TD> <TD> 8 </TD> <TD> 0 </TD> <TD> 33 </TD> <TD> 92 </TD> <TD> 6 </TD> <TD> 0 </TD> <TD> 50 </TD> </TR>
+  <TR> <TD> Guam </TD> <TD> 68 </TD> <TD> 42 </TD> <TD> 23 </TD> <TD> 23 </TD> <TD> 14 </TD> <TD> 8 </TD> <TD> 0 </TD> <TD> 31 </TD> <TD> 52 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 68 </TD> </TR>
+  <TR> <TD> Japan </TD> <TD> 21 283 </TD> <TD> 16 </TD> <TD> 7 663 </TD> <TD> 7 454 </TD> <TD> 221 </TD> <TD> 4 609 </TD> <TD> 0 </TD> <TD> 13 013 </TD> <TD> 85 </TD> <TD> 910 </TD> <TD> 426 </TD> <TD> 20 857 </TD> </TR>
+  <TR> <TD> Kiribati </TD> <TD> 348 </TD> <TD> 343 </TD> <TD> 134 </TD> <TD> 122 </TD> <TD> 0 </TD> <TD> 73 </TD> <TD> 9 </TD> <TD> 134 </TD> <TD> 52 </TD> <TD> 8 </TD> <TD> 2 </TD> <TD> 346 </TD> </TR>
+  <TR> <TD> Lao People&rsquo;s Democratic Republic </TD> <TD> 4 156 </TD> <TD> 62 </TD> <TD> 3 062 </TD> <TD> 484 </TD> <TD>  </TD> <TD> 351 </TD> <TD>  </TD> <TD> 3 062 </TD> <TD> 86 </TD> <TD> 168 </TD> <TD> 38 </TD> <TD> 4 118 </TD> </TR>
+  <TR> <TD> Malaysia </TD> <TD> 22 710 </TD> <TD> 75 </TD> <TD> 13 311 </TD> <TD> 4 941 </TD> <TD> 52 </TD> <TD> 2 945 </TD> <TD> 0 </TD> <TD> 13 311 </TD> <TD> 73 </TD> <TD> 602 </TD> <TD> 859 </TD> <TD> 21 851 </TD> </TR>
+  <TR> <TD> Marshall Islands </TD> <TD> 147 </TD> <TD> 276 </TD> <TD> 54 </TD> <TD> 39 </TD> <TD> 14 </TD> <TD> 29 </TD> <TD> 0 </TD> <TD> 54 </TD> <TD> 50 </TD> <TD> 4 </TD> <TD> 2 </TD> <TD> 145 </TD> </TR>
+  <TR> <TD> Micronesia, Federated States of </TD> <TD> 146 </TD> <TD> 139 </TD> <TD> 43 </TD> <TD> 75 </TD> <TD> 2 </TD> <TD> 22 </TD> <TD> 0 </TD> <TD> 58 </TD> <TD> 48 </TD> <TD> 2 </TD> <TD> 2 </TD> <TD> 144 </TD> </TR>
+  <TR> <TD> Mongolia </TD> <TD> 4 453 </TD> <TD> 148 </TD> <TD> 1 716 </TD> <TD> 617 </TD> <TD> 0 </TD> <TD> 1 611 </TD> <TD> 0 </TD> <TD> 1 716 </TD> <TD> 74 </TD> <TD> 184 </TD> <TD> 325 </TD> <TD> 4 128 </TD> </TR>
+  <TR> <TD> Nauru </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD> &ndash; </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> </TR>
+  <TR> <TD> New Caledonia </TD> <TD> 38 </TD> <TD> 15 </TD> <TD> 13 </TD> <TD> 11 </TD> <TD> 0 </TD> <TD> 12 </TD> <TD> 1 </TD> <TD> 24 </TD> <TD> 100 </TD> <TD> 1 </TD> <TD> 0 </TD> <TD> 38 </TD> </TR>
+  <TR> <TD> New Zealand </TD> <TD> 297 </TD> <TD> 7 </TD> <TD> 68 </TD> <TD> 88 </TD> <TD> 11 </TD> <TD> 112 </TD> <TD> 3 </TD> <TD> 143 </TD> <TD> 86 </TD> <TD> 11 </TD> <TD> 4 </TD> <TD> 293 </TD> </TR>
+  <TR> <TD> Niue </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> &ndash; </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 0 </TD> </TR>
+  <TR> <TD> Northern Mariana Islands </TD> <TD> 34 </TD> <TD> 60 </TD> <TD> 10 </TD> <TD> 17 </TD> <TD> 0 </TD> <TD> 4 </TD> <TD> 1 </TD> <TD> 15 </TD> <TD> 56 </TD> <TD> 0 </TD> <TD> 2 </TD> <TD> 32 </TD> </TR>
+  <TR> <TD> Palau </TD> <TD> 4 </TD> <TD> 19 </TD> <TD> 3 </TD> <TD> 1 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 3 </TD> <TD> 75 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 4 </TD> </TR>
+  <TR> <TD> Papua New Guinea </TD> <TD> 22 488 </TD> <TD> 287 </TD> <TD> 2 862 </TD> <TD> 2 046 </TD> <TD> 7 149 </TD> <TD> 8 277 </TD> <TD> 0 </TD> <TD> 2 862 </TD> <TD> 24 </TD> <TD> 223 </TD> <TD> 1 931 </TD> <TD> 20 557 </TD> </TR>
+  <TR> <TD> Philippines </TD> <TD> 230 162 </TD> <TD> 224 </TD> <TD> 94 006 </TD> <TD> 115 263 </TD> <TD> 0 </TD> <TD> 3 274 </TD> <TD> 0 </TD> <TD> 94 006 </TD> <TD> 45 </TD> <TD> 4 084 </TD> <TD> 13 535 </TD> <TD> 216 627 </TD> </TR>
+  <TR> <TD> Republic of Korea </TD> <TD> 49 532 </TD> <TD> 89 </TD> <TD> 12 137 </TD> <TD> 15 622 </TD> <TD> 3 316 </TD> <TD> 8 470 </TD> <TD> 0 </TD> <TD> 28 397 </TD> <TD> 91 </TD> <TD> 4 157 </TD> <TD> 5 830 </TD> <TD> 43 702 </TD> </TR>
+  <TR> <TD> Samoa </TD> <TD> 22 </TD> <TD> 12 </TD> <TD> 15 </TD> <TD> 4 </TD> <TD> 0 </TD> <TD> 3 </TD> <TD> 0 </TD> <TD> 19 </TD> <TD> 100 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 22 </TD> </TR>
+  <TR> <TD> Singapore </TD> <TD> 2 364 </TD> <TD> 43 </TD> <TD> 678 </TD> <TD> 1 093 </TD> <TD> 126 </TD> <TD> 306 </TD> <TD> 0 </TD> <TD> 1 206 </TD> <TD> 64 </TD> <TD> 98 </TD> <TD> 63 </TD> <TD> 2 301 </TD> </TR>
+  <TR> <TD> Solomon Islands </TD> <TD> 372 </TD> <TD> 66 </TD> <TD> 157 </TD> <TD> 87 </TD> <TD> 0 </TD> <TD> 112 </TD> <TD> 0 </TD> <TD> 157 </TD> <TD> 64 </TD> <TD> 5 </TD> <TD> 11 </TD> <TD> 361 </TD> </TR>
+  <TR> <TD> Tokelau </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD> &ndash; </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> </TR>
+  <TR> <TD> Tonga </TD> <TD> 11 </TD> <TD> 10 </TD> <TD> 9 </TD> <TD> 1 </TD> <TD> 0 </TD> <TD> 1 </TD> <TD> 0 </TD> <TD> 10 </TD> <TD> 100 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 11 </TD> </TR>
+  <TR> <TD> Tuvalu </TD> <TD> 20 </TD> <TD> 193 </TD> <TD> 8 </TD> <TD> 2 </TD> <TD> 0 </TD> <TD> 9 </TD> <TD> 0 </TD> <TD> 9 </TD> <TD> 90 </TD> <TD> 0 </TD> <TD> 1 </TD> <TD> 19 </TD> </TR>
+  <TR> <TD> Vanuatu </TD> <TD> 126 </TD> <TD> 51 </TD> <TD> 51 </TD> <TD> 22 </TD> <TD> 0 </TD> <TD> 51 </TD> <TD> 0 </TD> <TD> 73 </TD> <TD> 100 </TD> <TD> 1 </TD> <TD> 1 </TD> <TD> 125 </TD> </TR>
+  <TR> <TD> Viet Nam </TD> <TD> 103 906 </TD> <TD> 112 </TD> <TD> 51 033 </TD> <TD> 21 706 </TD> <TD>  </TD> <TD> 18 904 </TD> <TD> 3 210 </TD> <TD> 51 033 </TD> <TD> 70 </TD> <TD> 7 259 </TD> <TD> 1 794 </TD> <TD> 102 112 </TD> </TR>
+  <TR> <TD> Wallis and Futuna Islands </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD> &ndash; </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> </TR>
+  <TR> <TD> Western Pacific Region
+ </TD> <TD> 1 410 835 </TD> <TD> 75 </TD> <TD> 520 391 </TD> <TD> 714 790 </TD> <TD> 13 288 </TD> <TD> 72 377 </TD> <TD> 3 287 </TD> <TD> 544 482 </TD> <TD> 44 </TD> <TD> 50 348 </TD> <TD> 35 122 </TD> <TD> 1 375 713 </TD> </TR>
+   <TR> <TD colspan=13>Blank cells indicate data not reported. &ndash; indicates values that cannot be calculated.<br>
+(a) NEW AND RELAPSE includes cases for which the treatment history is unknown.<br>Data reported as of 1 October 2013. See ANNEX 4 of Global Tuberculosis Report, 2013.<br></TD></TR> </TABLE>
+
+<p><a id="m-notif"></a> </p>
+
+<h4 style='margin: 10pt 0pt 0pt 0pt;'>Figure 1 Tuberculosis case notification rate (new and relapse) per 100 000 population in countries and areas of the Western Pacific Region, 2012</h4>
+
+<p><img src="figure/m-notif.png" alt="plot of chunk m-notif"/> </p>
+
+<blockquote>
+<p>The boundaries shown and the designations used on this map do not imply the expression of any opinion whatsoever on the part of the World Health Organization concerning the legal status of any country, territory, city or area or of its authorities, or concerning the delimitation of its frontiers or boundaries. White lines on maps represent approximate border lines for which there may not yet be full agreement.</p>
+</blockquote>
+
+<p>Between 2002 and 2007, case notification rates in the Region increased from 47 to 77 per 100 000 population in all forms of TB and from 22 to 38 per 100 000 population in new smear-positive TB cases. After 2005 the case notification rates for all forms of TB stabilized, and new smear-positive cases seem to have started to decrease (<a href="#f-notif-trend">Figure 2</a>). </p>
+
+<p><a id="f-notif-trend"></a> </p>
+
+<h4 style='margin: 10pt 0pt 0pt 0pt;'>Figure 2 Tuberculosis case notification rate (all forms and new smear-positive) per 100 000 population in the Western Pacific Region, 2000&ndash;2012</h4>
+
+<p><img src="figure/f-notif-trend.png" alt="plot of chunk f-notif-trend"/> </p>
+
+<h3 style='margin: 10pt 0pt 0pt 0pt;'>Distribution by age and sex</h3>
+
+<p><a href="#f-agesex-bar">Figure 3</a> shows age group and sex-specific case notification rates of new smear-positive cases for the seven countries with a high burden of TB in the Region (note that the scale of the vertical axis is different for each country). Many countries follow a typical pattern for cross-sectional observations with increasing notification rates towards older populations except Mongolia and Papua New Guinea. In general, males are more affected than females with male-to-female TB ratios as high as three as seen in Viet Nam.</p>
+
+<p><a id="f-agesex-bar"></a> </p>
+
+<h4 style='margin: 10pt 0pt 0pt 0pt;'>Figure 3 Age group- and sex-specific notification rates (per 100 000 population) of new smear-positive tuberculosis cases in seven countries with a high-burden of TB in the Western Pacific Region, 2012</h4>
+
+<p><img src="figure/f-agesex-bar.png" alt="plot of chunk f-agesex-bar"/> </p>
+
+<p><a href="#f-agesex">Figure 4</a> shows trends of notification rates of new smear-positive cases of age- and sex-specific groups in the seven countries with a high-burden of TB from 20002012. Some countries demonstrated a declining trend of case notification for almost all age- and sex- groups, such as Cambodia, China and Viet Nam while others showed a less apparent trend except Papua New Guinea with a sharply increasing trend.</p>
+
+<p><a id="f-agesex"></a> </p>
+
+<h4 style='margin: 10pt 0pt 0pt 0pt;'>Figure 4 Trend of age group- and sex-specific notification rates (per 100 000 population) of new smear-positive tuberculosis cases in seven countries with a high-burden of TB in the Western Pacific Region, 2000&ndash;2012</h4>
+
+<p><img src="figure/f-agesex.png" alt="plot of chunk f-agesex"/> </p>
+
+<h3 style='margin: 10pt 0pt 0pt 0pt;'>Treatment outcomes</h3>
+
+<p>The Region continued observing treatment success rates beyond the target of 85% (<a href="#f-txout-bar">Figure 5</a>), and the rate has been at 85% or higher over the past several years. Across the Region, 15 countries and areas reached or maintained the 85% treatment success target. Among the countries with a high burden of TB, the treatment success rate was highest in China (96%) followed by Cambodia (94%), Viet Nam (93%), the Lao People&#39;s Democratic Republic (92%), the Philippines (90%) and Mongolia (85%). The treatment success rate of Papua New Guinea was the lowest at 69% with approximately a quarter of the 2011 cohort either defaulted or un-evaluated.</p>
+
+<p><a id="f-txout-bar"></a> </p>
+
+<h4 style='margin: 10pt 0pt 0pt 0pt;'>Figure 5 Trend of treatment outcome expressed as a proportion among new pulmonary smear-positive cases in the Western Pacific Region, 2000&ndash;2011</h4>
+
+<p><img src="figure/f-txout-bar.png" alt="plot of chunk f-txout-bar"/> </p>
+
+<h3 style='margin: 10pt 0pt 0pt 0pt;'>TB/HIV co-infection and collaborative activities</h3>
+
+<p>There has been some progress in reporting of information on TB/HIV co-infection and collaborative activities in the last several years. <a href="#f-tbhiv">Figure 6</a> summarizes four basic indicators (HIV testing, HIV positivity rate, co-trimoxazole preventive therapy (CPT) coverage and  antiretroviral 
+therapy (ART) coverage) for the seven countries with a high burden of TB. Cambodia reported the most comprehensive data completeness and programmatic progress. The coverage of HIV testing, CPT and ART progressively increased with a steady decrease in the proportion of HIV positive individuals among TB patients.</p>
+
+<p><a id="f-tbhiv"></a> </p>
+
+<h4 style='margin: 10pt 0pt 0pt 0pt;'>Figure 6 Progress in TB/HIV activities in seven countries in the Western Pacific Region with a high burden of TB, 2005&ndash;2012</h4>
+
+<p><img src="figure/f-tbhiv.png" alt="plot of chunk f-tbhiv"/> </p>
+
+<h2 style='margin: 10pt 0pt 0pt 0pt;'>Discussion</h2>
+
+<p>Overall, in 2012, countries and areas of the Western Pacific Region reported 1.4 million TB cases (all forms) and a case notification rate of 75 per 100 000 population, a level similar to the past several years.</p>
+
+<p>It has been known that the rapid increase in case notification between 2002 and 2007 was due to several positive programmatic developments in many countries in the Region such as completion and consolidation of the WHO DOTS strategy expansion; improvement in case reporting, including electronic reporting systems; and efforts to engage all health care providers.<sup>7</sup> Particularly, renewal of infectious disease-related legislation and the establishment of an internet-based disease notification system in China made a substantial contribution to the progress.<sup>8</sup></p>
+
+<p>Although the case notification for all forms of TB appears to be flat since 2007, it is important to note that the new smear-positive case notification rates demonstrate a clear declining trend (<a href="#f-notif-trend">Figure 2</a>). A possible interpretation is that the true TB incidence has been declining while overall case detection is static because intensified programmatic efforts by national TB programmes for early and increased case detection include smear-negative and extra pulmonary TB. The latest WHO estimates support this explanation with estimated incidence rates showing a consistent, rapidly-declining trend<sup>1</sup> (<a href="#f-est">Figure 7</a>). </p>
+
+<p><a id="f-est"></a> </p>
+
+<h4 style='margin: 10pt 0pt 0pt 0pt;'>Figure 7 Tuberculosis case notification rate per 100 000 population, estimated incidence, prevalence and mortality in the Western Pacific Region, 1990&ndash;2012</h4>
+
+<p><img src="figure/f-est.png" alt="plot of chunk f-est"/> </p>
+
+<blockquote>
+<p>Red line with certainty band: incidence, black line: case notification rate</p>
+</blockquote>
+
+<p>In any country where a rapid demographic change is underway, overall notification rates may not reflect a true disease trend in the communities. For instance, an overall case notification trend may appear to be stable because decreasing incidences can be cancelled out by a rapidly increasing proportion of an older population. For this reason, the examination of age- and sex- specific case notification rates is more informative and provides insights for understanding the underlying epidemiological process in a given setting.</p>
+
+<p>The typical pattern of linear increase of notification towards the older populations (such as shown in some countries in <a href="#f-agesex-bar">Figure 3</a>) has been explained as a widely observed phenomena under a stable TB control situation,<sup>9</sup> reflecting a high annual risk of TB infection in the past when the older population was young. Atypical patterns shown for Papua New Guinea and Mongolia, particularly relatively high notification rates among young and female groups, warrant further investigation. Time trend analysis for age- and sex- notification rates (<a href="#f-agesex">Figure 4</a>) is useful to detect any specific subgroups among which TB transmission and/or disease progression is particularly active.</p>
+
+<p>One of the critical shortcomings of these analyses is a gross lack of morbidity information among small children because the data is limited to smear-positive cases only. Since the 2006 revision of WHO recording and reporting forms,<sup>10</sup> the number of countries reporting age- and sex-disaggregated data for smear-negative and extra pulmonary cases is increasing and will enable a better assessment of the TB burden among children in future analysis.</p>
+
+<p>HIV infection fuels the TB epidemic, particularly in countries and areas with a high burden of TB. The overall percentage of TB patients tested for HIV in the Region still remained low. However, the figure has substantially increased in the last several years particularly in Cambodia, Viet Nam and the Lao People&#39;s Democratic Republic. Essential services such as co-trimoxazole prophylaxis and isoniazid preventive therapy have also expanded in many countries in the Region.</p>
+
+<p>This report provides a snapshot of the epidemiological and programmatic situation of TB in the Western Pacific Region based on the case notification data in 2012. As for any disease surveillance system, the analysis of surveillance data has inherent limitations. TB surveillance covers populations served by care providers linked with the national TB programme. Ideally this would include all known cases in the country; in practice the proportion of cases diagnosed outside of the TB programme and included in national reporting varies depending on the legal framework in the country. The WHO TB Impact Measurement Task Force recommends that countries continuously improve surveillance systems until reported cases can be considered a reliable proxy for incidence.<sup>11</sup> A careful assessment is needed of programmatic progress in the country and the quality of surveillance data when interpreting these findings.</p>
+
+<p>TB surveillance continues to be an important source of information for assessing the situation and measuring the progress for decision-making. WHO Regional Office for the Western Pacific will continue to conduct regional analysis on various topics related to TB epidemiology and programmatic progress, as well as provide support to countries to conduct epidemiological and programmatic assessment at national and subnational levels.</p>
+
+<h2 style='margin: 10pt 0pt 0pt 0pt;'>Conflicts of interest</h2>
+
+<p>None declared.</p>
+
+<h2 style='margin: 10pt 0pt 0pt 0pt;'>Funding</h2>
+
+<p>None.</p>
+
+<h2 style='margin: 10pt 0pt 0pt 0pt;'>References</h2>
+
+<ol>
+<li>Global Tuberculosis Report 2013. Geneva, World Health Organization, 2013 (<a href="http://www.who.int/tb/publications/global_report/en/">http://www.who.int/tb/publications/global_report/en/</a>, accessed 15 March 2014). </li>
+<li>Regional Strategy to Stop Tuberculosis in the Western Pacific 20112015. Manila, World Health Organization Regional Office for the Western Pacific, 2011 (<a href="http://www.wpro.who.int/tb/documents/policy/2010/regional_strategy/en/">http://www.wpro.who.int/tb/documents/policy/2010/regional_strategy/en/</a>, accessed 15 March 2014). </li>
+<li>Global strategy and targets for tuberculosis prevention, care and control after 2015. Geneva, World Health Organization, 2013 Nov. Report No.: EB134/12 (<a href="http://www.who.int/tb/post2015_tbstrategy.pdf?ua=1">http://www.who.int/tb/post2015_tbstrategy.pdf?ua=1</a>, accessed 15 March 2014). </li>
+<li>Treatment of Tuberculosis. Guidelines. 4th edition. Geneva, World Health Organization; 2010 <a href="http://whqlibdoc.who.int/publications/2010/9789241547833_eng.pdf">http://whqlibdoc.who.int/publications/2010/9789241547833_eng.pdf</a>, accessed 15 March 2014). </li>
+<li>Peng RD, Dominici F, Zeger SL. Reproducible epidemiologic research. American Journal of Epidemiology, 2006, 163:7839. doi:10.1093/aje/kwj093 PMID:16510544</li>
+<li>Groves T, Godlee F. Open science and reproducible research. BMJ (Clinical Research Ed.), 2012, :344. </li>
+<li>van-Maaren P et al. Reaching the global tuberculosis control targets in the Western Pacific Region. Bull World Health Organ. SciELO Public Health, 2007, 85:3603. </li>
+<li>Wang L, Liu J, Chin DP. Progress in tuberculosis control and the evolving public-health system in China. Lancet, 2007, 369:6916. doi:10.1016/S0140-6736(07)60316-X PMID:17321314</li>
+<li>Rieder HL. Epidemiologic basis of tuberculosis control. International Union Against Tuberculosis and Lung Disease (IUATLD); 1999. 162 p. </li>
+<li>Revised TB recording and reporting forms and registers-version 2006. Geneva: World Health Organization; 2006 (<a href="http://www.who.int/tb/dots/r_and_r_forms/en/">http://www.who.int/tb/dots/r_and_r_forms/en/</a>, accessed 15 March 2014). </li>
+<li>TB Impact Measurement. Geneva, World Health Organization, 2009.</li>
+</ol>
+
+</body>
+
+</html>
