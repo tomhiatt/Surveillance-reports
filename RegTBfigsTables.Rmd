@@ -5,6 +5,14 @@
 # Regional TB annual analysis
 ###################################################
 
+## Change this information to customize for your own data.
+
+# Year of TB notification data
+yr <- 2012
+# 
+
+###################################################
+
 # > sessionInfo()
 # R version 3.0.2 (2013-09-25)
 # Platform: i386-w64-mingw32/i386 (32-bit)
@@ -133,8 +141,6 @@ load("gparts.Rdata")
 # Functions to assist with tables and figure in markdown document (from here: http://rmflight.github.io/posts/2012/10/papersinRmd.html)
 ########################################################
 
-yr <- as.numeric(format(Sys.time(),"%Y")) - ifelse(as.numeric(format(Sys.time(),"%m")) < 4, 2, 1)
-
 incCount <- function(inObj, useName) {
   nObj <- length(inObj)
   useNum <- max(inObj) + 1
@@ -179,6 +185,8 @@ for(i in data1){
   data3 <- read.csv(i)
   tb <- merge(tb, data3, all=TRUE)
 }
+
+# Note: to use your own data, make a flat data file with each row corresponding to the lower reporting unit and a aggregating variable. EG by country with aggregating variable of region.
 
 # Add needed variables
 tb$g_hbc22 <- ifelse(tb$iso3 %in% c("AFG", "BGD", "BRA", "CHN", "COD", "ETH", "IDN", "IND", "KEN", "KHM", "MMR", "MOZ", "NGA", "PAK", "PHL", "RUS", "THA", "TZA", "UGA", "VNM", "ZAF", "ZWE"), "high", "low")
