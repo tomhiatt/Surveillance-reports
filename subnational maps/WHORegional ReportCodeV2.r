@@ -15,32 +15,33 @@ library(xlsx)
 library(maptools)
 library(raster)
 
-setwd("./subnational maps")
+if(!any(grep("subnational maps", getwd()))) setwd("./subnational maps")
 ##############################################
 ## Create Directories for Different Datasets##
 ##############################################
 
-# if() 
+if(!"TBSubnational" %in% dir()) {
+  dir.create(paste("./TBSubnational"))
+  dir.create(file.path(outfolder,"Data"))
+  dir.create(file.path(outfolder,"Maps"))
+  dir.create(file.path(outfolder,"Excel Template"))
+  dir.create(file.path(outfolder,"Tables"))
+  dir.create(file.path(outfolder,"Figures"))
+  dir.create(file.path(outfolder,"Shapefiles"))
+  dir.create(file.path(outfolder,"WHOMapTemplate"))
+  dir.create(file.path(outfolder,"AppendixTables"))
+} 
 
-dir.create(paste("./TBSubnational"))
 outfolder<-file.path(paste("./TBSubnational"))
-dir.create(file.path(outfolder,"Data"))
 datafolder<-file.path(outfolder,"Data")
-dir.create(file.path(outfolder,"Maps"))
 mapfolder<-file.path(outfolder,"Maps")
-dir.create(file.path(outfolder,"Excel Template"))
 exclfolder<-file.path(outfolder,"Excel Template")
-dir.create(file.path(outfolder,"Tables"))
 tablesfolder<-file.path(outfolder,"Tables")
-dir.create(file.path(outfolder,"Figures"))
 figurefolder<-file.path(outfolder,"Figures")
-dir.create(file.path(outfolder,"Shapefiles"))
 shapefolder<-file.path(outfolder,"Shapefiles")
-dir.create(file.path(outfolder,"WHOMapTemplate"))
 whomapfolder<-file.path(outfolder,"WHOMapTemplate")
-dir.create(file.path(outfolder,"AppendixTables"))
 aptfolder<-file.path(outfolder,"AppendixTables")
-
+                
 
 ###############################
 ## Variables to be collected ##
