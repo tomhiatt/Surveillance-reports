@@ -153,13 +153,13 @@ load(i)
 assign(namex,gadm)
 }
 
-KHM_map@data<-KHM_subnat
-CHN_map@data<-CHN_subnat
-LAO_map@data<-LAO_subnat
-MNG_map@data<-MNG_subnat
-PHL_map@data<-PHL_subnat
-PNG_map@data<-PNG_subnat
-VNM_map@data<-VNM_subnat
+KHM_map@data <- KHM_subnat
+CHN_map@data <- CHN_subnat
+LAO_map@data <- LAO_subnat
+MNG_map@data <- MNG_subnat
+PHL_map@data <- PHL_subnat
+PNG_map@data <- PNG_subnat
+VNM_map@data <- VNM_subnat
 
 
 ##################################################
@@ -227,6 +227,7 @@ trtc2<-"#05400e"
 
 # create map in ggplot
 
+gpclibPermit()
 
 for (i in rmaps){
 name<-substring(gsub(".*/","",i),1,3)
