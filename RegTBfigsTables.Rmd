@@ -456,7 +456,7 @@ p1 + scale_y_continuous("New smear-positive cases per 100 000")
 
 figCount <- incCount(figCount, "f-txout-bar")
 
-tra <- subset(tb, year %in% 2000:(yr-1), select=c(year, new_sp_coh, new_sp_cur, new_sp_cmplt, new_sp_died, new_sp_fail, new_sp_def))
+tra <- subset(tb, year %in% 2000:(yr-1) & g_whoregion=="WPR", select=c(year, new_sp_coh, new_sp_cur, new_sp_cmplt, new_sp_died, new_sp_fail, new_sp_def))
 
 trb <- aggregate(tra[2:ncol(tra)], by=list(year=tra$year), FUN=sum, na.rm=TRUE)
 
