@@ -178,7 +178,8 @@ shp$susp<-(shp$Number.of.suspects..people.with.presumptive.TB..screened.2012/shp
 shp$ns<-(shp$Number.of.suspects..people.with.presumptive.TB..screened.2012/shp$New.and.relapse.cases.2012)*100
 shp$trt<-(shp$Number.successfully.treated.in.new.treatment.cohort.2011/shp$Number.of.new.treatment.cohort.2011)*100
 rshp<-subset(shp,select=c("Province","notif","susp","ns","trt"))
-return(writeOGR(rshp, dsn=path.expand(shapefolder), country, driver="ESRI Shapefile"))
+# return(writeOGR(rshp, dsn=path.expand(shapefolder), country, driver="ESRI Shapefile"))
+return(save(rshp, file=paste0(shapefolder, "/", country, ".Rdata" )))
 }
 
 maprates(KHM_map,"KHM")
@@ -205,7 +206,7 @@ library(rgdal)
 library(classInt)
 library(gdata)
 
-rmaps<-dir(shapefolder,full.names=T, pattern=".shp")
+rmaps<-dir(shapefolder,full.names=T, pattern=".Rdata")
 
 # Map colors
 
@@ -227,11 +228,14 @@ trtc2<-"#05400e"
 
 # create map in ggplot
 
-gpclibPermit()
+# gpclibPermit()
 
 for (i in rmaps){
 name<-substring(gsub(".*/","",i),1,3)
-map<-readShapePoly(i, proj4string=CRS("+proj=longlat"))
+# map<-readShapePoly(i, proj4string=CRS("+proj=longlat"))
+load(i)
+map <- rshp
+
 map@data$id = rownames(map@data)
 map1<-fortify(map,region="id")
 map1.df <- join(map1, map@data, by="id")
