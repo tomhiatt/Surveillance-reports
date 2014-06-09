@@ -1,4 +1,5 @@
 ```{r setup, echo=FALSE, include=FALSE}
+
 ###################################################
 # Tom Hiatt
 # Updated: 12 March 2014
@@ -392,6 +393,7 @@ aga <- merge(subset(tb, year>1999, select=c("iso3", "country", "year", "g_whoreg
 agb1 <- aggregate(aga[6:ncol(aga)], by=list(year=aga$year, area=aga$g_whoregion), FUN=sum, na.rm=TRUE)
 
 agb1[c('iso3', 'g_hbc22')] <- NA
+agb1$iso3 <- agb1$area
 agb1$g_whoregion <- agb1$area
 aga1 <- rename(aga,c('country'='area'))
 agb <- rbind(aga1, agb1)
