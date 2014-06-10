@@ -1,7 +1,6 @@
 
 
 
-
 Epidemiology and control of tuberculosis in the Western Pacific Region: analysis of case notification data in 2012
 ========================================================
 
@@ -51,15 +50,13 @@ Results
 
 
 
-
-
 In 2012, countries and areas in the Region reported 1 410 835 people with TB disease ([Table 1](#t-notif)) making up 23% of the global burden. Of these cases, 97.5% (1 375 713) were new episodes of TB disease (either new or relapse cases). Within the Region China accounts for 64% (900 678) of the caseload with the Philippines and Viet Nam following with 16% (230 162) and 7% (103 906), respectively. TB notification rates, expressed as cases per 100 000 population, vary substantially in the Region with the highest rates found in Kiribati, Papua New Guinea, the Marshall Islands, Cambodia and the Philippines (343, 287, 276, 270 and 224 per 100 000 population, respectively ([Table 1](#t-notif), [Figure 1](#m-notif)). 
 
 
 <a id="t-notif"></a> 
 #### Table 1. Tuberculosis case notification from countries and areas of the Western Pacific Region, 2012
-<!-- html table generated in R 3.0.2 by xtable 1.7-1 package -->
-<!-- Fri Mar 21 15:12:28 2014 -->
+<!-- html table generated in R 3.1.0 by xtable 1.7-3 package -->
+<!-- Tue Jun 10 09:48:43 2014 -->
 <TABLE border=0 rules=rows width=900 cellpadding=5>
   <TR> <TD colspan=3></TD> 
   <TH colspan=7>NEW CASES</TH> 
@@ -120,13 +117,10 @@ In 2012, countries and areas in the Region reported 1 410 835 people with TB dis
 
 
 
-
 <a id="m-notif"></a> 
 #### Figure 1 Tuberculosis case notification rate (new and relapse) per 100 000 population in countries and areas of the Western Pacific Region, 2012
 ![plot of chunk m-notif](figure/m-notif.png) 
-
 > The boundaries shown and the designations used on this map do not imply the expression of any opinion whatsoever on the part of the World Health Organization concerning the legal status of any country, territory, city or area or of its authorities, or concerning the delimitation of its frontiers or boundaries. White lines on maps represent approximate border lines for which there may not yet be full agreement.
-
 
 
 
@@ -138,9 +132,7 @@ Between 2002 and 2007, case notification rates in the Region increased from 47 t
 #### Figure 2 Tuberculosis case notification rate (all forms and new smear-positive) per 100 000 population in the Western Pacific Region, 2000--2012
 ![plot of chunk f-notif-trend](figure/f-notif-trend.png) 
 
-
 ### Distribution by age and sex
-
 
 
 
@@ -152,7 +144,6 @@ Between 2002 and 2007, case notification rates in the Region increased from 47 t
 ![plot of chunk f-agesex-bar](figure/f-agesex-bar.png) 
 
 
-
 [Figure 4](#f-agesex) shows trends of notification rates of new smear-positive cases of age- and sex-specific groups in the seven countries with a high-burden of TB from 20002012. Some countries demonstrated a declining trend of case notification for almost all age- and sex- groups, such as Cambodia, China and Viet Nam while others showed a less apparent trend except Papua New Guinea with a sharply increasing trend.
 
 <a id="f-agesex"></a> 
@@ -161,9 +152,7 @@ Between 2002 and 2007, case notification rates in the Region increased from 47 t
 
 
 
-
 ### Treatment outcomes
-
 
 
 
@@ -173,9 +162,7 @@ The Region continued observing treatment success rates beyond the target of 85% 
 #### Figure 5 Trend of treatment outcome expressed as a proportion among new pulmonary smear-positive cases in the Western Pacific Region, 2000--2011
 ![plot of chunk f-txout-bar](figure/f-txout-bar.png) 
 
-
 ### TB/HIV co-infection and collaborative activities
-
 
 
 
@@ -188,10 +175,8 @@ therapy (ART) coverage) for the seven countries with a high burden of TB. Cambod
 
 
 
-
 Discussion
 --------------------------------------------------------
-
 
 
 
@@ -205,7 +190,6 @@ Although the case notification for all forms of TB appears to be flat since 2007
 <a id="f-est"></a> 
 #### Figure 7 Tuberculosis case notification rate per 100 000 population, estimated incidence, prevalence and mortality in the Western Pacific Region, 1990--2012
 ![plot of chunk f-est](figure/f-est.png) 
-
 > Red line with certainty band: incidence, black line: case notification rate
 
 In any country where a rapid demographic change is underway, overall notification rates may not reflect a true disease trend in the communities. For instance, an overall case notification trend may appear to be stable because decreasing incidences can be cancelled out by a rapidly increasing proportion of an older population. For this reason, the examination of age- and sex- specific case notification rates is more informative and provides insights for understanding the underlying epidemiological process in a given setting.

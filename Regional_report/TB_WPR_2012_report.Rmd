@@ -1,17 +1,8 @@
 ```{r setup, echo=FALSE, include=FALSE}
-
 ###################################################
 # Tom Hiatt
 # Updated: 12 March 2014
 # Regional TB annual analysis
-###################################################
-
-## Change this information to customize for your own data.
-
-# Year of TB notification data
-yr <- 2012
-# 
-
 ###################################################
 
 # > sessionInfo()
@@ -69,7 +60,6 @@ whbc <- c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM")
 
 # Create regional report folder if needed.
 # dir.create("./Regional_report") # run this if error below
-# dir.create("./figure_data") # run this if error below
 if(!any(grep("Regional_report", getwd()))) setwd("./Regional_report")
 
 
@@ -142,6 +132,8 @@ load("gparts.Rdata")
 # Functions to assist with tables and figure in markdown document (from here: http://rmflight.github.io/posts/2012/10/papersinRmd.html)
 ########################################################
 
+yr <- as.numeric(format(Sys.time(),"%Y")) - ifelse(as.numeric(format(Sys.time(),"%m")) < 4, 2, 1)
+
 incCount <- function(inObj, useName) {
   nObj <- length(inObj)
   useNum <- max(inObj) + 1
@@ -186,8 +178,6 @@ for(i in data1){
   data3 <- read.csv(i)
   tb <- merge(tb, data3, all=TRUE)
 }
-
-# Note: to use your own data, make a flat data file with each row corresponding to the lower reporting unit and a aggregating variable. EG by country with aggregating variable of region.
 
 # Add needed variables
 tb$g_hbc22 <- ifelse(tb$iso3 %in% c("AFG", "BGD", "BRA", "CHN", "COD", "ETH", "IDN", "IND", "KEN", "KHM", "MMR", "MOZ", "NGA", "PAK", "PHL", "RUS", "THA", "TZA", "UGA", "VNM", "ZAF", "ZWE"), "high", "low")
@@ -295,7 +285,7 @@ tbd <- .WPSARnames(tbc[c("area", "c_notified", "tot_newrel_100k", "new_sp", "new
 tbm <- xtable(tbd)
 digits(tbm) <- 0
 
-write.csv(tbm, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-notif", insLink=FALSE), ".csv"), row.names=FALSE, na="")
+write.csv(tbm, file=paste0(pasteLabel("./figure data/table", tableCount, "t-notif", insLink=FALSE), ".csv"), row.names=FALSE, na="")
 ```
 
 ```{r m-notif-data, include=FALSE}
@@ -308,7 +298,7 @@ mc$cat <- cut(round(mc$c_tot_newrel_100k,0), c(0, 10, 50, 100, 200, Inf), c('0�
 
 mc1 <- WHOmap.print(mc, legend.title= "TB cases per \n100 000 population", copyright=FALSE, show=FALSE, zoom="WPR")
 
-write.csv(mc, file=paste0(pasteLabel("./figure_data/figure", figCount, "m-notif", insLink=FALSE), ".csv"), row.names=FALSE)
+write.csv(mc, file=paste0(pasteLabel("./figure data/figure", figCount, "m-notif", insLink=FALSE), ".csv"), row.names=FALSE)
 ```
 
 
@@ -367,7 +357,7 @@ notb$`All forms of TB` <- notb$tot_newrel / notb$e_pop_num * 1e5
 notb$`New smear-positive` <- notb$new_sp / notb$e_pop_num * 1e5
 notc <- melt(notb[c("year", "New smear-positive", "All forms of TB")], id=1)
 
-write.csv(notc, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-notif-trend", insLink=FALSE), ".csv"), row.names=FALSE)
+write.csv(notc, file=paste0(pasteLabel("./figure data/figure", figCount, "f-notif-trend", insLink=FALSE), ".csv"), row.names=FALSE)
 ```
 
 Between 2002 and 2007, case notification rates in the Region increased from 47 to 77 per 100 000 population in all forms of TB and from 22 to 38 per 100 000 population in new smear-positive TB cases. After 2005 the case notification rates for all forms of TB stabilized, and new smear-positive cases seem to have started to decrease (`r I(pasteLabel("Figure", figCount, "f-notif-trend"))`). 
@@ -393,7 +383,6 @@ aga <- merge(subset(tb, year>1999, select=c("iso3", "country", "year", "g_whoreg
 agb1 <- aggregate(aga[6:ncol(aga)], by=list(year=aga$year, area=aga$g_whoregion), FUN=sum, na.rm=TRUE)
 
 agb1[c('iso3', 'g_hbc22')] <- NA
-agb1$iso3 <- agb1$area
 agb1$g_whoregion <- agb1$area
 aga1 <- rename(aga,c('country'='area'))
 agb <- rbind(aga1, agb1)
@@ -418,9 +407,9 @@ age$sh.name <- factor(age$iso3, c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM
 age[is.na(age$sh.name), 'sh.name'] <- "WPR"
 age$age <- factor(age$age, c("014", "1524", "2534", "3544", "4554", "5564", "65"), c("0–14", "15–24", "25–34", "35–44", "45–54", "55–64", "\u2265 65"))
 
-write.csv(age, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-agesex-bar", insLink=FALSE), ".csv"), row.names=FALSE)
+write.csv(age, file=paste0(pasteLabel("./figure data/figure", figCount, "f-agesex-bar", insLink=FALSE), ".csv"), row.names=FALSE)
 
-write.csv(age, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-agesex", insLink=FALSE), ".csv"), row.names=FALSE)
+write.csv(age, file=paste0(pasteLabel("./figure data/figure", figCount, "f-agesex", insLink=FALSE), ".csv"), row.names=FALSE)
 ```
 
 `r I(pasteLabel("Figure", figCount, "f-agesex-bar"))` shows age group and sex-specific case notification rates of new smear-positive cases for the seven countries with a high burden of TB in the Region (note that the scale of the vertical axis is different for each country). Many countries follow a typical pattern for cross-sectional observations with increasing notification rates towards older populations except Mongolia and Papua New Guinea. In general, males are more affected than females with male-to-female TB ratios as high as three as seen in Viet Nam.
@@ -458,7 +447,7 @@ p1 + scale_y_continuous("New smear-positive cases per 100 000")
 
 figCount <- incCount(figCount, "f-txout-bar")
 
-tra <- subset(tb, year %in% 2000:(yr-1) & g_whoregion=="WPR", select=c(year, new_sp_coh, new_sp_cur, new_sp_cmplt, new_sp_died, new_sp_fail, new_sp_def))
+tra <- subset(tb, year %in% 2000:(yr-1), select=c(year, new_sp_coh, new_sp_cur, new_sp_cmplt, new_sp_died, new_sp_fail, new_sp_def))
 
 trb <- aggregate(tra[2:ncol(tra)], by=list(year=tra$year), FUN=sum, na.rm=TRUE)
 
@@ -470,7 +459,7 @@ trb$`Not evaluated` <- (trb$new_sp_coh - (trb$new_sp_cur + trb$new_sp_cmplt + tr
 
 trc <- melt(trb[c("year", "Success", "Died", "Failed", "Defaulted", "Not evaluated")], id=1)
 
-write.csv(trc, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-txout-bar", insLink=FALSE), ".csv"), row.names=FALSE)
+write.csv(trc, file=paste0(pasteLabel("./figure data/figure", figCount, "f-txout-bar", insLink=FALSE), ".csv"), row.names=FALSE)
 ```
 
 The Region continued observing treatment success rates beyond the target of 85% (`r I(pasteLabel("Figure", figCount, "f-txout-bar"))`), and the rate has been at 85% or higher over the past several years. Across the Region, 15 countries and areas reached or maintained the 85% treatment success target. Among the countries with a high burden of TB, the treatment success rate was highest in China (96%) followed by Cambodia (94%), Viet Nam (93%), the Lao People's Democratic Republic (92%), the Philippines (90%) and Mongolia (85%). The treatment success rate of Papua New Guinea was the lowest at 69% with approximately a quarter of the 2011 cohort either defaulted or un-evaluated.
@@ -509,11 +498,10 @@ thb$variable <- factor(thb$variable, levels=c("test", "pos", "cpt", "art"), labe
 
 thb$country <- factor(thb$iso3, c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM", "WPR"), c("Cambodia", "China", "Lao \nPeople’s \nDemocratic \nRepublic", "Mongolia", "Papua \nNew \nGuinea", "Philippines", "Viet Nam", "Western \nPacific \nRegion"))
 
-write.csv(thb, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-tbhiv", insLink=FALSE), ".csv"), row.names=FALSE)
+write.csv(thb, file=paste0(pasteLabel("./figure data/figure", figCount, "f-tbhiv", insLink=FALSE), ".csv"), row.names=FALSE)
 ```
 
-There has been some progress in reporting of information on TB/HIV co-infection and collaborative activities in the last several years. `r I(pasteLabel("Figure", figCount, "f-tbhiv"))` summarizes four basic indicators (HIV testing, HIV positivity rate, co-trimoxazole preventive therapy (CPT) coverage and  antiretroviral 
-therapy (ART) coverage) for the seven countries with a high burden of TB. Cambodia reported the most comprehensive data completeness and programmatic progress. The coverage of HIV testing, CPT and ART progressively increased with a steady decrease in the proportion of HIV positive individuals among TB patients.
+There has been some progress in reporting of information on TB/HIV co-infection and collaborative activities in the last several years. `r I(pasteLabel("Figure", figCount, "f-tbhiv"))` summarizes four basic indicators (HIV testing, HIV positivity rate, CPT coverage and ART coverage) for the seven countries with a high burden of TB. Cambodia reported the most comprehensive data completeness and programmatic progress. The coverage of HIV testing, CPT and ARV progressively increased with a steady decrease in a proportion of HIV positive individuals among TB patients.
 
 <a id="f-tbhiv"></a> 
 #### `r I(pasteLabel("Figure", figCount, "f-tbhiv", insLink=FALSE))` Progress in TB/HIV activities in seven countries in the Western Pacific Region with a high burden of TB, 2005--2012
@@ -556,12 +544,12 @@ estg$var <- "inc"
 esth <- merge(estf, estg, all.x=TRUE)
 esth$var <- factor(esth$var, levels=c("inc", "prev", "mort_exc_tbhiv"), labels=c("Incidence and notification", "Prevalence", "Mortality (excluding HIV)"))
 
-write.csv(esth, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-est", insLink=FALSE), ".csv"), row.names=FALSE)
+write.csv(esth, file=paste0(pasteLabel("./figure data/figure", figCount, "f-est", insLink=FALSE), ".csv"), row.names=FALSE)
 ```
 
 Overall, in 2012, countries and areas of the Western Pacific Region reported 1.4 million TB cases (all forms) and a case notification rate of 75 per 100 000 population, a level similar to the past several years.
 
-It has been known that the rapid increase in case notification between 2002 and 2007 was due to several positive programmatic developments in many countries in the Region such as completion and consolidation of the WHO DOTS strategy expansion; improvement in case reporting, including electronic reporting systems; and efforts to engage all health care providers.^7 Particularly, renewal of infectious disease-related legislation and the establishment of an internet-based disease notification system in China made a substantial contribution to the progress.^8
+It has been known that the rapid increase in case notification between 2002 and 2007 was due to several positive programmatic developments in many countries in the Region such as completion and consolidation of the WHO Directly Observed Treatment, Short-course strategy expansion; improvement in case reporting, including electronic reporting systems; and efforts to engage all health care providers.^7 Particularly, renewal of infectious disease-related legislation and the establishment of an internet-based disease notification system in China made a substantial contribution to the progress.^8
 
 Although the case notification for all forms of TB appears to be flat since 2007, it is important to note that the new smear-positive case notification rates demonstrate a clear declining trend (`r I(pasteLabel("Figure", figCount, "f-notif-trend"))`). A possible interpretation is that the true TB incidence has been declining while overall case detection is static because intensified programmatic efforts by national TB programmes for early and increased case detection include smear-negative and extra pulmonary TB. The latest WHO estimates support this explanation with estimated incidence rates showing a consistent, rapidly-declining trend^1 (`r I(pasteLabel("Figure", figCount, "f-est"))`). 
 

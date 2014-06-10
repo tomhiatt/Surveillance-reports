@@ -15,33 +15,30 @@ library(xlsx)
 library(maptools)
 library(raster)
 
-if(!any(grep("subnational maps", getwd()))) setwd("./subnational maps")
+
 ##############################################
 ## Create Directories for Different Datasets##
 ##############################################
 
-if(!"TBSubnational" %in% dir()) {
-  dir.create(paste("./TBSubnational"))
-  dir.create(file.path(outfolder,"Data"))
-  dir.create(file.path(outfolder,"Maps"))
-  dir.create(file.path(outfolder,"Excel Template"))
-  dir.create(file.path(outfolder,"Tables"))
-  dir.create(file.path(outfolder,"Figures"))
-  dir.create(file.path(outfolder,"Shapefiles"))
-  dir.create(file.path(outfolder,"WHOMapTemplate"))
-  dir.create(file.path(outfolder,"AppendixTables"))
-} 
-
-outfolder<-file.path(paste("./TBSubnational"))
+dir.create(paste("~/TBSubnational"))
+outfolder<-file.path(paste("~/TBSubnational"))
+dir.create(file.path(outfolder,"Data"))
 datafolder<-file.path(outfolder,"Data")
+dir.create(file.path(outfolder,"Maps"))
 mapfolder<-file.path(outfolder,"Maps")
+dir.create(file.path(outfolder,"Excel Template"))
 exclfolder<-file.path(outfolder,"Excel Template")
+dir.create(file.path(outfolder,"Tables"))
 tablesfolder<-file.path(outfolder,"Tables")
+dir.create(file.path(outfolder,"Figures"))
 figurefolder<-file.path(outfolder,"Figures")
+dir.create(file.path(outfolder,"Shapefiles"))
 shapefolder<-file.path(outfolder,"Shapefiles")
+dir.create(file.path(outfolder,"WHOMapTemplate"))
 whomapfolder<-file.path(outfolder,"WHOMapTemplate")
+dir.create(file.path(outfolder,"AppendixTables"))
 aptfolder<-file.path(outfolder,"AppendixTables")
-                
+
 
 ###############################
 ## Variables to be collected ##
@@ -55,7 +52,7 @@ aptfolder<-file.path(outfolder,"AppendixTables")
 # Number successfully treated in new treatment cohort 2011 
 
 subtbdat<-c("Population", "New and relapse cases 2012", 
-"Number of suspects (people with presumptive TB) tested 2012",
+"Number of suspects (people with presumptive TB) screened 2012",
 "Number of new treatment cohort 2011",
 "Number successfully treated in new treatment cohort 2011")
 
@@ -73,16 +70,26 @@ subtbdat<-c("Population", "New and relapse cases 2012",
 # Philippines (PHL)
 # Vietnam (VNM)
 
-
-
 countries<-c("KHM","CHN","LAO","MNG","PNG","PHL","VNM")
 
-if(length(list.files(mapfolder)) < length(countries) ){
-  for (i in countries){
-    lev<-ifelse(i=="VNM",2,1)
-    getData('GADM', country=i, level=lev, path=mapfolder)
-  }
+for (i in countries){
+lev<-ifelse(i=="VNM",2,1)
+getData('GADM', country=i, level=lev, path=mapfolder)
 }
+
+
+
+##### OR ###############################################################
+# Cambodia<-getData("GADM",country="KHM", level=1, path=mapfolder)     #
+# China<-getData("GADM",country="CHN", level=1, path=mapfolder)        #
+# Lao<-getData("GADM",country="LAO", level=1, path=mapfolder)          #
+# Mongolia<-getData("GADM",country="MNG", level=1, path=mapfolder)     #
+# PNG<-getData("GADM",country="PNG", level=1, path=mapfolder)          #
+# Philippines<-getData("GADM",country="PHL", level=1, path=mapfolder)  # 
+# Vietnam<-getData("GADM",country="VNM", level=2, path=mapfolder)      #
+########################################################################
+
+
 
 ###########################################
 # Create Excel File Template for country  #
@@ -95,24 +102,24 @@ if(length(list.files(mapfolder)) < length(countries) ){
 
 maps<-dir(mapfolder)  
 for (i in maps[-7]){
-  name<-substring(i,1,3)
-  load(file.path(mapfolder, i))
-  dat<-subset(gadm@data, select=c("NAME_0","ID_1","NAME_1")) 
-  colnames(dat)<-c("Country","ID","Province")
-  dat[c(subtbdat)]<-" "
-  write.xlsx(x = dat, file=path.expand(file.path(exclfolder,paste(name,".xlsx", sep=""))),
-             sheetName = "TBSubNat", row.names = FALSE)
+name<-substring(i,1,3)
+load(i)
+dat<-subset(gadm@data, select=c("NAME_0","ID_1","NAME_1")) 
+colnames(dat)<-c("Country","ID","Province")
+dat[c(subtbdat)]<-" "
+write.xlsx(x = dat, file=path.expand(file.path(exclfolder,paste(name,".xlsx", sep=""))),
+        sheetName = "TBSubNat", row.names = FALSE)
 }
 
 # For Vietnam
 for (i in maps[7]){
-  name<-substring(i,1,3)
-  load(file.path(mapfolder, i))
-  dat<-subset(gadm@data, select=c("NAME_0","ID_2","VARNAME_2")) 
-  colnames(dat)<-c("Country","ID","Province")
-  dat[c(subtbdat)]<-" "
-  write.xlsx(x = dat, file=path.expand(file.path(exclfolder,paste(name,".xlsx", sep=""))),
-             sheetName = "TBSubNat", row.names = FALSE)
+name<-substring(i,1,3)
+load(i)
+dat<-subset(gadm@data, select=c("NAME_0","ID_2","VARNAME_2")) 
+colnames(dat)<-c("Country","ID","Province")
+dat[c(subtbdat)]<-" "
+write.xlsx(x = dat, file=path.expand(file.path(exclfolder,paste(name,".xlsx", sep=""))),
+        sheetName = "TBSubNat", row.names = FALSE)
 }
 
 ####################
@@ -153,13 +160,13 @@ load(i)
 assign(namex,gadm)
 }
 
-KHM_map@data <- KHM_subnat
-CHN_map@data <- CHN_subnat
-LAO_map@data <- LAO_subnat
-MNG_map@data <- MNG_subnat
-PHL_map@data <- PHL_subnat
-PNG_map@data <- PNG_subnat
-VNM_map@data <- VNM_subnat
+KHM_map@data<-KHM_subnat
+CHN_map@data<-CHN_subnat
+LAO_map@data<-LAO_subnat
+MNG_map@data<-MNG_subnat
+PHL_map@data<-PHL_subnat
+PNG_map@data<-PNG_subnat
+VNM_map@data<-VNM_subnat
 
 
 ##################################################
@@ -178,8 +185,7 @@ shp$susp<-(shp$Number.of.suspects..people.with.presumptive.TB..screened.2012/shp
 shp$ns<-(shp$Number.of.suspects..people.with.presumptive.TB..screened.2012/shp$New.and.relapse.cases.2012)*100
 shp$trt<-(shp$Number.successfully.treated.in.new.treatment.cohort.2011/shp$Number.of.new.treatment.cohort.2011)*100
 rshp<-subset(shp,select=c("Province","notif","susp","ns","trt"))
-# return(writeOGR(rshp, dsn=path.expand(shapefolder), country, driver="ESRI Shapefile"))
-return(save(rshp, file=paste0(shapefolder, "/", country, ".Rdata" )))
+return(writeOGR(rshp, dsn=path.expand(shapefolder), country, driver="ESRI Shapefile"))
 }
 
 maprates(KHM_map,"KHM")
@@ -203,10 +209,8 @@ library(plyr)
 library(mapproj)
 library(RColorBrewer)
 library(rgdal)
-library(classInt)
-library(gdata)
 
-rmaps<-dir(shapefolder,full.names=T, pattern=".Rdata")
+rmaps<-dir(shapefolder,full.names=T, pattern=".shp")
 
 # Map colors
 
@@ -228,65 +232,49 @@ trtc2<-"#05400e"
 
 # create map in ggplot
 
-# gpclibPermit()
 
 for (i in rmaps){
 name<-substring(gsub(".*/","",i),1,3)
-# map<-readShapePoly(i, proj4string=CRS("+proj=longlat"))
-load(i)
-map <- rshp
-
+map<-readShapePoly(i, proj4string=CRS("+proj=longlat"))
 map@data$id = rownames(map@data)
 map1<-fortify(map,region="id")
 map1.df <- join(map1, map@data, by="id")
 
-nbrks<-round(seq(min(map1.df$notif,na.rm=T),max(map1.df$notif,na.rm=T),(max(map1.df$notif,na.rm=T)-min(map1.df$notif,na.rm=T))/5),0)
-sbrks<-round(seq(min(map1.df$susp,na.rm=T),max(map1.df$susp,na.rm=T),(max(map1.df$susp,na.rm=T)-min(map1.df$susp,na.rm=T))/5),0)
-nsbrks<-round(seq(min(map1.df$ns,na.rm=T),max(map1.df$ns,na.rm=T),(max(map1.df$ns,na.rm=T)-min(map1.df$ns,na.rm=T))/5),0)
-trtbrks<-round(seq(min(map1.df$trt,na.rm=T),max(map1.df$trt,na.rm=T),(max(map1.df$trt,na.rm=T)-min(map1.df$trt,na.rm=T))/5),0)
- 
-
-
 ## Mapping Notification Rates
 theme_set(theme_classic())
-
-n1<- ggplot(map1.df, aes(long,lat,group=group))+geom_polygon(aes(fill=notif))+scale_fill_gradient("New and relapse\ncases per\n100 000\npopulation, 2012",low=nc1,high=nc2, space="Lab", guide="legend",breaks=nbrks)
-n1<-n1+geom_polygon(fill="NA",colour="white")
-n1<-n1+theme(axis.text.x =element_blank(),axis.text.y= element_blank(), axis.line = element_blank(), axis.ticks=element_blank(),axis.title.x =element_blank(),axis.title.y= element_blank())
-n1<-n1+coord_map()
+n1<- ggplot(map1.df, aes(long,lat,group=group))+geom_polygon(aes(fill=notif), colour="white")+scale_fill_gradient("New and relapse\ncases per\n100 000\npopulation, 2012",low=nc1,high=nc2, space="Lab")
+n2<-n1+theme(axis.text.x =element_blank(),axis.text.y= element_blank(), axis.line = element_blank(), axis.ticks=element_blank(),axis.title.x =element_blank(),axis.title.y= element_blank())
+n3<-n2+coord_map()
 #print map in jpeg format
 jpeg(file=file.path(figurefolder, paste(name,"notif",".jpeg", sep="")),w=2115,h=2000,res=300)
-print(n1)
+print(n3)
 dev.off()
 
 ## Mapping Number of suspect
 
 
-s1<- ggplot(map1.df, aes(long,lat,group=group))+geom_polygon(aes(fill=susp))+scale_fill_gradient("Suspects tested\nfor TB\nper 100 000\npopulation, 2012",low=sc1,high=sc2, space="Lab", guide="legend",breaks=sbrks)
-s1<-s1+geom_polygon(fill="NA",colour="white")
-s1<-s1+theme(axis.text.x =element_blank(),axis.text.y= element_blank(), axis.line = element_blank(), axis.ticks=element_blank(),axis.title.x =element_blank(),axis.title.y= element_blank())
-s1<-s1+coord_map()
+s1<- ggplot(map1.df, aes(long,lat,group=group))+geom_polygon(aes(fill=susp), colour="white")+scale_fill_gradient("Suspects tested\nfor TB\nper 100 000\npopulation, 2012",low=sc1,high=sc2, space="Lab")
+s2<-s1+theme(axis.text.x =element_blank(),axis.text.y= element_blank(), axis.line = element_blank(), axis.ticks=element_blank(),axis.title.x =element_blank(),axis.title.y= element_blank())
+s3<-s2+coord_map()
 #print map in jpeg format
 jpeg(file=file.path(figurefolder, paste(name,"susp",".jpeg", sep="")),w=2115,h=2000,res=300)
-print(s1)
+print(s3)
 dev.off()
 
 ## Mapping Number of suspect/relapse
 
-ns1<- ggplot(map1.df, aes(long,lat,group=group))+geom_polygon(aes(fill=ns))+scale_fill_gradient("Percentage of\nsuspects found\npositive for\nTB, 2012",low=nsc1,high=nsc2, space="Lab", guide="legend",breaks=nsbrks)
-ns1<-ns1+geom_polygon(fill="NA",colour="white")
-ns1<-ns1+theme(axis.text.x =element_blank(),axis.text.y= element_blank(), axis.line = element_blank(), axis.ticks=element_blank(),axis.title.x =element_blank(),axis.title.y= element_blank())
-ns1<-ns1+coord_map()
+ns1<- ggplot(map1.df, aes(long,lat,group=group))+geom_polygon(aes(fill=ns), colour="white")+scale_fill_gradient("Percentage of\nsuspects found\npositive for\nTB, 2012",low=nsc1,high=nsc2, space="Lab")
+ns2<-ns1+theme(axis.text.x =element_blank(),axis.text.y= element_blank(), axis.line = element_blank(), axis.ticks=element_blank(),axis.title.x =element_blank(),axis.title.y= element_blank())
+ns3<-ns2+coord_map()
 jpeg(file=file.path(figurefolder, paste(name,"ns",".jpeg", sep="")),w=2115,h=2000,res=300)
-print(ns1)
+print(ns3)
 dev.off()
 
-trt1<- ggplot(map1.df, aes(long,lat,group=group))+geom_polygon(aes(fill=trt))+scale_fill_gradient("Percentage of\npatients successfully\ntreated, 2011",low=trtc1,high=trtc2, space="Lab", guide="legend",breaks=trtbrks)
-trt1<-trt1+geom_polygon(fill="NA",colour="white")
-trt1<-trt1+theme(axis.text.x =element_blank(),axis.text.y= element_blank(), axis.line = element_blank(), axis.ticks=element_blank(),axis.title.x =element_blank(),axis.title.y= element_blank())
-trt1<-trt1+coord_map()
+trt1<- ggplot(map1.df, aes(long,lat,group=group))+geom_polygon(aes(fill=trt), colour="white")+scale_fill_gradient("Percentage of\npatients successfully\ntreated, 2011",low=trtc1,high=trtc2, space="Lab")
+trt2<-trt1+theme(axis.text.x =element_blank(),axis.text.y= element_blank(), axis.line = element_blank(), axis.ticks=element_blank(),axis.title.x =element_blank(),axis.title.y= element_blank())
+trt3<-trt2+coord_map()
 jpeg(file=file.path(figurefolder, paste(name,"trt",".jpeg", sep="")),w=2115,h=2000,res=300)
-print(trt1)
+print(trt3)
 dev.off()
 
 }
@@ -310,39 +298,26 @@ for (i in 2:length(files)) {
      regnotifmap <- spRbind(regnotifmap,temp.data)
 }
 
-###########################################
-# Creating regional notification rate map #
-###########################################
+# Creating regional notification rate map
+
 regnotifmap@data$id = rownames(regnotifmap@data)
 rnmap<-fortify(regnotifmap,region="id")
 rnmap.df <- join(rnmap, regnotifmap@data, by="id")
-rbrks<-round(seq(min(regnotifmap$notif,na.rm=T),max(regnotifmap$notif,na.rm=T),(max(regnotifmap$notif,na.rm=T)-min(regnotifmap$notif,na.rm=T))/5),0)
+
 data(wrld_simpl)
-wrld_simpl<-(wrld_simpl[wrld_simpl$REGION==142,])
-wmap<-fortify(wrld_simpl, region="NAME")
+wrld_simpl@data$id<-rownames(wrld_simpl@data)
+wmap<-fortify(wrld_simpl, region="id")
 
-
-## Warning: this process will consume total memroy (3907Mb) allocation for R environment
-
+# Warning: this process will consume total memroy (3907Mb) allocation for R environment
 theme_set(theme_classic())
-rgtm<-ggplot(wmap, aes(long,lat,group=group))+geom_polygon(fill="grey90")
-rgtm<-rgtm+geom_polygon(data=rnmap.df,aes(long,lat, group=group, fill=notif))+scale_fill_gradient("New and relapse\ncases per\n100 000\npopulation, 2012",low=nc1,high=nc2, space="Lab", guide="legend", breaks=rbrks)+xlim(c(73.55,157))+ylim(c(-11,53))+coord_map()
+wm<-ggplot(wmap, aes(long,lat,group=group))+geom_polygon()
+rgtm<-wm+geom_polygon(data=rnmap.df,aes(long,lat, group=group, fill=ns))+scale_fill_gradient("New and relapse\ncases per\n100 000\npopulation, 2012",low=nc1,high=nc2, space="Lab")+xlim(c(73.55,157))+ylim(c(-11,53))+coord_map()
 rgtm<-rgtm+theme(axis.text.x =element_blank(),axis.text.y= element_blank(), axis.line = element_blank(), axis.ticks=element_blank(),axis.title.x =element_blank(),axis.title.y= element_blank())
 
-
-keep(rgtm, sure=T) # Free R memory keeping only rgtm object for plotting later
-
-dir.create(paste("~/TBSubnational"))
-outfolder<-file.path(paste("~/TBSubnational"))
-figurefolder<-file.path(outfolder,"Figures")
-dir.create(file.path(outfolder,"Shapefiles"))
 
 jpeg(file=file.path(figurefolder, paste("regionalns2",".jpeg", sep="")),w=2115,h=2000,res=300)
 print(rgtm)
 dev.off()
-
-
-
 
 
 
