@@ -106,12 +106,7 @@ if(ord=='wpr')  d <- d[match(c("Afghanistan", "Bangladesh", "Brazil", "Cambodia"
   return(d)
 }
 
-########################################################
-# Functions for maps
-########################################################
 
-source("./MapFunctions.r")
-load("gparts.Rdata")
 
 ########################################################
 # Functions to assist with tables and figure in markdown document (from here: http://rmflight.github.io/posts/2012/10/papersinRmd.html)
@@ -150,7 +145,7 @@ tableCat <- function(inFrame) {
 
 # Create directory and Get data
 
-if(!"data" %in% dir()){
+if(!"data" %in% dir() | length(list.files('./data'))==0){
   dir.create(paste("./data"))
   stop("Download the notification and treatment outcomes data from 'http://who.int/tb/country/data/download/en/' to './data'.")
   }
@@ -176,9 +171,9 @@ tb$c_tot_newrel_100k <- tb$tot_newrel / tb$e_pop_num * 1e5
 
 # Get population data (available from UN population division. http://esa.un.org/unpd/wpp/unpp/panel_population.htm) and formatted TB/HIV data and estimates for the WHO Western Pacific Region.
 
-load("./addata.Rdata")
+# load("./addata.Rdata")
 
-tb <- merge(tb, tbhiv[c(3,4,13:20)], all=TRUE)
+# tb <- merge(tb, tbhiv[c(3,4,13:20)], all=TRUE)
 
 ```
 
