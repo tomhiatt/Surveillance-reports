@@ -364,7 +364,7 @@ tbd <- .WPSARnames(tbc[c("area", "c_notified", "tot_newrel_100k", "new_sp", "new
 tbm <- xtable(tbd)
 digits(tbm) <- 0
 
-write.csv(tbm, file=paste0(pasteLabel("./figure data/table", tableCount, "t-notif", insLink=FALSE), ".csv"), row.names=FALSE, na="")
+write.csv(tbm, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-notif", insLink=FALSE), ".csv"), row.names=FALSE, na="")
 ```
 
 ```{r m-notif-data, include=FALSE}
@@ -377,7 +377,7 @@ mc$cat <- cut(round(mc$c_tot_newrel_100k,0), c(0, 10, 50, 100, 200, Inf), c('0â€
 
 mc1 <- WHOmap.print(mc, legend.title= "TB cases per \n100 000 population", copyright=FALSE, show=FALSE, zoom="WPR")
 
-write.csv(mc, file=paste0(pasteLabel("./figure data/figure", figCount, "m-notif", insLink=FALSE), ".csv"), row.names=FALSE)
+write.csv(mc, file=paste0(pasteLabel("./figure_data/figure", figCount, "m-notif", insLink=FALSE), ".csv"), row.names=FALSE)
 ```
 
 
