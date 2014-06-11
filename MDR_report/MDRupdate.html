@@ -10,141 +10,79 @@
 
 
 <style type="text/css">
-/* From: http://gforge.se/2014/01/fast-track-publishing-using-knitr-part-ii/
-Set the main font to Calibri, same
-   as My Word 2010 uses. Also set the
-   default font size to 11pt.
- 
-   The maximum width to 35em enhances
-   readability through optimal line
-   length. Note: this setting is ignored
-   by Word/Libre Office*/
-body  {
-   font-family: Calibri;
-   font-size: 11pt;
+body, td {
+   font-family: sans-serif;
    background-color: white;
-   padding-top: 1em;
-   margin: auto;
-   max-width: 35em;
+   font-size: 13px;
 }
- 
-/* Set the paragraph margin and
-   padding to 0 except for the bottom */
-p {
-  padding: 0;
-  margin: 0;
-  margin-bottom: 10pt;
+
+body {
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 20px;
 }
- 
-/* Table style from here http://blogs.cetis.ac.uk/adam/2013/10/25/changing-style-knitr-and-markdown-in-rstudio/ */
-table {
-  max-width: 95%;
-  border: 1px solid #ccc;
-}
-th {
-  background-color: #dcdcdc;
-  color: #000000;
-}
-td {
-  background-color: #dcdcdc;
-}
- 
-/* The tr padding/margin 0 is important for table
-   import, while the font needs to be specified as
-   font and not font-family/font-size due to limiations
-   in Libre Office */
-td, tr{
-  font: 10pt Arial;
-  padding: 0px;
-  margin: 0px;
-}
- 
-/* The cell should have a little space to easy reading
-   although this section is mostly ignored by the
-   Libre Office import */
-td {
-  padding: 4px;
-  padding-bottom: 2px;
-}
- 
-/* Set the headings to correspond to Word-style */
-h1, h2, h3, h4, h5, h6 {
-  margin: 10pt 0pt 0pt 0pt;
-  font-family: Cambria;
-  font-weight: bold;
-}
- 
-/* h1 has a slightly larger top margins
-   so we re-set that from the other*/
-h1 {
-  margin: 24pt 0pt 0pt 0pt;
-  font-size: 14pt;
-  color: #365F91;
-}
- 
- 
-h2 {
-  font-size: 13pt;
-  color: #4F81BD;
-}
- 
-h3 {
-  font-size: 11pt;
-  color: #4F81BD;
-}
- 
-h4 {
-  font-size: 11pt;
-  font-weight: bold;
-  font-style: italic;
-  color: #4F81BD;
-}
- 
-h5 {
-  font-size: 11pt;
-  font-weight: normal;
-  color: #243F5D;
-}
- 
-h6 {
-  font-size: 11pt;
-  font-weight: normal;
-  font-style: italic;
-  color: #243F5D;
-}
- 
-/* The following sections are mostly
-   unrelated to Word/Libre Office imports */
+
 tt, code, pre {
    font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
 }
- 
+
+h1 {
+   font-size:2.2em;
+}
+
+h2 {
+   font-size:1.8em;
+}
+
+h3 {
+   font-size:1.4em;
+}
+
+h4 {
+   font-size:1.0em;
+}
+
+h5 {
+   font-size:0.9em;
+}
+
+h6 {
+   font-size:0.8em;
+}
+
 a:visited {
    color: rgb(50%, 0%, 50%);
 }
- 
-pre {
-   margin-top: 0;
-   max-width: 95%;
-   border: 1px solid #ccc;
-   white-space: pre-wrap;
+
+pre, img {
+  max-width: 100%;
 }
- 
+
 pre code {
    display: block; padding: 0.5em;
 }
- 
-code.r, code.cpp {
-   background-color: #F8F8F8;
+
+code {
+  font-size: 92%;
+  border: 1px solid #ccc;
 }
- 
+
+code[class] {
+  background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
 blockquote {
    color:#666666;
    margin:0;
    padding-left: 1em;
    border-left: 0.5em #EEE solid;
 }
- 
+
 hr {
    height: 0px;
    border-bottom: none;
@@ -152,55 +90,56 @@ hr {
    border-top-style: dotted;
    border-top-color: #999999;
 }
- 
+
 @media print {
    * {
-    background: transparent !important;
-	  color: black !important;
-	  filter: none !important;
-	  -ms-filter: none !important;
+      background: transparent !important;
+      color: black !important;
+      filter:none !important;
+      -ms-filter: none !important;
    }
- 
+
    body {
-	  font-size:11pt;
-	  max-width:100%;
+      font-size:12pt;
+      max-width:100%;
    }
- 
+
    a, a:visited {
-	  text-decoration: underline;
+      text-decoration: underline;
    }
- 
+
    hr {
-	  visibility: hidden;
-	  page-break-before: always;
+      visibility: hidden;
+      page-break-before: always;
    }
- 
+
    pre, blockquote {
-	  padding-right: 1em;
-	  page-break-inside: avoid;
+      padding-right: 1em;
+      page-break-inside: avoid;
    }
- 
+
    tr, img {
-	  page-break-inside: avoid;
+      page-break-inside: avoid;
    }
- 
+
    img {
-	  max-width: 100% !important;
+      max-width: 100% !important;
    }
- 
-   @page {
-	  margin-top: 2cm;
-	  margin-bottom: 1.5cm;
-	  margin-left: 3cm;
-	  margin-right: 3cm;
+
+   @page :left {
+      margin: 15mm 20mm 15mm 10mm;
    }
- 
+
+   @page :right {
+      margin: 15mm 10mm 15mm 20mm;
+   }
+
    p, h2, h3 {
-	  orphans: 3; widows: 3;
+      orphans: 3; widows: 3;
    }
- 
+
    h2, h3 {
-	  page-break-after: avoid;
+      page-break-after: avoid;
    }
 }
 </style>
@@ -328,7 +267,7 @@ hr {
 
 <h3 style='margin: 10pt 0pt 0pt 0pt;'>Case notification</h3>
 
-<p>In 2012, countries and areas in the Region reported 1 410 835 people with TB disease (<a href="#t-notif">Table 1</a>) making up 23% of the global burden. Of these cases, 97.5% (1 375 713) were new episodes of TB disease (either new or relapse cases). Within the Region China accounts for 64% (900 678) of the caseload with the Philippines and Viet Nam following with 16% (230 162) and 7% (103 906), respectively. TB notification rates, expressed as cases per 100 000 population, vary substantially in the Region with the highest rates found in Kiribati, Papua New Guinea, the Marshall Islands, Cambodia and the Philippines (343, 287, 276, 270 and 224 per 100 000 population, respectively (<a href="#t-notif">Table 1</a>, <a href="#m-notif">Figure 1</a>). </p>
+<p>In 2012, countries and areas in the Region reported 1 410 835 people with TB disease (<a href="#%20t-notif"> Table 1 </a>) making up 23% of the global burden. Of these cases, 97.5% (1 375 713) were new episodes of TB disease (either new or relapse cases). Within the Region China accounts for 64% (900 678) of the caseload with the Philippines and Viet Nam following with 16% (230 162) and 7% (103 906), respectively. TB notification rates, expressed as cases per 100 000 population, vary substantially in the Region with the highest rates found in Kiribati, Papua New Guinea, the Marshall Islands, Cambodia and the Philippines (343, 287, 276, 270 and 224 per 100 000 population, respectively (<a href="#%20t-notif"> Table 1 </a>, <a href="#%20m-notif"> Figure 1 </a>). </p>
 
 <p><a id="t-notif"></a> </p>
 
@@ -336,7 +275,7 @@ hr {
 
 <!-- html table generated in R 3.1.0 by xtable 1.7-3 package -->
 
-<!-- Tue Jun 10 11:21:02 2014 -->
+<!-- Wed Jun 11 11:23:08 2014 -->
 
 <TABLE border=0 rules=rows width=900 cellpadding=5>
   <TR> <TD colspan=3></TD> 

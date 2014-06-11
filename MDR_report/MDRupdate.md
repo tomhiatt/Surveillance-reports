@@ -119,13 +119,13 @@ References
 
 
 
-In 2012, countries and areas in the Region reported 1 410 835 people with TB disease ([Table 1](#t-notif)) making up 23% of the global burden. Of these cases, 97.5% (1 375 713) were new episodes of TB disease (either new or relapse cases). Within the Region China accounts for 64% (900 678) of the caseload with the Philippines and Viet Nam following with 16% (230 162) and 7% (103 906), respectively. TB notification rates, expressed as cases per 100 000 population, vary substantially in the Region with the highest rates found in Kiribati, Papua New Guinea, the Marshall Islands, Cambodia and the Philippines (343, 287, 276, 270 and 224 per 100 000 population, respectively ([Table 1](#t-notif), [Figure 1](#m-notif)). 
+In 2012, countries and areas in the Region reported 1 410 835 people with TB disease ([ Table 1 ](# t-notif )) making up 23% of the global burden. Of these cases, 97.5% (1 375 713) were new episodes of TB disease (either new or relapse cases). Within the Region China accounts for 64% (900 678) of the caseload with the Philippines and Viet Nam following with 16% (230 162) and 7% (103 906), respectively. TB notification rates, expressed as cases per 100 000 population, vary substantially in the Region with the highest rates found in Kiribati, Papua New Guinea, the Marshall Islands, Cambodia and the Philippines (343, 287, 276, 270 and 224 per 100 000 population, respectively ([ Table 1 ](# t-notif ), [ Figure 1 ](# m-notif )). 
 
 
 <a id="t-notif"></a> 
 #### Table 1. Tuberculosis case notification from countries and areas of the Western Pacific Region, 2012
 <!-- html table generated in R 3.1.0 by xtable 1.7-3 package -->
-<!-- Mon Jun 09 16:28:07 2014 -->
+<!-- Wed Jun 11 11:23:08 2014 -->
 <TABLE border=0 rules=rows width=900 cellpadding=5>
   <TR> <TD colspan=3></TD> 
   <TH colspan=7>NEW CASES</TH> 
