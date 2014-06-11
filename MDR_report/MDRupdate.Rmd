@@ -223,6 +223,51 @@ Analysis was conducted by the statistical package R (R Core Team, 2013, Vienna, 
 Results
 --------------------------------------------------------
 
+```{r m-coverage-data, warning=FALSE}
+tableCount <- incCount(tableCount, "m-coverage")
+
+# Notification table
+
+tbb <- subset(tb, year==yr & g_whoregion=="WPR", select=c('country', 'g_whoregion', 'c_notified', "new_sp", "new_sn", "new_su", "new_ep", "new_oth", "ret_rel", 'c_newinc', "c_ret", "newret_oth", "new_labconf", 'c_new', "e_pop_num"))
+
+tbb$new.pulm <- .rowsums(tbb[c('new_sp', 'new_sn', 'new_su')])
+
+tbb <- tbb[order(tbb$country),]
+names(tbb)[names(tbb)=='country'] <- 'area'
+
+# make aggregate row
+tbbr <- aggregate(tbb[3:ncol(tbb)], by=list(area=tbb$g_whoregion), FUN=sum, na.rm=TRUE)
+
+
+# combine together
+tbc <- rbind(tbb[tbb$g_whoregion=='WPR', c(1, 3:ncol(tbb))], tbbr[tbbr$area=='WPR',]) # , tbbh, tbbga
+
+# Fill in data for countries not reporting lab confirmed (see below too)
+tbc$new_labconf2 <- ifelse(is.na(tbc$new_labconf), tbc$new_sp, tbc$new_labconf)
+
+# calculate and format vars
+tbc$ret_nrel <- tbc$c_ret - tbc$ret_rel
+tbc$newpulm_lab_pct <- tbc$new_labconf2 / tbc$new.pulm * 100
+tbc$tot_newrel_100k <- tbc$c_newinc / tbc$e_pop_num * 1e5
+
+for(var in 2:ncol(tbc)){
+  tbc[var] <- rounder(tbc[[var]])
+}
+tbc[is.na(tbc$newpulm_lab_pct), 'newpulm_lab_pct'] <-  "--"
+tbc[is.na(tbc$tot_newrel_100k), 'newpulm_lab_pct'] <-  "--"
+
+# Add footnote for countries not reporting Lab confirmed 
+footnote.b <- ifelse(any(is.na(tbc$new_labconf) & !is.na(tbc$new_sp)), paste('(b) LABORATORY CONFIRMED data for', paste(subset(tbc, is.na(new_labconf), 'area'), collapse=', '), 'refer to smear-positive cases only. Data on cases that were laboratory confirmed using other methods were not reported.'), "")
+tbc$new_labconf2 <- ifelse(is.na(tbc$new_labconf) & !is.na(tbc$new_sp), paste0(tbc$new_sp, "(b)"), tbc$new_labconf2)
+
+# Rename countries
+tbd <- .WPSARnames(tbc[c("area", "c_notified", "tot_newrel_100k", "new_sp", "new_sn", "new_su", "new_ep", "new_oth", "new_labconf2", "newpulm_lab_pct", "ret_rel", "ret_nrel", "c_newinc")], col="area")
+
+tbm <- xtable(tbd)
+digits(tbm) <- 0
+
+write.csv(tbm, file=paste0(pasteLabel("./figure_data/table", tableCount, "m-coverage", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
+```
 
 ### Surveillance
 #### coverage of drug resistance surveillance: 
@@ -262,9 +307,37 @@ Results
 <a id="t-notif"></a> 
 ##### `r I(pasteLabel("Table", tableCount, "t-notif", insLink=FALSE))`.			Graph showing notification and enrolment
 
-#### Treatment outcome
-<a id="t-notif"></a> 
-##### `r I(pasteLabel("Table", tableCount, "t-notif", insLink=FALSE))`.			Graph (bar country wise)
+#### Treatment outcomes
+
+```{r f-mtxout-bar-data}
+
+figCount <- incCount(figCount, "f-mtxout-bar")
+
+tra <- subset(tb, year %in% 2006:(yr-2) & g_whoregion=="WPR", select=c(year, mdr_coh, mdr_cur, mdr_cmplt, mdr_died, mdr_fail, mdr_def))
+
+trb <- aggregate(tra[2:ncol(tra)], by=list(year=tra$year), FUN=sum, na.rm=TRUE)
+
+trb$Success <- (trb$mdr_cur + trb$mdr_cmplt) / trb$mdr_coh * 100
+trb$Died <- trb$mdr_died / trb$mdr_coh * 100
+trb$Failed <- trb$mdr_fail / trb$mdr_coh * 100
+trb$Defaulted <- trb$mdr_def / trb$mdr_coh * 100
+trb$`Not evaluated` <- (trb$mdr_coh - (trb$mdr_cur + trb$mdr_cmplt + trb$mdr_died + trb$mdr_fail + trb$mdr_def)) / trb$mdr_coh * 100
+
+trc <- melt(trb[c("year", "Success", "Died", "Failed", "Defaulted", "Not evaluated")], id=1)
+
+write.csv(trc, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-mtxout-bar", insLink=FALSE), ".csv"), row.names=FALSE)
+```
+
+<a id="f-mtxout-bar"></a> 
+##### `r I(pasteLabel("Figure", figCount, "f-mtxout-bar", insLink=FALSE))`.	Trend of treatment outcome expressed as a proportion among MDR-TB cases in the Western Pacific Region, 2006--`r yr-2`
+``` {r f-txout-bar, fig.width=9}
+
+ggplot(trc, aes(year, value, fill=variable)) + geom_bar(stat="identity", position="stack") + theme_report() + scale_fill_brewer('Outcome', type="qual", palette=6) + scale_x_continuous("", breaks=min(trc$year):max(trc$year)) + scale_y_continuous("Percent of cohort") + coord_cartesian(ylim=c(0,100)) + guides(fill = guide_legend(reverse = TRUE))
+
+
+
+```
+
 
 
 Discussion
