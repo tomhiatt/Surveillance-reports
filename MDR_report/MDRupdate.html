@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Drug resistant tuberculosis in the WHO Western Pacific Region</title>
+
+
+
+
+
+<style type="text/css">
+/* From: http://gforge.se/2014/01/fast-track-publishing-using-knitr-part-ii/
+Set the main font to Calibri, same
+   as My Word 2010 uses. Also set the
+   default font size to 11pt.
+ 
+   The maximum width to 35em enhances
+   readability through optimal line
+   length. Note: this setting is ignored
+   by Word/Libre Office*/
+body  {
+   font-family: Calibri;
+   font-size: 11pt;
+   background-color: white;
+   padding-top: 1em;
+   margin: auto;
+   max-width: 35em;
+}
+ 
+/* Set the paragraph margin and
+   padding to 0 except for the bottom */
+p {
+  padding: 0;
+  margin: 0;
+  margin-bottom: 10pt;
+}
+ 
+/* Table style from here http://blogs.cetis.ac.uk/adam/2013/10/25/changing-style-knitr-and-markdown-in-rstudio/ */
+table {
+  max-width: 95%;
+  border: 1px solid #ccc;
+}
+th {
+  background-color: #dcdcdc;
+  color: #000000;
+}
+td {
+  background-color: #dcdcdc;
+}
+ 
+/* The tr padding/margin 0 is important for table
+   import, while the font needs to be specified as
+   font and not font-family/font-size due to limiations
+   in Libre Office */
+td, tr{
+  font: 10pt Arial;
+  padding: 0px;
+  margin: 0px;
+}
+ 
+/* The cell should have a little space to easy reading
+   although this section is mostly ignored by the
+   Libre Office import */
+td {
+  padding: 4px;
+  padding-bottom: 2px;
+}
+ 
+/* Set the headings to correspond to Word-style */
+h1, h2, h3, h4, h5, h6 {
+  margin: 10pt 0pt 0pt 0pt;
+  font-family: Cambria;
+  font-weight: bold;
+}
+ 
+/* h1 has a slightly larger top margins
+   so we re-set that from the other*/
+h1 {
+  margin: 24pt 0pt 0pt 0pt;
+  font-size: 14pt;
+  color: #365F91;
+}
+ 
+ 
+h2 {
+  font-size: 13pt;
+  color: #4F81BD;
+}
+ 
+h3 {
+  font-size: 11pt;
+  color: #4F81BD;
+}
+ 
+h4 {
+  font-size: 11pt;
+  font-weight: bold;
+  font-style: italic;
+  color: #4F81BD;
+}
+ 
+h5 {
+  font-size: 11pt;
+  font-weight: normal;
+  color: #243F5D;
+}
+ 
+h6 {
+  font-size: 11pt;
+  font-weight: normal;
+  font-style: italic;
+  color: #243F5D;
+}
+ 
+/* The following sections are mostly
+   unrelated to Word/Libre Office imports */
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+ 
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+ 
+pre {
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+ 
+pre code {
+   display: block; padding: 0.5em;
+}
+ 
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+ 
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+ 
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+ 
+@media print {
+   * {
+    background: transparent !important;
+	  color: black !important;
+	  filter: none !important;
+	  -ms-filter: none !important;
+   }
+ 
+   body {
+	  font-size:11pt;
+	  max-width:100%;
+   }
+ 
+   a, a:visited {
+	  text-decoration: underline;
+   }
+ 
+   hr {
+	  visibility: hidden;
+	  page-break-before: always;
+   }
+ 
+   pre, blockquote {
+	  padding-right: 1em;
+	  page-break-inside: avoid;
+   }
+ 
+   tr, img {
+	  page-break-inside: avoid;
+   }
+ 
+   img {
+	  max-width: 100% !important;
+   }
+ 
+   @page {
+	  margin-top: 2cm;
+	  margin-bottom: 1.5cm;
+	  margin-left: 3cm;
+	  margin-right: 3cm;
+   }
+ 
+   p, h2, h3 {
+	  orphans: 3; widows: 3;
+   }
+ 
+   h2, h3 {
+	  page-break-after: avoid;
+   }
+}
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style='margin: 24pt 0pt 0pt 0pt;'>Drug resistant tuberculosis in the WHO Western Pacific Region</h1>
+
+<h3 style='margin: 10pt 0pt 0pt 0pt;'>Tauhid Islam,<sup>a</sup> Tom Hiatt<sup>a</sup> and Nobuyuki Nishikiori<sup>a</sup></h3>
+
+<p><sup>a</sup> Stop TB and Leprosy Elimination, Division of Combating Communicable Diseases, World Health Organization Regional Office for the Western Pacific, Manila, the Philippines.</p>
+
+<p>Correspondence to Tauhid Islam (e-mail: <a href="mailto:islamt@wpro.who.int">islamt@wpro.who.int</a>).</p>
+
+<p>Running title: </p>
+
+<p>Key words: </p>
+
+<h2 style='margin: 10pt 0pt 0pt 0pt;'>Abstract </h2>
+
+<h2 style='margin: 10pt 0pt 0pt 0pt;'>Introduction</h2>
+
+<h2 style='margin: 10pt 0pt 0pt 0pt;'>Methods</h2>
+
+<p>[modify this text appropriately.]</p>
+
+<h3 style='margin: 10pt 0pt 0pt 0pt;'>Data</h3>
+
+<p>Every year, 36 countries and areas in the Region are requested to report TB surveillance data to WHO using a standardized data collection form. Since 2009, a web-based online system has been used for data submission and validation. Collected data covers the following areas: TB case notifications and treatment outcomes, diagnostic and treatment services, drug management, surveillance and surveys of drug-resistance, information on TB/HIV co-infection, infection control, engagement of all care providers and budgets and expenditures for TB control. The full description of methods is available in the Global Tuberculosis Report 2013 and the data sets are available from the WHO global TB database (<a href="http://www.who.int/tb/data">www.who.int/tb/data</a>). Case definitions for TB can be found in the 4th edition of the TB treatment guidelines.<sup>4</sup> In 2013, 30 countries and areas of the Western Pacific Region reported data representing more than 99.9% of the total population. This report described the epidemiological situation and progress in programmatic response with a focus on seven countries with a high burden of TB: Cambodia, China, the Lao People&#39;s Democratic Republic, Mongolia, Papua New Guinea, the Philippines and Viet Nam. (Globally, WHO designates 22 countries with a high burden of TB that include Cambodia, China, the Philippines and Viet Nam. The other three countries: the Lao People&#39;s Democratic Republic, Mongolia and Papua New Guinea are considered priority countries with a high burden of TB in the Western Pacific Region).</p>
+
+<h3 style='margin: 10pt 0pt 0pt 0pt;'>Analysis and reproducibility</h3>
+
+<p>Analysis was conducted by the statistical package R (R Core Team, 2013, Vienna, Austria, <a href="http://www.R-project.org">www.R-project.org</a>). Due to calls for transparent and reproducible research,<sup>5,6</sup> we have published programme code to generate the entire contents of this article including all figures and tables by using R with the knitr package (Yihui Xie, 2013). Readers can download the code (see supplement material) and reproduce all figures and tables under an appropriate personal computing environment. For non-commercial purposes, readers may modify the code to produce figures and tables that are not presented in this article. For instance, readers may wish to produce tables and figures for countries or regions other than the WHO Western Pacific Region.</p>
+
+<h2 style='margin: 10pt 0pt 0pt 0pt;'>Results</h2>
+
+<h3 style='margin: 10pt 0pt 0pt 0pt;'>Surveillance</h3>
+
+<h4 style='margin: 10pt 0pt 0pt 0pt;'>coverage of drug resistance surveillance:</h4>
+
+<p><a id="t-notif"></a> </p>
+
+<h5 style='margin: 10pt 0pt 0pt 0pt;'>Table NA.         Table or map (survey/ surveillance, single/several data point,              national/ sub national)</h5>
+
+<h4 style='margin: 10pt 0pt 0pt 0pt;'>MDR-TB rate:</h4>
+
+<p><a id="t-notif"></a> </p>
+
+<h5 style='margin: 10pt 0pt 0pt 0pt;'>Table NA.         Table: rate among new and reTx, CI, year, number of country year                data point</h5>
+
+<pre><code>        (R resistance data need to be included as separate column)
+</code></pre>
+
+<h4 style='margin: 10pt 0pt 0pt 0pt;'>XDR-TB:</h4>
+
+<p><a id="t-notif"></a> </p>
+
+<h5 style='margin: 10pt 0pt 0pt 0pt;'>Table NA.         Table, number and year of reporting</h5>
+
+<h4 style='margin: 10pt 0pt 0pt 0pt;'>Resistance to SLD:</h4>
+
+<p><a id="t-notif"></a> </p>
+
+<h5 style='margin: 10pt 0pt 0pt 0pt;'>Table NA.         Rate (FQ and injectable)</h5>
+
+<h4 style='margin: 10pt 0pt 0pt 0pt;'>Trends in drug resistance:</h4>
+
+<p><a id="t-notif"></a> </p>
+
+<h5 style='margin: 10pt 0pt 0pt 0pt;'>Table NA.         Possible?? Graph?</h5>
+
+<h3 style='margin: 10pt 0pt 0pt 0pt;'>Management of drug resistant TB</h3>
+
+<h4 style='margin: 10pt 0pt 0pt 0pt;'>DST coverage</h4>
+
+<p><a id="t-notif"></a> </p>
+
+<h5 style='margin: 10pt 0pt 0pt 0pt;'>Table NA.         Table : % of DST result among new and reTx</h5>
+
+<h4 style='margin: 10pt 0pt 0pt 0pt;'>Notification and enrolment</h4>
+
+<p><a id="t-notif"></a> </p>
+
+<h5 style='margin: 10pt 0pt 0pt 0pt;'>Table NA.         Year, number notified and enrolled, % of total burden</h5>
+
+<pre><code>        Age, sex? Child MDR-TB?
+</code></pre>
+
+<h4 style='margin: 10pt 0pt 0pt 0pt;'>Alignment</h4>
+
+<p><a id="t-notif"></a> </p>
+
+<h5 style='margin: 10pt 0pt 0pt 0pt;'>Table NA.         Graph showing notification and enrolment</h5>
+
+<h4 style='margin: 10pt 0pt 0pt 0pt;'>Treatment outcome</h4>
+
+<p><a id="t-notif"></a> </p>
+
+<h5 style='margin: 10pt 0pt 0pt 0pt;'>Table NA.         Graph (bar country wise)</h5>
+
+<h2 style='margin: 10pt 0pt 0pt 0pt;'>Discussion</h2>
+
+<h3 style='margin: 10pt 0pt 0pt 0pt;'>WPRO response</h3>
+
+<h4 style='margin: 10pt 0pt 0pt 0pt;'>rGLC and  activities</h4>
+
+<h3 style='margin: 10pt 0pt 0pt 0pt;'>Issues &amp; way forward</h3>
+
+<h2 style='margin: 10pt 0pt 0pt 0pt;'>Conflicts of interest</h2>
+
+<p>None declared.</p>
+
+<h2 style='margin: 10pt 0pt 0pt 0pt;'>Funding</h2>
+
+<p>None.</p>
+
+<h2 style='margin: 10pt 0pt 0pt 0pt;'>References</h2>
+
+<ol>
+<li>Global Tuberculosis Report 2013. Geneva, World Health Organization, 2013 (<a href="http://www.who.int/tb/publications/global_report/en/">http://www.who.int/tb/publications/global_report/en/</a>, accessed 15 March 2014). </li>
+</ol>
+
+<h3 style='margin: 10pt 0pt 0pt 0pt;'>Case notification</h3>
+
+<p>In 2012, countries and areas in the Region reported 1 410 835 people with TB disease (<a href="#t-notif">Table 1</a>) making up 23% of the global burden. Of these cases, 97.5% (1 375 713) were new episodes of TB disease (either new or relapse cases). Within the Region China accounts for 64% (900 678) of the caseload with the Philippines and Viet Nam following with 16% (230 162) and 7% (103 906), respectively. TB notification rates, expressed as cases per 100 000 population, vary substantially in the Region with the highest rates found in Kiribati, Papua New Guinea, the Marshall Islands, Cambodia and the Philippines (343, 287, 276, 270 and 224 per 100 000 population, respectively (<a href="#t-notif">Table 1</a>, <a href="#m-notif">Figure 1</a>). </p>
+
+<p><a id="t-notif"></a> </p>
+
+<h4 style='margin: 10pt 0pt 0pt 0pt;'>Table 1. Tuberculosis case notification from countries and areas of the Western Pacific Region, 2012</h4>
+
+<!-- html table generated in R 3.1.0 by xtable 1.7-3 package -->
+
+<!-- Tue Jun 10 11:21:02 2014 -->
+
+<TABLE border=0 rules=rows width=900 cellpadding=5>
+  <TR> <TD colspan=3></TD> 
+  <TH colspan=7>NEW CASES</TH> 
+  <TH colspan=2>RETREATMENT CASES</TH> 
+  <TD colspan=1></TD> </TR> 
+  <TR> <TD></TD> <TD>TOTAL NOTIFIED</TD>
+  <TD>TOTAL NOTIFIED PER 100 000</TD>
+  <TD>SMEAR-<br>POSITIVE</TD> 
+  <TD>SMEAR-<br>NEGATIVE</TD> 
+  <TD>SMEAR NOT DONE</TD>
+  <TD>EXTRA-<br>PULMONARY</TD> 
+  <TD>CASE TYPE<br> UNKNOWN</TD> 
+  <TD>PULMONARY CASES LABORATORY CONFIRMED</TD> 
+  <TD>PERCENTAGE OF PULMONARY CASES LABORATORY CONFIRMED</TD>   
+  <TD>RELAPSE</TD> 
+  <TD>RETREATMENT<br>EXCL. RELAPSE</TD> 
+  <TD>NEW AND<br>RELAPSE(a)</TD> 
+ </TR> <TR> <TD> American Samoa </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD> &ndash; </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> </TR>
+  <TR> <TD> Australia </TD> <TD> 1 325 </TD> <TD> 6 </TD> <TD> 290 </TD> <TD> 330 </TD> <TD> 78 </TD> <TD> 498 </TD> <TD> 63 </TD> <TD> 667 </TD> <TD> 96 </TD> <TD> 26 </TD> <TD> 20 </TD> <TD> 1 305 </TD> </TR>
+  <TR> <TD> Brunei Darussalam </TD> <TD> 243 </TD> <TD> 59 </TD> <TD> 119 </TD> <TD> 51 </TD> <TD> 28 </TD> <TD> 31 </TD> <TD> 0 </TD> <TD> 166 </TD> <TD> 84 </TD> <TD> 14 </TD> <TD> 0 </TD> <TD> 243 </TD> </TR>
+  <TR> <TD> Cambodia </TD> <TD> 40 258 </TD> <TD> 270 </TD> <TD> 14 838 </TD> <TD> 8 509 </TD> <TD> 0 </TD> <TD> 15 290 </TD> <TD> 0 </TD> <TD> 14 838 </TD> <TD> 64 </TD> <TD> 446 </TD> <TD> 73 </TD> <TD> 40 185 </TD> </TR>
+  <TR> <TD> China </TD> <TD> 900 678 </TD> <TD> 65 </TD> <TD> 316 332 </TD> <TD> 533 977 </TD> <TD> 2 073 </TD> <TD> 6 479 </TD> <TD> 0 </TD> <TD> 316 332 </TD> <TD> 37 </TD> <TD> 31 784 </TD> <TD> 10 033 </TD> <TD> 890 645 </TD> </TR>
+  <TR> <TD> Hong Kong Special Administrative Region (China) </TD> <TD> 4 969 </TD> <TD> 67 </TD> <TD> 1 463 </TD> <TD> 2 004 </TD> <TD> 202 </TD> <TD> 817 </TD> <TD> 0 </TD> <TD> 2 704 </TD> <TD> 74 </TD> <TD> 323 </TD> <TD> 160 </TD> <TD> 4 809 </TD> </TR>
+  <TR> <TD> Macao Special Administrative Region (China) </TD> <TD> 406 </TD> <TD> 73 </TD> <TD> 156 </TD> <TD> 137 </TD> <TD> 2 </TD> <TD> 31 </TD> <TD> 0 </TD> <TD> 241 </TD> <TD> 82 </TD> <TD> 26 </TD> <TD> 2 </TD> <TD> 404 </TD> </TR>
+  <TR> <TD> Cook Islands </TD> <TD> 1 </TD> <TD> 5 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> &ndash; </TD> <TD> 1 </TD> <TD> 0 </TD> <TD> 1 </TD> </TR>
+  <TR> <TD> Fiji </TD> <TD> 218 </TD> <TD> 24 </TD> <TD> 111 </TD> <TD> 54 </TD> <TD> 0 </TD> <TD> 40 </TD> <TD> 0 </TD> <TD> 165 </TD> <TD> 100 </TD> <TD> 5 </TD> <TD> 8 </TD> <TD> 210 </TD> </TR>
+  <TR> <TD> French Polynesia </TD> <TD> 50 </TD> <TD> 18 </TD> <TD> 26 </TD> <TD> 10 </TD> <TD> 0 </TD> <TD> 8 </TD> <TD> 0 </TD> <TD> 33 </TD> <TD> 92 </TD> <TD> 6 </TD> <TD> 0 </TD> <TD> 50 </TD> </TR>
+  <TR> <TD> Guam </TD> <TD> 68 </TD> <TD> 42 </TD> <TD> 23 </TD> <TD> 23 </TD> <TD> 14 </TD> <TD> 8 </TD> <TD> 0 </TD> <TD> 31 </TD> <TD> 52 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 68 </TD> </TR>
+  <TR> <TD> Japan </TD> <TD> 21 283 </TD> <TD> 16 </TD> <TD> 7 663 </TD> <TD> 7 454 </TD> <TD> 221 </TD> <TD> 4 609 </TD> <TD> 0 </TD> <TD> 13 013 </TD> <TD> 85 </TD> <TD> 910 </TD> <TD> 426 </TD> <TD> 20 857 </TD> </TR>
+  <TR> <TD> Kiribati </TD> <TD> 348 </TD> <TD> 343 </TD> <TD> 134 </TD> <TD> 122 </TD> <TD> 0 </TD> <TD> 73 </TD> <TD> 9 </TD> <TD> 134 </TD> <TD> 52 </TD> <TD> 8 </TD> <TD> 2 </TD> <TD> 346 </TD> </TR>
+  <TR> <TD> Lao People&rsquo;s Democratic Republic </TD> <TD> 4 156 </TD> <TD> 62 </TD> <TD> 3 062 </TD> <TD> 484 </TD> <TD>  </TD> <TD> 351 </TD> <TD>  </TD> <TD> 3 062 </TD> <TD> 86 </TD> <TD> 168 </TD> <TD> 38 </TD> <TD> 4 118 </TD> </TR>
+  <TR> <TD> Malaysia </TD> <TD> 22 710 </TD> <TD> 75 </TD> <TD> 13 311 </TD> <TD> 4 941 </TD> <TD> 52 </TD> <TD> 2 945 </TD> <TD> 0 </TD> <TD> 13 311 </TD> <TD> 73 </TD> <TD> 602 </TD> <TD> 859 </TD> <TD> 21 851 </TD> </TR>
+  <TR> <TD> Marshall Islands </TD> <TD> 147 </TD> <TD> 276 </TD> <TD> 54 </TD> <TD> 39 </TD> <TD> 14 </TD> <TD> 29 </TD> <TD> 0 </TD> <TD> 54 </TD> <TD> 50 </TD> <TD> 4 </TD> <TD> 2 </TD> <TD> 145 </TD> </TR>
+  <TR> <TD> Micronesia, Federated States of </TD> <TD> 146 </TD> <TD> 139 </TD> <TD> 43 </TD> <TD> 75 </TD> <TD> 2 </TD> <TD> 22 </TD> <TD> 0 </TD> <TD> 58 </TD> <TD> 48 </TD> <TD> 2 </TD> <TD> 2 </TD> <TD> 144 </TD> </TR>
+  <TR> <TD> Mongolia </TD> <TD> 4 453 </TD> <TD> 148 </TD> <TD> 1 716 </TD> <TD> 617 </TD> <TD> 0 </TD> <TD> 1 611 </TD> <TD> 0 </TD> <TD> 1 716 </TD> <TD> 74 </TD> <TD> 184 </TD> <TD> 325 </TD> <TD> 4 128 </TD> </TR>
+  <TR> <TD> Nauru </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD> &ndash; </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> </TR>
+  <TR> <TD> New Caledonia </TD> <TD> 38 </TD> <TD> 15 </TD> <TD> 13 </TD> <TD> 11 </TD> <TD> 0 </TD> <TD> 12 </TD> <TD> 1 </TD> <TD> 24 </TD> <TD> 100 </TD> <TD> 1 </TD> <TD> 0 </TD> <TD> 38 </TD> </TR>
+  <TR> <TD> New Zealand </TD> <TD> 297 </TD> <TD> 7 </TD> <TD> 68 </TD> <TD> 88 </TD> <TD> 11 </TD> <TD> 112 </TD> <TD> 3 </TD> <TD> 143 </TD> <TD> 86 </TD> <TD> 11 </TD> <TD> 4 </TD> <TD> 293 </TD> </TR>
+  <TR> <TD> Niue </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> &ndash; </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 0 </TD> </TR>
+  <TR> <TD> Northern Mariana Islands </TD> <TD> 34 </TD> <TD> 60 </TD> <TD> 10 </TD> <TD> 17 </TD> <TD> 0 </TD> <TD> 4 </TD> <TD> 1 </TD> <TD> 15 </TD> <TD> 56 </TD> <TD> 0 </TD> <TD> 2 </TD> <TD> 32 </TD> </TR>
+  <TR> <TD> Palau </TD> <TD> 4 </TD> <TD> 19 </TD> <TD> 3 </TD> <TD> 1 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 3 </TD> <TD> 75 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 4 </TD> </TR>
+  <TR> <TD> Papua New Guinea </TD> <TD> 22 488 </TD> <TD> 287 </TD> <TD> 2 862 </TD> <TD> 2 046 </TD> <TD> 7 149 </TD> <TD> 8 277 </TD> <TD> 0 </TD> <TD> 2 862 </TD> <TD> 24 </TD> <TD> 223 </TD> <TD> 1 931 </TD> <TD> 20 557 </TD> </TR>
+  <TR> <TD> Philippines </TD> <TD> 230 162 </TD> <TD> 224 </TD> <TD> 94 006 </TD> <TD> 115 263 </TD> <TD> 0 </TD> <TD> 3 274 </TD> <TD> 0 </TD> <TD> 94 006 </TD> <TD> 45 </TD> <TD> 4 084 </TD> <TD> 13 535 </TD> <TD> 216 627 </TD> </TR>
+  <TR> <TD> Republic of Korea </TD> <TD> 49 532 </TD> <TD> 89 </TD> <TD> 12 137 </TD> <TD> 15 622 </TD> <TD> 3 316 </TD> <TD> 8 470 </TD> <TD> 0 </TD> <TD> 28 397 </TD> <TD> 91 </TD> <TD> 4 157 </TD> <TD> 5 830 </TD> <TD> 43 702 </TD> </TR>
+  <TR> <TD> Samoa </TD> <TD> 22 </TD> <TD> 12 </TD> <TD> 15 </TD> <TD> 4 </TD> <TD> 0 </TD> <TD> 3 </TD> <TD> 0 </TD> <TD> 19 </TD> <TD> 100 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 22 </TD> </TR>
+  <TR> <TD> Singapore </TD> <TD> 2 364 </TD> <TD> 43 </TD> <TD> 678 </TD> <TD> 1 093 </TD> <TD> 126 </TD> <TD> 306 </TD> <TD> 0 </TD> <TD> 1 206 </TD> <TD> 64 </TD> <TD> 98 </TD> <TD> 63 </TD> <TD> 2 301 </TD> </TR>
+  <TR> <TD> Solomon Islands </TD> <TD> 372 </TD> <TD> 66 </TD> <TD> 157 </TD> <TD> 87 </TD> <TD> 0 </TD> <TD> 112 </TD> <TD> 0 </TD> <TD> 157 </TD> <TD> 64 </TD> <TD> 5 </TD> <TD> 11 </TD> <TD> 361 </TD> </TR>
+  <TR> <TD> Tokelau </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD> &ndash; </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> </TR>
+  <TR> <TD> Tonga </TD> <TD> 11 </TD> <TD> 10 </TD> <TD> 9 </TD> <TD> 1 </TD> <TD> 0 </TD> <TD> 1 </TD> <TD> 0 </TD> <TD> 10 </TD> <TD> 100 </TD> <TD> 0 </TD> <TD> 0 </TD> <TD> 11 </TD> </TR>
+  <TR> <TD> Tuvalu </TD> <TD> 20 </TD> <TD> 193 </TD> <TD> 8 </TD> <TD> 2 </TD> <TD> 0 </TD> <TD> 9 </TD> <TD> 0 </TD> <TD> 9 </TD> <TD> 90 </TD> <TD> 0 </TD> <TD> 1 </TD> <TD> 19 </TD> </TR>
+  <TR> <TD> Vanuatu </TD> <TD> 126 </TD> <TD> 51 </TD> <TD> 51 </TD> <TD> 22 </TD> <TD> 0 </TD> <TD> 51 </TD> <TD> 0 </TD> <TD> 73 </TD> <TD> 100 </TD> <TD> 1 </TD> <TD> 1 </TD> <TD> 125 </TD> </TR>
+  <TR> <TD> Viet Nam </TD> <TD> 103 906 </TD> <TD> 112 </TD> <TD> 51 033 </TD> <TD> 21 706 </TD> <TD>  </TD> <TD> 18 904 </TD> <TD> 3 210 </TD> <TD> 51 033 </TD> <TD> 70 </TD> <TD> 7 259 </TD> <TD> 1 794 </TD> <TD> 102 112 </TD> </TR>
+  <TR> <TD> Wallis and Futuna Islands </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD> &ndash; </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> </TR>
+  <TR> <TD> Western Pacific Region
+ </TD> <TD> 1 410 835 </TD> <TD> 75 </TD> <TD> 520 391 </TD> <TD> 714 790 </TD> <TD> 13 288 </TD> <TD> 72 377 </TD> <TD> 3 287 </TD> <TD> 544 482 </TD> <TD> 44 </TD> <TD> 50 348 </TD> <TD> 35 122 </TD> <TD> 1 375 713 </TD> </TR>
+   <TR> <TD colspan=13>Blank cells indicate data not reported. &ndash; indicates values that cannot be calculated.<br>
+(a) NEW AND RELAPSE includes cases for which the treatment history is unknown.<br>Data reported as of 1 October 2013. See ANNEX 4 of Global Tuberculosis Report, 2013.<br></TD></TR> </TABLE>
+
+<p><a id="m-notif"></a> </p>
+
+<h4 style='margin: 10pt 0pt 0pt 0pt;'>Figure 1 Tuberculosis case notification rate (new and relapse) per 100 000 population in countries and areas of the Western Pacific Region, 2012</h4>
+
+<p><img src="figure/m-notif.png" alt="plot of chunk m-notif"/> </p>
+
+<blockquote>
+<p>The boundaries shown and the designations used on this map do not imply the expression of any opinion whatsoever on the part of the World Health Organization concerning the legal status of any country, territory, city or area or of its authorities, or concerning the delimitation of its frontiers or boundaries. White lines on maps represent approximate border lines for which there may not yet be full agreement.</p>
+</blockquote>
+
+</body>
+
+</html>

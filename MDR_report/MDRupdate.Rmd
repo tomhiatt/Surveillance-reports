@@ -70,7 +70,7 @@ whbc <- c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM")
 # Create regional report folder if needed.
 # dir.create("./Regional_report") # run this if error below
 # dir.create("./figure data") # run this if error below
-if(!any(grep("Regional_report", getwd()))) setwd("./Regional_report")
+if(!any(grep("MDR_report", getwd()))) setwd("./MDR_report")
 
 
 # Theme for plots
@@ -135,8 +135,8 @@ if(ord=='wpr')  d <- d[match(c("Afghanistan", "Bangladesh", "Brazil", "Cambodia"
 # Functions for maps
 ########################################################
 
-source("./MapFunctions.r")
-load("gparts.Rdata")
+# source("./MapFunctions.r")
+# load("gparts.Rdata")
 
 ########################################################
 # Functions to assist with tables and figure in markdown document (from here: http://rmflight.github.io/posts/2012/10/papersinRmd.html)
