@@ -39,7 +39,6 @@ opts_chunk$set(
   echo=FALSE
   )
 
-whbc <- c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM")
 
 # Create regional report folder if needed.
 # dir.create("./Regional_report") # run this if error below
@@ -164,7 +163,10 @@ for(i in data1){
 # Note: to use your own data, make a flat data file with each row corresponding to the lower reporting unit and a aggregating variable. EG by country with aggregating variable of region.
 
 # Add needed variables
-tb$g_hbc22 <- ifelse(tb$iso3 %in% c("AFG", "BGD", "BRA", "CHN", "COD", "ETH", "IDN", "IND", "KEN", "KHM", "MMR", "MOZ", "NGA", "PAK", "PHL", "RUS", "THA", "TZA", "UGA", "VNM", "ZAF", "ZWE"), "high", "low")
+# tb$g_hbc22 <- ifelse(tb$iso3 %in% c("AFG", "BGD", "BRA", "CHN", "COD", "ETH", "IDN", "IND", "KEN", "KHM", "MMR", "MOZ", "NGA", "PAK", "PHL", "RUS", "THA", "TZA", "UGA", "VNM", "ZAF", "ZWE"), "high", "low")
+
+
+whbc <- c("KHM", "CHN", "JPN", "MYS", "MNG", "PNG", "PHL", "KOR", "VNM")
 
 tb$c_new <- .rowsums(tb[c("new_sp", "new_sn", "new_su", "new_ep", "new_oth")])
 tb$c_newinc <- .rowsums(tb[c("c_new", "ret_rel", "newret_oth")])
@@ -172,6 +174,9 @@ tb$c_ret <- .rowsums(tb[c("ret_rel", "ret_taf", "ret_tad", "ret_oth")])
 tb$c_notified <- .rowsums(tb[c("c_new", "c_ret", "newret_oth")])
 
 tb$c_tot_newrel_100k <- tb$tot_newrel / tb$e_pop_num * 1e5
+
+tb$country2 <- ifelse(tb$iso3 %in% whbc, as.character(tb$iso3), "Other") 
+tb$country2 <- factor(tb$country2, c("KHM", "CHN", "JPN", "MYS", "MNG", "PNG", "PHL", "KOR", "VNM", "Other"), c("Cambodia", "China", "Japan", "Malaysia", "Mongolia", "Papua New Guinea", "Philippines", "Republic of Korea", "Viet Nam", "Other countries"))
 
 # Get population data (available from UN population division. http://esa.un.org/unpd/wpp/unpp/panel_population.htm) and formatted TB/HIV data and estimates for the WHO Western Pacific Region.
 
@@ -304,8 +309,40 @@ write.csv(tbm, file=paste0(pasteLabel("./figure_data/table", tableCount, "m-cove
 			Age, sex? Child MDR-TB?
 
 #### Alignment
-<a id="t-notif"></a> 
-##### `r I(pasteLabel("Table", tableCount, "t-notif", insLink=FALSE))`.			Graph showing notification and enrolment
+
+
+```{r f-align-bar-data}
+
+figCount <- incCount(figCount, "f-align-bar")
+
+tea <- subset(tb, year %in% 2006:yr & g_whoregion=="WPR", select=c(country2, year, e_mdr_num, e_mdr_num_lo, e_mdr_num_hi, mdr, conf_mdr_tx, unconf_mdr_tx))
+
+teb1 <- aggregate(tea[3:ncol(tea)], by=list(year=tea$year), FUN=sum, na.rm=TRUE)
+teb1$area <- "WPR"
+
+# Separate hbcs
+teb2 <- aggregate(tea[3:ncol(tea)], by=list(year=tea$year, area=tea$country2), FUN=sum, na.rm=TRUE)
+
+#combine
+teb <- rbind(teb1, teb2)
+
+tec <- melt(teb[c("area", "year", "e_mdr_num", "e_mdr_num_lo", "e_mdr_num_hi", "mdr", "conf_mdr_tx", "unconf_mdr_tx")], id=1:2)
+
+write.csv(tec, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-align-bar", insLink=FALSE), ".csv"), row.names=FALSE)
+```
+
+
+a id="f-align"></a> 
+##### `r I(pasteLabel("Figure", figCount, "f-alignment", insLink=FALSE))`. Trend of notification and enrolment of MDR-TB cases in the Western Pacific Region, 2006--`r yr-2`
+Graph showing notification and enrolment
+``` {r f-align-bar, fig.width=9}
+
+ggplot(subset(tec, !variable %in% c("e_mdr_num", "e_mdr_num_lo", "e_mdr_num_hi")), aes(year, value, color=variable)) + geom_line() + facet_wrap(~area, scales="free_y") + theme_report() + scale_fill_brewer('Outcome', type="qual", palette=6) + scale_x_continuous("", breaks=min(tec$year):max(tec$year)) + scale_y_continuous("MDR-TB cases")  + guides(fill = guide_legend(reverse = TRUE))
+
+ggplot(tec, aes(year, value, color=variable)) + geom_line() + facet_wrap(~area, scales="free_y") + theme_report() + scale_fill_brewer('Outcome', type="qual", palette=6) + scale_x_continuous("", breaks=min(tec$year):max(tec$year)) + scale_y_continuous("MDR-TB cases")  + guides(fill = guide_legend(reverse = TRUE))
+```
+
+<
 
 #### Treatment outcomes
 
@@ -313,9 +350,16 @@ write.csv(tbm, file=paste0(pasteLabel("./figure_data/table", tableCount, "m-cove
 
 figCount <- incCount(figCount, "f-mtxout-bar")
 
-tra <- subset(tb, year %in% 2006:(yr-2) & g_whoregion=="WPR", select=c(year, mdr_coh, mdr_cur, mdr_cmplt, mdr_died, mdr_fail, mdr_def))
+tra <- subset(tb, year %in% 2006:(yr-2) & g_whoregion=="WPR", select=c(country2, year, mdr_coh, mdr_cur, mdr_cmplt, mdr_died, mdr_fail, mdr_def))
 
-trb <- aggregate(tra[2:ncol(tra)], by=list(year=tra$year), FUN=sum, na.rm=TRUE)
+trb1 <- aggregate(tra[3:ncol(tra)], by=list(year=tra$year), FUN=sum, na.rm=TRUE)
+trb1$area <- "WPR"
+
+# Separate hbcs
+trb2 <- aggregate(tra[3:ncol(tra)], by=list(year=tra$year, area=tra$country2), FUN=sum, na.rm=TRUE)
+
+#combine
+trb <- rbind(trb1, trb2)
 
 trb$Success <- (trb$mdr_cur + trb$mdr_cmplt) / trb$mdr_coh * 100
 trb$Died <- trb$mdr_died / trb$mdr_coh * 100
@@ -323,17 +367,18 @@ trb$Failed <- trb$mdr_fail / trb$mdr_coh * 100
 trb$Defaulted <- trb$mdr_def / trb$mdr_coh * 100
 trb$`Not evaluated` <- (trb$mdr_coh - (trb$mdr_cur + trb$mdr_cmplt + trb$mdr_died + trb$mdr_fail + trb$mdr_def)) / trb$mdr_coh * 100
 
-trc <- melt(trb[c("year", "Success", "Died", "Failed", "Defaulted", "Not evaluated")], id=1)
+trc <- melt(trb[c("area", "year", "Success", "Died", "Failed", "Defaulted", "Not evaluated")], id=1:2)
 
 write.csv(trc, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-mtxout-bar", insLink=FALSE), ".csv"), row.names=FALSE)
 ```
 
 <a id="f-mtxout-bar"></a> 
 ##### `r I(pasteLabel("Figure", figCount, "f-mtxout-bar", insLink=FALSE))`.	Trend of treatment outcome expressed as a proportion among MDR-TB cases in the Western Pacific Region, 2006--`r yr-2`
-``` {r f-txout-bar, fig.width=9}
+``` {r f-mtxout-bar, fig.width=9}
 
-ggplot(trc, aes(year, value, fill=variable)) + geom_bar(stat="identity", position="stack") + theme_report() + scale_fill_brewer('Outcome', type="qual", palette=6) + scale_x_continuous("", breaks=min(trc$year):max(trc$year)) + scale_y_continuous("Percent of cohort") + coord_cartesian(ylim=c(0,100)) + guides(fill = guide_legend(reverse = TRUE))
+ggplot(trc[trc$area=="WPR",], aes(year, value, fill=variable)) + geom_bar(stat="identity", position="stack") + theme_report() + scale_fill_brewer('Outcome', type="qual", palette=6) + scale_x_continuous("", breaks=min(trc$year):max(trc$year)) + scale_y_continuous("Percent of cohort") + coord_cartesian(ylim=c(0,100)) + guides(fill = guide_legend(reverse = TRUE))
 
+ggplot(trc, aes(year, value, fill=variable)) + geom_bar(stat="identity", position="stack") + facet_wrap(~area) + theme_report() + scale_fill_brewer('Outcome', type="qual", palette=6) + scale_x_continuous("", breaks=min(trc$year):max(trc$year)) + scale_y_continuous("Percent of cohort") + coord_cartesian(ylim=c(0,100)) + guides(fill = guide_legend(reverse = TRUE))
 
 
 ```
