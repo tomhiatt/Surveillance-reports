@@ -6,13 +6,17 @@
 
 # A few details on my way of working. For the tables, figures, maps repeated from year to year, all the code is here and the data source is nearly 100% from the global database. Some people have to send me excel files which I save in the 'External data' folder. For other one-off tables I just save the final files in my folders and iterate with the creator to get them in a ready format.
 
-
+# -------------------------------------------------
+# bits to change if another dude is running this.
 start <- Sys.time()
 source("d:/users/hiattt/Dropbox/Code/R/.Rprofile")
+runprofile()
+
+basefolder <- "d:/users/hiattt/Google Drive/Work files/Global TB report/Tables and Figures"
+# -------------------------------------------------
 
 # SETTINGS. Change these three things as appropriate
 thisyear <- as.numeric(format(Sys.time(),"%Y")) - ifelse(as.numeric(format(Sys.time(),"%m")) < 6, 1, 0) # This refers to the report year
-basefolder <- "d:/users/hiattt/Google Drive/Work files/Global TB report/Tables and Figures"
 
 # Set-up
 
@@ -49,6 +53,30 @@ dir.create(file.path(basefolder, "Tables"))
 # outfolder <- file.path(versionfolders, todate)
 outfolder <- basefolder
 setwd(basefolder)
+
+# Graph theme components
+# ---------------------------
+theme_glb.rpt <- function(base_size=12, base_family="") {
+  colors <- ggthemes_data$few
+  gray <- colors$medium['gray']
+  black <- colors$dark['black'] # I don't know why these last 3 parts are needed, but they are. List is here: http://docs.ggplot2.org/0.9.2.1/theme.html
+  theme_bw(base_size=base_size, base_family=base_family) +
+    theme(
+      line = element_line(colour = gray),
+      rect = element_rect(fill = "white", colour = NA),
+      text = element_text(colour = black),
+      axis.ticks.x = element_line(colour = gray),
+      axis.ticks.y = element_blank(),
+      legend.key = element_rect(colour = NA),
+      ## Examples do not use grid lines
+      panel.border = element_rect(colour = gray),
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor = element_blank(),
+      strip.background = element_rect(fill="white", colour=NA),
+      strip.text = element_text(hjust=0),
+      plot.title = element_text(hjust=0)
+    )
+}
 
 # Create dummy data for latest year until data are available
 for(df in c('e', 'eraw', 'a', 'araw', 'n', 'd')){

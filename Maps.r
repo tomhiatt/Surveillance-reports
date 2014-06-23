@@ -1,7 +1,7 @@
 # -------------------------------------------------
 # Maps in the global report
 # Tom Hiatt
-# 6 July 2012
+# 6 July 2012, updated 23 June 2014
 # -------------------------------------------------
 
 source('d:/users/hiattt/Dropbox/Code/Global TB control Reports/Tables and Figures/2013/Setup.r')
@@ -11,17 +11,15 @@ source('d:/users/hiattt/Dropbox/Code/Global TB control Reports/Tables and Figure
 
 setwd(outfolder)
 
-# -------------------------------------------------
-# HIVtest_map
-# -------------------------------------------------
+# HIVtest_map -------------------------------------------------
 
 mc <- subset(tbhiv, year==thisyear-1, select=c(country, iso2, iso3, g_whoregion, hivtest_pct_numerator, hivtest_pct_denominator))
 mc$hivtest_prct <- round(mc$hivtest_pct_numerator/mc$hivtest_pct_denominator * 100)
 
 # Fix and footnote for Russian Federation
-mc[mc$country=='Russian Federation', 'hivtest_prct'] <- round(subset(n, iso2=='RU' & year==thisyear-1, hivtest_p) / subset(n, iso2=='RU' & year==thisyear-1, c_new) * 100)
+# mc[mc$country=='Russian Federation', 'hivtest_prct'] <- round(subset(n, iso2=='RU' & year==thisyear-1, hivtest_p) / subset(n, iso2=='RU' & year==thisyear-1, c_new) * 100)
 
-warning("Russian Federation modification for the HIV test map is still in place. Delete this message when no longer applicable.")
+# warning("Russian Federation modification for the HIV test map is still in place. Delete this message when no longer applicable.")
 
 
 mc$cat <- NA  
@@ -40,9 +38,7 @@ mc1 <- WHOmap.print(mc, paste("Percentage of patients with known HIV status by c
 figsave(mc1, mc, "HIVtest_map")
 
 
-# -------------------------------------------------
-# HIVart_map
-# -------------------------------------------------
+# HIVart_map -------------------------------------------------
 
 mca <- subset(tbhiv, year==thisyear-1, select=c(country, iso2, iso3, g_whoregion, hiv_art_pct_numerator, hiv_art_pct_denominator))
 mca$hivart_prct <- round(mca$hiv_art_pct_numerator/mca$hiv_art_pct_denominator * 100)
@@ -56,9 +52,7 @@ mca1 <- WHOmap.print(mca, paste("Percentage of HIV-positive TB patients enrolled
 figsave(mca1, mca, "HIVart_map")
 
 
-# -------------------------------------------------
-# HIVipt_map
-# -------------------------------------------------
+# HIVipt_map -------------------------------------------------
 
 mca <- subset(n, year==thisyear-1 & hiv_reg_new < hiv_reg, select=c(country, iso2, iso3, g_whoregion, hiv_ipt, hiv_reg_new, hiv_reg))
 
@@ -81,7 +75,7 @@ mca$cat <- cut(mca$hivipt_prct, c(0, 25, 50, 75, Inf), c('0–24', '25–49', '5
 
 # map
 
-mca2 <- WHOmap.print(mca, paste("Percentage of elligible people newly enrolled on HIV care \nand provied isoniazid preventive therapy (IPT),", thisyear-1), "Percentage of \npeople living  \nwith HIV on IPT", copyright=FALSE)
+mca2 <- WHOmap.print(mca, paste("Percentage of eligible people newly enrolled on HIV care \nand provied isoniazid preventive therapy (IPT),", thisyear-1), "Percentage of \npeople living  \nwith HIV on IPT", copyright=FALSE)
 #, show=FALSE)
 
 figsave(mca2, mca, "HIVipt_map2")
@@ -170,9 +164,8 @@ dev.off()
 figsave(mgc, mga, "hivprev_map")
 
 
-# -------------------------------------------------
+# err_map -------------------------------------------------
 # Electronic recording and reporting
-# -------------------------------------------------
 
 mha <- subset(s, year %in% (thisyear-1):(thisyear-2), select=c('country', 'year', 'iso3', 'caseb_err_nat'))
 

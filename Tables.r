@@ -1,14 +1,12 @@
 # -------------------------------------------------
 # Tables in the global report
 # Tom Hiatt
-# 6 July 2012, updated 28 June 2013
+# 6 July 2012, updated 23 June 2014
 # -------------------------------------------------
 
-source('d:/users/hiattt/Dropbox/Code/Global TB control Reports/Tables and Figures/2013/Setup.r')
+source('d:/users/hiattt/Dropbox/Code/Surveillance reports/Setup.r')
 
-#-------------------------------------------------------------------
-# tb_burden
-#-------------------------------------------------------------------
+# tb_burden -------------------------------------------------------------------
 
 # Numbers
 
@@ -151,9 +149,7 @@ for(var in rates){
 
 write.csv(tada, file=glue("Tables/burden_cp", Sys.Date(), ".csv"), row.names=FALSE)
 
-#-------------------------------------------------------------------
-# notif
-#-------------------------------------------------------------------
+# notif -------------------------------------------------------------------
 
 tbb <- subset(n, year==thisyear-1, select=c('country', 'g_whoregion', 'g_hbc22', 'c_notified', "new_sp", "new_sn", "new_su", "new_ep", "new_oth", "ret_rel", 'c_newinc', "c_ret", "newret_oth", "new_labconf", 'c_new'))
 
@@ -225,11 +221,9 @@ print(tbm, type="html", file=glue("Tables/notif", Sys.Date(), ".htm"),include.ro
 
 tablecopy("notif")
 
-#-------------------------------------------------------------------
 # tsr new_sp and all
-#-------------------------------------------------------------------
 
-# new_sp
+# tsr_sp -------------------------------------------------------------------
 
 # Get country tsr and cohort size
 tcb <- subset(o, g_hbc22=='high' & year >= 1995 & year<thisyear-1, select=c('country', 'year', 'c_new_sp_tsr', 'new_sp_coh'))
@@ -310,8 +304,8 @@ print(tc_coha, type="html", file=glue("Tables/sp_tsr", Sys.Date(), ".htm"),inclu
 tablecopy("sp_tsr")
 
 
-# ---------------------------------------
 # All (smear pos, extrapulm, ret)
+# allnew_tsr -------------------------------------------------------------------
 
 tcbb <- subset(o, year>=1995 & year<thisyear-1, select=c('country', 'year', 'g_hbc22', 'g_whoregion', 'new_sp_coh', 'new_sp_cur', 'new_sp_cmplt', 'new_snep_coh', 'new_snep_cmplt'))
 
@@ -446,9 +440,7 @@ print(tdf, type="html", file=glue("Tables/cdr", Sys.Date(), ".htm"),include.rown
 
 tablecopy('cdr')
 
-#-------------------------------------------------------------------
-# tbhiv
-#-------------------------------------------------------------------
+# tbhiv -------------------------------------------------------------------
 
 tea <- merge(n[c('country', 'year', "g_whoregion", 'g_hbhiv41', "hiv_tbscr", "hiv_ipt")], tbhiv[c('country', 'year', "hivtest", "hivtest_pct_denominator", "hivtest_pos_pct_denominator", "hivtest_pos_pct_numerator", "hiv_cpt_pct_numerator", "hiv_cpt_pct_denominator", "hiv_art_pct_numerator", "hiv_art_pct_denominator", 'hivtest_pct_numerator', 'hivtest_pos', 'hiv_cpt', 'hiv_art')])
 
@@ -546,9 +538,7 @@ print(tee, type="html", file=glue("Tables/tbhiv", Sys.Date(), ".htm"),include.ro
 tablecopy("tbhiv")
 
 
-#-------------------------------------------------------------------
-# lab_capac & lab_policy
-#-------------------------------------------------------------------
+# lab_capac & lab_policy --------------------------------------------------------
 
 # 2013 fix
 # if(thisyear==2013) load('d:/users/hiattt/Dropbox/Tom_global_report/view_TME_master_strategy_2013-07-22.Rdata')
@@ -619,7 +609,7 @@ tfd <- within(tfd, {
 # Remove aggregates for sums 
 tfd[37:45, c("lab_sm_f", "lab_sm_led", "lab_cul_f", "lab_dst_f", "lab_lpa_f", "lab_xpert")] <- '–'
 
-# lab_capac
+# lab_capac ####
 
 tfe <- xtable(tfd[c("country", "g_hbc22", "g_hbmdr27", "lab_sm_f", "c_sm_100k", "lab_sm_led_pct", "lab_cul_f", "c_cul_5m", "lab_dst_f", "c_dst_5m", "lab_lpa_f", "c_lpa_5m", "lab_xpert")], align=c('l', 'l', rep('c',12)))
 
@@ -650,7 +640,7 @@ print(tfe, type="html", file=glue("Tables/lab_capac", Sys.Date(), ".htm"),includ
 
 tablecopy("lab_capac")
 
-# lab_policy
+# lab_policy ####
 
 tff <- xtable(tfd[c("country", "g_hbc22", "g_hbmdr27", "dst_in_guide", "lc_rst_in_guide", "lpa_in_guide", "dx_alg_tbhiv_in_guide", "xpert_in_guide_TBHIV", "xpert_in_guide_MDR")], align=c('l', 'l', rep('c',8)))
 
@@ -669,9 +659,7 @@ print(tff, type="html", file=glue("Tables/lab_policy", Sys.Date(), ".htm"),inclu
 
 tablecopy("lab_policy")
 
-#-------------------------------------------------------------------
-# age and sex
-#-------------------------------------------------------------------
+# agesex -------------------------------------------------------------------
 
 # Get country data
 
