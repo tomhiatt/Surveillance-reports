@@ -4,15 +4,28 @@
 # 6 July 2012, revised 28 June 2013
 # -------------------------------------------------
 
+whoami <- "Tom"   # I hope you know the answer to this.
+
+if(whoami=="Tom"){
+  Rprofile <- "d:/users/hiattt/Dropbox/Code/R/.Rprofile"
+  basefolder <- "d:/users/hiattt/Google Drive/Work files/Global TB report/Tables and Figures"
+}
+
+if(whoami=="Hazim"){
+  Rprofile <- "d:/users/hiattt/Dropbox/Code/R/.Rprofile"
+  basefolder <- "d:/users/hiattt/Google Drive/Work files/Global TB report/Tables and Figures"
+}
+
+
 # A few details on my way of working. For the tables, figures, maps repeated from year to year, all the code is here and the data source is nearly 100% from the global database. Some people have to send me excel files which I save in the 'External data' folder. For other one-off tables I just save the final files in my folders and iterate with the creator to get them in a ready format.
 
 # -------------------------------------------------
 # bits to change if another dude is running this.
 start <- Sys.time()
-source("d:/users/hiattt/Dropbox/Code/R/.Rprofile")
+source(Rprofile)
 runprofile()
 
-basefolder <- "d:/users/hiattt/Google Drive/Work files/Global TB report/Tables and Figures"
+
 # -------------------------------------------------
 
 # SETTINGS. Change these three things as appropriate
@@ -75,6 +88,7 @@ theme_glb.rpt <- function(base_size=12, base_family="") {
       strip.background = element_rect(fill="white", colour=NA),
       strip.text = element_text(hjust=0),
       plot.title = element_text(hjust=0)
+#       plot.margin = unit(c(0,0))
     )
 }
 
@@ -247,6 +261,29 @@ figsave <- function(obj, data, name, width=11, height=7){
 
 tablecopy <- function(table){
   file.copy(glue("Tables/", table, Sys.Date(), ".htm"), glue("Review/", table, ".htm"), overwrite=TRUE)
+}
+
+# To make typical report table
+glb.rpt.table <- function(df, column.nums, country.col = 1){
+  hbcs <- df[df$g_hbc22=='high', c(country.col, column.nums)]
+  names(hbcs)[1] <- "area"
+  
+  
+  # make aggregate rows
+  agg1 <- aggregate(df[column.nums], by=list(area=df$g_hbc22), FUN=sum, na.rm=TRUE)
+  agg1 <- agg1[agg1$area=='high',]
+  agg1$area <- 'High-burden countries'
+  
+  agg2 <- aggregate(df[column.nums], by=list(area=df$g_whoregion), FUN=sum, na.rm=TRUE)
+  
+  agg3 <- df; agg3[country.col] <- 'Global'
+  agg3b <- aggregate(agg3[column.nums], by=list(area=agg3[[country.col]]), FUN=sum, na.rm=TRUE)
+  
+  # combine together
+  com1 <- rbind(hbcs, agg1, agg2, agg3b)
+  com2 <- .shortnames(com1, col = "area", ord = "hbc")
+  
+  return(com2)
 }
 
 ########################################################

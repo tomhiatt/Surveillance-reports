@@ -151,11 +151,9 @@ write.csv(tada, file=glue("Tables/burden_cp", Sys.Date(), ".csv"), row.names=FAL
 
 # notif -------------------------------------------------------------------
 
-tbb <- subset(n, year==thisyear-1, select=c('country', 'g_whoregion', 'g_hbc22', 'c_notified', "new_sp", "new_sn", "new_su", "new_ep", "new_oth", "ret_rel", 'c_newinc', "c_ret", "newret_oth", "new_labconf", 'c_new'))
+tbb <- subset(n, year==thisyear-1, select=c('country', 'g_whoregion', 'g_hbc22', 'c_notified', 'c_newinc', "new_labconf", "new_clindx", "new_ep", "ret_rel_labconf", "ret_rel_clindx", "ret_rel_ep", "ret_nrel", "notif_foreign"))
 
-tbb$new.pulm <- .rowsums(tbb[c('new_sp', 'new_sn', 'new_su')])
-
-# tbb$c_notified_lab <- tbb$new_labconf
+tbb$new.pulm <- .rowsums(tbb[c("new_labconf", "new_clindx", "ret_rel_labconf", "ret_rel_clindx")])
 
 tbb <- tbb[order(tbb$country),]
 names(tbb)[names(tbb)=='country'] <- 'area'
@@ -172,52 +170,58 @@ tbbga <- aggregate(tbbg[4:ncol(tbb)], by=list(area=tbbg$area), FUN=sum, na.rm=TR
 tbc <- rbind(tbb[tbb$g_hbc22=='high', c(1, 4:ncol(tbb))], tbbh, tbbr, tbbga)
 
 # Fill in data for countries not reporting lab confirmed (see below too)
-tbc$new_labconf2 <- ifelse(is.na(tbc$new_labconf), tbc$new_sp, tbc$new_labconf)
+# tbc$new_labconf2 <- ifelse(is.na(tbc$new_labconf), tbc$new_sp, tbc$new_labconf)
 
 # calculate and format vars
 # tbc$labconf <- rowSums(tbc[c('new_labconf2', 'ret_labconf')]) 
 # tbc$notif_lab <- tbc$labconf / tbc$c_notified_lab * 100
-tbc$ret_nrel <- tbc$c_ret - tbc$ret_rel
-tbc$newpulm_lab_pct <- tbc$new_labconf2 / tbc$new.pulm * 100
+# tbc$ret_nrel <- tbc$c_ret - tbc$ret_rel
+tbc$nrpulm_lab_pct <- tbc$new_labconf / tbc$new.pulm * 100
+
+tbc$notif_foreign_pct <- tbc$notif_foreign / tbc$c_notified * 100
 
 
 for(var in 2:ncol(tbc)){
   tbc[var] <- rounder(tbc[[var]])
 }
-tbc[is.na(tbc$newpulm_lab_pct), 'newpulm_lab_pct'] <- "–"
+
+tbc[is.na(tbc$nrpulm_lab_pct), 'nrpulm_lab_pct'] <- "–"
+tbc[is.na(tbc$notif_foreign_pct), 'notif_foreign_pct'] <- "–"
+
 # rename
 tbc <- .shortnames(tbc, col='area')
 
 # Add footnote for countries not reporting Lab confirmed (Thailand)
-footnote.b <- ifelse(any(is.na(tbc$new_labconf)), paste('(b) LABORATORY CONFIRMED data for', paste(subset(tbc, is.na(new_labconf), 'area'), collapse=', '), 'refer to smear-positive cases only. Data on cases that were laboratory confirmed using other methods were not reported.'), "")
-tbc$new_labconf2 <- ifelse(is.na(tbc$new_labconf), glue(tbc$new_sp, "(b)"), tbc$new_labconf2)
+# footnote.b <- ifelse(any(is.na(tbc$new_labconf)), paste('(b) LABORATORY CONFIRMED data for', paste(subset(tbc, is.na(new_labconf), 'area'), collapse=', '), 'refer to smear-positive cases only. Data on cases that were laboratory confirmed using other methods were not reported.'), "")
+# tbc$new_labconf2 <- ifelse(is.na(tbc$new_labconf), glue(tbc$new_sp, "(b)"), tbc$new_labconf2)
 
 # Add to file
+  
+tbm <- xtable(tbc[c("area", "c_notified", "notif_foreign_pct", 'c_newinc', "new_labconf", "new_clindx", "new_ep", "ret_rel_labconf", "ret_rel_clindx", "ret_rel_ep", "nrpulm_lab_pct", "ret_nrel")])
+
+digits(tbm) <- 0
 
 cat(paste("<h3>Case notifications,", thisyear-1, "</h3>"), file=glue("Tables/notif", Sys.Date(), ".htm"))
 
-tbm <- xtable(tbc[c("area", "c_notified", "new_sp", "new_sn", "new_su", "new_ep", "new_oth", "new_labconf2", "newpulm_lab_pct", "ret_rel", "ret_nrel", "c_newinc")])
-digits(tbm) <- 0
-print(tbm, type="html", file=glue("Tables/notif", Sys.Date(), ".htm"),include.rownames=F, include.colnames=F, html.table.attributes="border=0 rules=rows width=1100 cellpadding=5", append=T, 
-      add.to.row=list(pos=list(0,30), command=c(
-"<TR> <TD colspan=2></TD> 
-	<TH colspan=7>NEW CASES</TH> 
-  <TH colspan=2>RETREATMENT CASES</TH> 
-  <TD colspan=1></TD> </TR> 
-  <TR> <TD></TD> <TD>TOTAL<br> NOTIFIED</TD> 
-  <TD>SMEAR-<br>POSITIVE</TD> 
-  <TD>SMEAR-<br>NEGATIVE</TD> 
-  <TD>SMEAR NOT DONE</TD>
-  <TD>EXTRA-<br>PULMONARY</TD> 
-  <TD>CASE TYPE<br> UNKNOWN</TD> 
-  <TD>PULMONARY CASES LABORATORY CONFIRMED</TD> 
-  <TD>PERCENTAGE OF PULMONARY CASES LABORATORY CONFIRMED</TD>   
-  <TD>RELAPSE</TD> 
-  <TD>RETREATMENT<br>EXCL. RELAPSE</TD> 
-  <TD>NEW AND<br>RELAPSE(a)</TD> 
+print(tbm, type="html", file=glue("Tables/notif", Sys.Date(), ".htm"),include.rownames=F, include.colnames=F, html.table.attributes="border=0 rules=rows width=1100 cellpadding=5", append=T, add.to.row=list(pos=list(0, nrow(tbm)), command=c(
+"<TR> <TD colspan=4></TD> 
+	<TH colspan=3>NEW OR PREVIOUS TREATMENT HISTORY UNKNOWN</TH> 
+  <TH colspan=3>RELAPSE</TH> 
+  <TD colspan=2></TD> </TR> 
+  <TR> <TD></TD> <TD>TOTAL NOTIFIED</TD> 
+  <TD>PERCENT FOREIGN-BORN</TD> 
+  <TD>NEW AND RELAPSE(a)</TD> 
+  <TD>PULMONARY BACTERIOLOGICALLY CONFIRMED</TD>
+  <TD>PULMONARY CLINICALLY DIAGNOSED</TD> 
+  <TD>EXTRAPULMONARY</TD>   
+  <TD>PULMONARY BACTERIOLOGICALLY CONFIRMED</TD>
+  <TD>PULMONARY CLINICALLY DIAGNOSED</TD> 
+  <TD>EXTRAPULMONARY</TD> 
+  <TD>PERCENTAGE OF PULMONARY CASES LABORATORY CONFIRMED</TD> 
+  <TD>RETREATMENT EXCL. RELAPSE</TD> 
  </TR>", 
-	glue("<TR> <TD colspan=12>Blank cells indicate data not reported.<br>
-(a) NEW AND RELAPSE includes cases for which the treatment history is unknown.<br>", footnote.b,"</TD></TR>"))))
+	"<TR> <TD colspan=12>Blank cells indicate data not reported.<br>
+(a) NEW AND RELAPSE includes cases for which the treatment history is unknown.</TD></TR>")))
 
 tablecopy("notif")
 
@@ -663,108 +667,83 @@ tablecopy("lab_policy")
 
 # Get country data
 
-tiasb <- subset(n.t, year == thisyear-1, select=c("iso3", "country", "year", "g_whoregion", "g_hbc22", "new_sp_m04", "new_sp_m514", "new_sp_m014", "new_sp_m1524", "new_sp_m2534", "new_sp_m3544", "new_sp_m4554", "new_sp_m5564", "new_sp_m65", "new_sp_mu", "new_sp_f04", "new_sp_f514", "new_sp_f014", "new_sp_f1524",  "new_sp_f2534", "new_sp_f3544", "new_sp_f4554", "new_sp_f5564", "new_sp_f65", "new_sp_fu", "new_sn_m04", "new_sn_m514", "new_sn_m014", "new_sn_m1524", "new_sn_m2534", "new_sn_m3544", "new_sn_m4554", "new_sn_m5564", "new_sn_m65", "new_sn_mu", "new_sn_f04", "new_sn_f514", "new_sn_f014", "new_sn_f1524", "new_sn_f2534", "new_sn_f3544", "new_sn_f4554", "new_sn_f5564", "new_sn_f65", "new_sn_fu", "new_ep_m04", "new_ep_m514", "new_ep_m014", "new_ep_m1524", "new_ep_m2534", "new_ep_m3544", "new_ep_m4554", "new_ep_m5564", "new_ep_m65", "new_ep_mu", "new_ep_f04", "new_ep_f514", "new_ep_f014", "new_ep_f1524", "new_ep_f2534", "new_ep_f3544", "new_ep_f4554", "new_ep_f5564", "new_ep_f65", "new_ep_fu", "c_new_014", 'new_sn_m15plus', 'new_sn_f15plus', 'new_sn_sexunk014', 'new_sn_sexunk15plus', 'new_ep_m15plus', 'new_ep_f15plus', 'new_ep_sexunk014', 'new_ep_sexunk15plus'))
-
-# Nigeria fix
-if(thisyear==2013){
-  tiasb[tiasb$country=='Nigeria',c("new_sn_mu", "new_ep_mu")] <- NA
-  warning('Some Nigeria numbers are being vaporized...')
-}
-
+tiasb <- subset(n.t, year == thisyear-1, select=c("iso3", "country", "year", "g_whoregion", "g_hbc22", "newrel_m04", "newrel_m514", "newrel_m014", "newrel_m1524", "newrel_m2534", "newrel_m3544", "newrel_m4554", "newrel_m5564", "newrel_m65", "newrel_mu", "newrel_f04", "newrel_f514", "newrel_f014", "newrel_f1524", "newrel_f2534", "newrel_f3544", "newrel_f4554", "newrel_f5564", "newrel_f65", "newrel_fu", 'newrel_m15plus', 'newrel_f15plus', 'newrel_sexunk014', 'newrel_sexunk15plus'))
 
 # Order by country
-tiasb <- tiasb[order(tiasb$country),]
-
-# Combine categories
-# The all vars are not shown for countries where only sp was reported. But they are included in aggregates.
-
-# check if sn and ep were reported
-tiasb$sn.full <- .rowsums(tiasb[c("new_sn_m1524", "new_sn_m2534", "new_sn_m3544", "new_sn_m4554", "new_sn_m5564", "new_sn_m65", "new_sn_f1524", "new_sn_f2534", "new_sn_f3544", "new_sn_f4554", "new_sn_f5564", "new_sn_f65")]) # "new_sn_m.child",  "new_sn_mu", "new_sn_f.child",, "new_sn_fu"
-
-tiasb$ep.full <- .rowsums(tiasb[c("new_ep_m1524", "new_ep_m2534", "new_ep_m3544", "new_ep_m4554", "new_ep_m5564", "new_ep_m65", "new_ep_f1524", "new_ep_f2534", "new_ep_f3544", "new_ep_f4554", "new_ep_f5564", "new_ep_f65")]) # "new_ep_m.child",  "new_ep_mu", "new_ep_f.child",, "new_ep_fu"
+# tiasb <- tiasb[order(tiasb$country),]
 
 # for alternate report age or sex reported (measured by total)
-tiasb$snep.age.alt <- .rowsums(tiasb[c("new_sn_m014", "new_sn_f014", 'new_sn_sexunk014', "new_sn_m15plus", "new_sn_f15plus", 'new_sn_sexunk15plus', "new_ep_m014", "new_ep_f014", 'new_ep_sexunk014', "new_ep_m15plus", "new_ep_f15plus", 'new_ep_sexunk15plus')])  #excludes vars where age is unknown
+tiasb$snep.age.alt <- .rowsums(tiasb[c("newrel_m014", "newrel_f014", 'newrel_sexunk014', "newrel_m15plus", "newrel_f15plus", 'newrel_sexunk15plus')])  #excludes vars where age is unknown
 
-tiasb$snep.sex.alt <- .rowsums(tiasb[c("new_sn_m014", "new_sn_m15plus", "new_sn_mu", "new_sn_f014", "new_sn_f15plus", "new_sn_fu", "new_ep_m014", "new_ep_m15plus", "new_ep_mu", "new_ep_f014", "new_ep_f15plus", "new_ep_fu")]) #excludes vars where sex is unknown
-
-# flag var for sn ep reporting of 4) full age/sex breakdown, 3) 'Alternative' breakdown for age and sex, 2) 'Alternative' breakdown for age only, 1) 'Alternative' breakdown for sex only, and 0) no reporting of sn or ep.
-tiasb$sn.ep.report <- ifelse(!is.na(tiasb$sn.full) | !is.na(tiasb$ep.full), 4, ifelse(!is.na(tiasb$snep.age.alt) & !is.na(tiasb$snep.sex.alt), 3, ifelse(!is.na(tiasb$snep.age.alt), 2, ifelse(!is.na(tiasb$snep.sex.alt),1 ,0 )))) 
-
-# combine new_sp vars
-tiasb$new_sp.014 <- .rowsums(tiasb[c("new_sp_m014", "new_sp_f014")])
-tiasb$new_sp.1544 <- .rowsums(tiasb[c("new_sp_m1524",  "new_sp_m2534", "new_sp_m3544", "new_sp_f1524",  "new_sp_f2534", "new_sp_f3544")])
-tiasb$new_sp.4564 <- .rowsums(tiasb[c("new_sp_m4554", "new_sp_m5564", "new_sp_f4554", "new_sp_f5564")])
-tiasb$new_sp.65 <- .rowsums(tiasb[c("new_sp_m65", "new_sp_f65")])
-tiasb$new_sp.totalage <- .rowsums(tiasb[c("new_sp.014", "new_sp.1544", "new_sp.4564", "new_sp.65")])
+tiasb$snep.sex.alt <- .rowsums(tiasb[c("newrel_m014", "newrel_m15plus", "newrel_mu", "newrel_f014", "newrel_f15plus", "newrel_fu")]) #excludes vars where sex is unknown
 
 # combine all vars
-tiasb$all.014 <- .rowsums(tiasb[c("new_sp.014", "new_sn_m014", "new_sn_f014", "new_ep_m014", "new_ep_f014", 'new_sn_sexunk014', 'new_ep_sexunk014')]) # (unknowns will be removed for this var later, but for now they are needed for age % and aggregates)
-if(any(tiasb$all.014!=tiasb$c_new_014)) warning('You might have a problem with your child cases. Check these to make sure.'); subset(tiasb, all.014!=c_new_014, c('all.014', 'c_new_014', 'group_name'))
-tiasb$all.1544 <- .rowsums(tiasb[c("new_sp.1544", "new_sn_m1524",  "new_sn_m2534", "new_sn_m3544", "new_sn_f1524",  "new_sn_f2534", "new_sn_f3544", "new_ep_m1524",  "new_ep_m2534", "new_ep_m3544", "new_ep_f1524",  "new_ep_f2534", "new_ep_f3544")])
-tiasb$all.4564 <- .rowsums(tiasb[c("new_sp.4564", "new_sn_m4554", "new_sn_m5564", "new_sn_f4554", "new_sn_f5564", "new_ep_m4554", "new_ep_m5564", "new_ep_f4554", "new_ep_f5564")])
-tiasb$all.65 <- .rowsums(tiasb[c("new_sp.65", "new_sn_m65", "new_sn_f65", "new_ep_m65", "new_ep_f65")])
-tiasb$all.totalage <- .rowsums(tiasb[c('all.014', 'new_sp.1544', 'new_sp.4564', 'new_sp.65', 'new_sn_m15plus', 'new_sn_f15plus', 'new_sn_sexunk15plus', 'new_ep_m15plus', 'new_ep_f15plus', 'new_ep_sexunk15plus')]) 
+tiasb$all.014 <- .rowsums(tiasb[c("newrel_m014", "newrel_f014", 'newrel_sexunk014')]) # (unknowns will be removed for this var later, but for now they are needed for age % and aggregates)
 
-tiasb$new_sp.male <- .rowsums(tiasb[c("new_sp_m014", "new_sp_m1524", "new_sp_m2534", "new_sp_m3544", "new_sp_m4554", "new_sp_m5564", "new_sp_m65", "new_sp_mu")])
-tiasb$new_sp.female <- .rowsums(tiasb[c("new_sp_f014", "new_sp_f1524", "new_sp_f2534", "new_sp_f3544", "new_sp_f4554", "new_sp_f5564", "new_sp_f65", "new_sp_fu")])
+tiasb$all.1544 <- .rowsums(tiasb[c("newrel_m1524",  "newrel_m2534", "newrel_m3544", "newrel_f1524",  "newrel_f2534", "newrel_f3544")])
+tiasb$all.4564 <- .rowsums(tiasb[c("newrel_m4554", "newrel_m5564", "newrel_f4554", "newrel_f5564")])
+tiasb$all.65 <- .rowsums(tiasb[c("newrel_m65", "newrel_f65")])
+tiasb$all.totalage <- .rowsums(tiasb[c('all.014', 'newrel_m15plus', 'newrel_f15plus', 'newrel_sexunk15plus')]) 
 
-tiasb$all.male <- .rowsums(tiasb[c('new_sp.male', "new_sn_m014", 'new_sn_m15plus', "new_sn_mu",  "new_ep_m014", 'new_ep_m15plus',"new_ep_mu")])
-tiasb$all.female <- .rowsums(tiasb[c('new_sp.female', "new_sn_f014", 'new_sn_f15plus', "new_sn_fu",  "new_ep_f014", 'new_ep_f15plus',"new_ep_fu")])
+tiasb$all.male <- .rowsums(tiasb[c("newrel_m014", 'newrel_m15plus', "newrel_mu")])
+tiasb$all.female <- .rowsums(tiasb[c("newrel_f014", 'newrel_f15plus', "newrel_fu")])
 
 # Assemble aggregates
-tiasr <- aggregate(tiasb[6:ncol(tiasb)], by=list(group_name=tiasb$g_whoregion, year=tiasb$year), FUN='sum', na.rm=T)
+# tiasr <- aggregate(tiasb[6:ncol(tiasb)], by=list(group_name=tiasb$g_whoregion, year=tiasb$year), FUN='sum', na.rm=T)
+# 
+# tiash <- aggregate(tiasb[6:ncol(tiasb)], by=list(hbc=tiasb$g_hbc22, year=tiasb$year), FUN='sum', na.rm=T)
+# tiash$group_name <- 'High-burden countries'
+# tiash <- tiash[tiash$hbc=='high',-1]
+# 
+# tiasg <- aggregate(tiasb[6:ncol(tiasb)], by=list(year=tiasb$year), FUN='sum', na.rm=T)
+# tiasg$group_name <- 'Global'
+# 
+# tiasj <- rbind(tiash, tiasr, tiasg)
+# # tiasj$type <- "aggs"
+# tiasj$iso3 <- "aggs"
+# tiasj$g_whoregion <- tiasj$group_name
+# 
+# # tiasb$type <- 'countries'
+# names(tiasb)[names(tiasb)=="country"] <- "group_name"
 
-tiash <- aggregate(tiasb[6:ncol(tiasb)], by=list(hbc=tiasb$g_hbc22, year=tiasb$year), FUN='sum', na.rm=T)
-tiash$group_name <- 'High-burden countries'
-tiash <- tiash[tiash$hbc=='high',-1]
+tiaa <- glb.rpt.table(df = tiasb, column.nums = 6:ncol(tiasb), country.col = 2)
 
-tiasg <- aggregate(tiasb[6:ncol(tiasb)], by=list(year=tiasb$year), FUN='sum', na.rm=T)
-tiasg$group_name <- 'Global'
+tiaa1 <- .shortnames(subset(tb, rel_in_agesex_flg==0 & g_hbc22=="high" & year==thisyear-1, country))
+tiaa$area <- ifelse(tiaa$area %in% tiaa1$country, paste0(tiaa$area, "*"), tiaa$area)
 
-tiasj <- rbind(tiash, tiasr, tiasg)
-# tiasj$type <- "aggs"
-tiasj$iso3 <- "aggs"
-tiasj$g_whoregion <- tiasj$group_name
+tikeep <- c("area", "newrel_m014", "newrel_f014", "all.014", "all.1544", "all.4564", "all.65", "all.totalage", "all.male", "all.female") #"sn.ep.totalage",
 
-# tiasb$type <- 'countries'
-names(tiasb)[names(tiasb)=="country"] <- "group_name"
+tiaa <- tiaa[tikeep]
 
-tikeep <- c("group_name", "iso3", "new_sp_m014", "new_sp_f014", "new_sn_m014", "new_sn_f014", "new_ep_m014", "new_ep_f014",  "sn.ep.report", "new_sp.014", "new_sp.1544", "new_sp.4564", "new_sp.65", "new_sp.totalage", "all.014", "all.1544", "all.4564", "all.65", "new_sp.totalage", "new_sp.male", "new_sp.female", "all.totalage", "all.male", "all.female") #"sn.ep.totalage",
-
-tiaa <- rbind(tiasb[tiasb$g_hbc22=='high', tikeep], tiasj[tikeep])
-tiaa$order <- 1:nrow(tiaa)
+# tiaa <- rbind(tiasb[tiasb$g_hbc22=='high', tikeep], tiasj[tikeep])
+# tiaa$order <- 1:nrow(tiaa)
 
 # Calculate % child. (Removed for all new where countries didn't report)
-tiaa$new_sp.child.pct <- ifelse(is.na(tiaa$new_sp.totalage), "–", frmt(tiaa$new_sp.014 / tiaa$new_sp.totalage * 100))
-tiaa$all.child.pct <- ifelse(tiaa$sn.ep.report %in% 0:1 , "–", frmt(tiaa$all.014 / tiaa$all.totalage * 100))
+# tiaa$new_sp.child.pct <- ifelse(is.na(tiaa$new_sp.totalage), "–", frmt(tiaa$new_sp.014 / tiaa$new_sp.totalage * 100))
+tiaa$all.child.pct <- ifelse(is.na(tiaa$all.totalage) , "–", frmt(tiaa$all.014 / tiaa$all.totalage * 100))
 
 # Calculate male female ratio. (Removed for all new where countries didn't report)
-tiaa$new_sp.mf.ratio <- ifelse(is.na(tiaa$new_sp.male) | is.na(tiaa$new_sp.female) | tiaa$new_sp.male==0 | tiaa$new_sp.female==0, "–", frmt(tiaa$new_sp.male / tiaa$new_sp.female))
-tiaa$all.mf.ratio <- ifelse(tiaa$sn.ep.report %in% c(0,2), "–", frmt(tiaa$all.male / tiaa$all.female))
+# tiaa$new_sp.mf.ratio <- ifelse(is.na(tiaa$new_sp.male) | is.na(tiaa$new_sp.female) | tiaa$new_sp.male==0 | tiaa$new_sp.female==0, "–", frmt(tiaa$new_sp.male / tiaa$new_sp.female))
+tiaa$all.mf.ratio <- ifelse(is.na(tiaa$all.male) | is.na(tiaa$all.female) | tiaa$all.male==0 | tiaa$all.female==0, "–", frmt(tiaa$all.male / tiaa$all.female))
 
-for(var in tikeep[10:18]){
+for(var in tikeep[2:8]){
   tiaa[var] <- rounder(tiaa[[var]])
 }
 
 # Remove values for countries not reporting full sn ep.
-for(var in tikeep[15:18]){
-  tiaa[var] <- ifelse(tiaa$sn.ep.report==4 | tiaa$iso3=="aggs", tiaa[[var]], "")
-}
+# for(var in tikeep[15:18]){
+#   tiaa[var] <- ifelse(tiaa$sn.ep.report==4 | tiaa$iso3=="aggs", tiaa[[var]], "")
+# }
 
-tiaa <- tiaa[order(tiaa$order),]
-tid <- xtable(.shortnames(subset(tiaa, select=c("group_name", "new_sp.014", "new_sp.1544", "new_sp.4564", "new_sp.65", "new_sp.child.pct", "new_sp.mf.ratio", "all.014", "all.1544", "all.4564", "all.65", "all.child.pct", "all.mf.ratio")), col='group_name'))
+# tiaa <- tiaa[order(tiaa$order),]
+tid <- xtable(subset(tiaa, select=c("area", "all.014", "all.1544", "all.4564", "all.65", "all.child.pct", "all.mf.ratio")))
 
 # Add to file
 
-cat(glue("<h2>Notifications of new TB cases by age and sex, ", thisyear-1, '</h2>'), file=glue("Tables/agesex", Sys.Date(), ".htm"))
+cat(glue("<h2>Notifications of new and relapse TB cases by age and sex, ", thisyear-1, '</h2>'), file=glue("Tables/agesex", Sys.Date(), ".htm"))
 
-print(tid, type="html", file=glue("Tables/agesex", Sys.Date(), ".htm"),include.rownames=F, include.colnames=F, #sanitize.text.function=identity, html.table.attributes="border=0 rules=rows width=1100 cellpadding=5", append=T, 
-      add.to.row=list(pos=list(0,nrow(tid)), command=c(
-        "<TR> <TD colspan=1></TD> 
-  <TH colspan=6>NEW SMEAR-POSITIVE CASES</TH> 
-        <TH colspan=6>ALL NEW CASES</TH> 
-         </TR> 
+print(tid, type="html", file=glue("Tables/agesex", Sys.Date(), ".htm"),include.rownames=F, include.colnames=F, append=TRUE, add.to.row=list(pos=list(0,nrow(tid)), command=c(
+        " 
         <TR> <TD></TD> 
         <TD>0–14 YEARS</TD>
         <TD>15–44 YEARS</TD>
@@ -772,14 +751,8 @@ print(tid, type="html", file=glue("Tables/agesex", Sys.Date(), ".htm"),include.r
         <TD>&#8805;65 YEARS</TD>
         <TD>% AGED &#60 15 YEARS</TD>
         <TD>MALE/FEMALE RATIO</TD>
-        <TD>0–14 YEARS</TD>
-        <TD>15–44 YEARS</TD>
-        <TD>45–64 YEARS</TD>
-        <TD>&#8805;65 YEARS</TD>
-        <TD>% AGED &#60 15 YEARS</TD>
-        <TD>MALE/FEMALE RATIO</TD>
-         </TR>", 
-	"<TR> <TD colspan=13>Blank cells indicate data that could not be reported for the age categories shown.<br>– indicates values that cannot be calculated.</TD> </TR>")))
+        </TR>", 
+	"<TR> <TD colspan=7>Blank cells indicate data that could not be reported for the age categories shown.<br>– indicates values that cannot be calculated.<br>* New cases only.</TD> </TR>")))
 
 tablecopy("agesex")
 

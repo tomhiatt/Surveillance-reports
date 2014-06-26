@@ -6,15 +6,6 @@
 
 source('d:/users/hiattt/Dropbox/Code/Surveillance reports/Setup.r')
 
-# This next chunk is for testing
-# --------------------------------------------------------
-ggplot(subset(gac, year>=gadstart), aes(year, hivtest_pct, colour=area)) + 
-  geom_line(size=1.5) + geom_text(data=subset(gac, year==max(gac$year)), aes(label = area), hjust=-.1, vjust=0, size=5) +
-  scale_y_continuous(name = "Percentage of TB patients", limits=c(0,100)) + #, expand=c(0,0)
-  scale_x_continuous("", labels=gadstart:(thisyear-1), breaks=gadstart:(thisyear-1)) + 
-  scale_color_brewer(name="WHO region", palette="Dark2") +
-  expand_limits(x=c(gadstart, thisyear+0.5)) + theme_glb.rpt() +
-  opts(title=glue('HIV testing for TB patients, globally and by WHO region, ', gadstart, '-', thisyear-1), legend.position="none")
 
 
 # Bit's I'm going to implement:
@@ -24,13 +15,6 @@ ggplot(subset(gac, year>=gadstart), aes(year, hivtest_pct, colour=area)) +
 #   - Titles left justified
 #   - label range always includes all data
 #   - All use same color palette
-
-plot.title=theme_text(size=16, hjust=0)
-
-dat<-data.frame(x=1:10, y=c(11:17,5:3))
-ggplot(dat, aes(x,y)) + 
-  geom_point() + expand_limits(y=c(min(pretty(c(dat$y, min(dat$y) * (0.95)))), max(pretty(c(dat$y, max(dat$y) * (1.05))))))
-
 
 #----------------------------------------------------
 # Global rates of incidence, prevalence and mortality - est_global
@@ -811,6 +795,69 @@ figsave(gal, gak, "hivprog_graph_all")
 # continuation of rates outside of the range of reported data.
 
 # Intervals indicate scenarios where non-reporting countries report 0% or 100%.
+
+# txsucc -------------------------------------------------------------------
+
+ha1 <- subset(tb, year==thisyear-2, select=c('country', 'g_whoregion', 'g_hbc22', "rel_with_new_flg", "newrel_coh", "newrel_succ", "newrel_fail", "newrel_died", "newrel_lost", "c_newrel_neval"))
+
+# Aggregate and reassemple
+
+haa <- glb.rpt.table(ha1, 5:ncol(ha1))
+
+ha2 <- .shortnames(subset(ha1, rel_with_new_flg==0 & g_hbc22=="high", country))
+haa$area <- ifelse(haa$area %in% ha2$country, paste0(haa$area, "*"), haa$area)
+
+haa$area <- factor(haa$area, levels=rev(haa$area))
+
+haa$`Treatment success` <- haa$newrel_succ / haa$newrel_coh * 100
+haa$Failure <- haa$newrel_fail / haa$newrel_coh * 100
+haa$Died <- haa$newrel_died / haa$newrel_coh * 100
+haa$`Lost to follow-up` <- haa$newrel_lost / haa$newrel_coh * 100
+haa$`Not evaluated` <- haa$c_newrel_neval / haa$newrel_coh * 100
+
+
+# Plot
+
+hab <- melt(haa[c(1, 8:12)], id=1)
+
+hac <- ggplot(hab, aes(area, value, fill=variable)) + geom_bar(stat="identity", position="stack") + geom_hline(yintercept=85, color="grey70") + geom_text(data=subset(hab, variable=="Treatment success"), aes(label=round(value,0)), hjust=1.25, vjust=0.3, size=4, color="white") + theme_glb.rpt() + coord_flip() +   scale_fill_brewer("", type = "qual", palette = 8) + labs(x="", y="Percentage of cohort") + theme(legend.position="bottom", panel.grid=element_blank()) + expand_limits(c(0,0))
+
+figsave(hac, hab, "txsucc")
+
+# hiv_ts_d ---------------------------------------------------
+
+hma <- subset(tb, year==thisyear-2 & !is.na(tbhiv_coh), c(iso3, tbhiv_coh, tbhiv_succ, tbhiv_died, newrel_coh, newrel_succ, newrel_died)) #This excludes those note reporting TB/HIV treatment outcomes. Check that this is what is desired!!!
+hma[1] <- "global"
+
+hmb <- aggregate(hma[2:ncol(hma)], by=list(area=hma$iso3), FUN=sum, na.rm=TRUE)
+hmb$nhiv_coh <- 
+
+hmc <- melt(hmb, id=1)
+hmc$type <- str_extract(hmc$variable, "tbhiv|newrel")
+hmc$out <- str_extract(hmc$variable, "coh|succ|died")
+  
+hmd <- cast(hmc, out~type)
+
+hmd$`HIV-` <- hmd$newrel - hmd$tbhiv
+hmd <- rename(hmd, c(tbhiv="HIV+"))
+
+hme <- melt(as.data.frame(hmd[-2]), id=1, variable_name = "type")
+
+hmf <- cast(hme, ...~out)
+
+hmf$`Treatment success` <- hmf$succ / hmf$coh * 100
+hmf$Died <- hmf$died / hmf$coh * 100
+
+hmg <- melt(as.data.frame(hmf[c(1,5:6)]), id=1) # It's a melt and cast fiesta!
+
+hmh <- ggplot(hmg, aes(variable, value, fill=type)) + geom_bar(stat="identity", position="dodge", width=0.5) + theme_glb.rpt() + labs(x="") + scale_y_continuous("Percentage of cohort", limits=c(0,100)) + scale_fill_brewer("", type = "qual", palette=6)
+
+hmi <- hmg; hmi$duh <- ""
+
+hmj <- ggplot(hmi, aes(duh, value, fill=type)) + geom_bar(stat="identity", position="dodge", width=0.5) + facet_wrap(~variable, scales="free") + theme_glb.rpt() + labs(x="") + scale_y_continuous("Percentage of cohort") + scale_fill_brewer("", type = "qual", palette=6)
+
+figsave(hmh, hmg, "hiv_ts_d")
+figsave(hmj, hmg, "hiv_ts_d2")
 
 #-------------------------------------------------------------------
 # SLIDE - absolute incidence and mortality (all and hiv-neg)
