@@ -264,24 +264,47 @@ tablecopy <- function(table){
 }
 
 # To make typical report table
-glb.rpt.table <- function(df, column.nums, country.col = 1){
-  hbcs <- df[df$g_hbc22=='high', c(country.col, column.nums)]
-  names(hbcs)[1] <- "area"
+glb.rpt.table <- function(df, column.nums, country.col=1, year.col=NA){
   
+  if(is.na(year.col)){
+    hbcs <- df[df$g_hbc22=='high', c(country.col, column.nums)]
+    names(hbcs)[1] <- "area"
+    
+    # make aggregate rows
+    agg1 <- aggregate(df[column.nums], by=list(area=df$g_hbc22), FUN=sum, na.rm=TRUE)
+    agg1 <- agg1[agg1$area=='high',]
+    agg1$area <- 'High-burden countries'
+    
+    agg2 <- aggregate(df[column.nums], by=list(area=df$g_whoregion), FUN=sum, na.rm=TRUE)
+    
+    agg3 <- df; agg3[country.col] <- 'Global'
+    agg3b <- aggregate(agg3[column.nums], by=list(area=agg3[[country.col]]), FUN=sum, na.rm=TRUE) 
+    
+    # combine together
+    com1 <- rbind(hbcs, agg1, agg2, agg3b)
+    com2 <- .shortnames(com1, col = "area", ord = "hbc")
+  }
   
-  # make aggregate rows
-  agg1 <- aggregate(df[column.nums], by=list(area=df$g_hbc22), FUN=sum, na.rm=TRUE)
-  agg1 <- agg1[agg1$area=='high',]
-  agg1$area <- 'High-burden countries'
+  if(!is.na(year.col)){
+    hbcs <- df[df$g_hbc22=='high', c(country.col, year.col, column.nums)]
+    names(hbcs)[1] <- "area"
+    
+    # make aggregate rows
+    agg1 <- aggregate(df[column.nums], by=list(area=df$g_hbc22, year=df$year), FUN=sum, na.rm=TRUE)
+    agg1 <- agg1[agg1$area=='high',]
+    agg1$area <- 'High-burden countries'
+    
+    agg2 <- aggregate(df[column.nums], by=list(area=df$g_whoregion, year=df$year), FUN=sum, na.rm=TRUE)
+    
+    agg3 <- df; agg3[country.col] <- 'Global'
+    agg3b <- aggregate(agg3[column.nums], by=list(area=agg3[[country.col]], year=df$year), FUN=sum, na.rm=TRUE) 
+    
+    # combine together
+    com2 <- rbind(hbcs, agg1, agg2, agg3b)
+
+  }
   
-  agg2 <- aggregate(df[column.nums], by=list(area=df$g_whoregion), FUN=sum, na.rm=TRUE)
-  
-  agg3 <- df; agg3[country.col] <- 'Global'
-  agg3b <- aggregate(agg3[column.nums], by=list(area=agg3[[country.col]]), FUN=sum, na.rm=TRUE)
-  
-  # combine together
-  com1 <- rbind(hbcs, agg1, agg2, agg3b)
-  com2 <- .shortnames(com1, col = "area", ord = "hbc")
+
   
   return(com2)
 }

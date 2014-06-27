@@ -826,19 +826,31 @@ figsave(hac, hab, "txsucc")
 
 # hiv_ts_d ---------------------------------------------------
 
-hma <- subset(tb, year==thisyear-2 & !is.na(tbhiv_coh), c(iso3, tbhiv_coh, tbhiv_succ, tbhiv_died, newrel_coh, newrel_succ, newrel_died)) #This excludes those note reporting TB/HIV treatment outcomes. Check that this is what is desired!!!
+hma <- subset(tb, year==thisyear-2 & !is.na(tbhiv_coh) & !is.na(newrel_coh), c(iso3, newrel_coh, newrel_succ, newrel_fail, newrel_died, newrel_lost, c_newrel_neval, ret_nrel_coh, ret_nrel_succ, ret_nrel_fail, ret_nrel_died, ret_nrel_lost, c_ret_nrel_neval, tbhiv_coh, tbhiv_succ, tbhiv_fail, tbhiv_died, tbhiv_lost, c_tbhiv_neval)) 
+
+if(thisyear==2014){
+  hma <- subset(hma, iso3 %nin% c('COD', "MOZ"))
+  warning("DRC and Mozambique numbers removed!!!")
+}
+  
+  
+
 hma[1] <- "global"
 
 hmb <- aggregate(hma[2:ncol(hma)], by=list(area=hma$iso3), FUN=sum, na.rm=TRUE)
-hmb$nhiv_coh <- 
 
 hmc <- melt(hmb, id=1)
-hmc$type <- str_extract(hmc$variable, "tbhiv|newrel")
-hmc$out <- str_extract(hmc$variable, "coh|succ|died")
-  
-hmd <- cast(hmc, out~type)
+hmc$type <- str_extract(hmc$variable, "tbhiv|newrel|ret_nrel")
+hmc$out <- str_extract(hmc$variable, "coh|succ|fail|died|lost|neval")
 
-hmd$`HIV-` <- hmd$newrel - hmd$tbhiv
+# Combine newrel and ret_nrel
+
+hmc$type <- ifelse(hmc$type=="tbhiv", "tbhiv", "all")
+hmc1 <- aggregate(hmc[3], by=list(type=hmc$type, out=hmc$out), FUN=sum, na.rm=TRUE)
+  
+hmd <- cast(hmc1, out~type)
+
+hmd$`HIV-` <- hmd$all - hmd$tbhiv
 hmd <- rename(hmd, c(tbhiv="HIV+"))
 
 hme <- melt(as.data.frame(hmd[-2]), id=1, variable_name = "type")
@@ -846,15 +858,20 @@ hme <- melt(as.data.frame(hmd[-2]), id=1, variable_name = "type")
 hmf <- cast(hme, ...~out)
 
 hmf$`Treatment success` <- hmf$succ / hmf$coh * 100
+hmf$Failed <- hmf$fail / hmf$coh * 100
 hmf$Died <- hmf$died / hmf$coh * 100
+hmf$`Lost to follow-up` <- hmf$lost / hmf$coh * 100
+hmf$`Not evaluated` <- hmf$neval / hmf$coh * 100
 
-hmg <- melt(as.data.frame(hmf[c(1,5:6)]), id=1) # It's a melt and cast fiesta!
+hmg <- melt(as.data.frame(hmf[c(1,8:ncol(hmf))]), id=1) # It's a melt and cast fiesta!
 
-hmh <- ggplot(hmg, aes(variable, value, fill=type)) + geom_bar(stat="identity", position="dodge", width=0.5) + theme_glb.rpt() + labs(x="") + scale_y_continuous("Percentage of cohort", limits=c(0,100)) + scale_fill_brewer("", type = "qual", palette=6)
+hmh <- ggplot(hmg, aes(type, value, fill=variable)) + geom_bar(stat="identity", position="stack", width=0.5) + theme_glb.rpt() + labs(x="") + scale_y_continuous("Percentage of cohort") + scale_fill_brewer("", type = "qual", palette=6)
 
 hmi <- hmg; hmi$duh <- ""
 
-hmj <- ggplot(hmi, aes(duh, value, fill=type)) + geom_bar(stat="identity", position="dodge", width=0.5) + facet_wrap(~variable, scales="free") + theme_glb.rpt() + labs(x="") + scale_y_continuous("Percentage of cohort") + scale_fill_brewer("", type = "qual", palette=6)
+# hmj <- ggplot(hmi, aes(duh, value, fill=type)) + geom_bar(stat="identity", position="dodge", width=0.5) + facet_wrap(~variable, scales="free") + theme_glb.rpt() + labs(x="") + scale_y_continuous("Percentage of cohort") + scale_fill_brewer("", type = "qual", palette=6)
+
+hmj <- ggplot(hmi, aes(variable, value, fill=type)) + geom_bar(stat="identity", position="dodge", width=0.5)  + theme_glb.rpt() + labs(x="") + scale_y_continuous("Percentage of cohort", limits=c(0,100)) + scale_fill_brewer("", type = "qual", palette=6)
 
 figsave(hmh, hmg, "hiv_ts_d")
 figsave(hmj, hmg, "hiv_ts_d2")

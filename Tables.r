@@ -151,7 +151,7 @@ write.csv(tada, file=glue("Tables/burden_cp", Sys.Date(), ".csv"), row.names=FAL
 
 # notif -------------------------------------------------------------------
 
-tbb <- subset(n, year==thisyear-1, select=c('country', 'g_whoregion', 'g_hbc22', 'c_notified', 'c_newinc', "new_labconf", "new_clindx", "new_ep", "ret_rel_labconf", "ret_rel_clindx", "ret_rel_ep", "ret_nrel", "notif_foreign"))
+tbb <- subset(n, year==thisyear-1, select=c('country', 'g_whoregion', 'g_hbc22', 'c_notified', 'c_newinc', "new_labconf", "new_clindx", "new_ep", "ret_rel_labconf", "ret_rel_clindx", "ret_rel_ep", "ret_nrel"))
 
 tbb$new.pulm <- .rowsums(tbb[c("new_labconf", "new_clindx", "ret_rel_labconf", "ret_rel_clindx")])
 
@@ -178,7 +178,7 @@ tbc <- rbind(tbb[tbb$g_hbc22=='high', c(1, 4:ncol(tbb))], tbbh, tbbr, tbbga)
 # tbc$ret_nrel <- tbc$c_ret - tbc$ret_rel
 tbc$nrpulm_lab_pct <- tbc$new_labconf / tbc$new.pulm * 100
 
-tbc$notif_foreign_pct <- tbc$notif_foreign / tbc$c_notified * 100
+# tbc$notif_foreign_pct <- tbc$notif_foreign / tbc$c_notified * 100
 
 
 for(var in 2:ncol(tbc)){
@@ -186,10 +186,10 @@ for(var in 2:ncol(tbc)){
 }
 
 tbc[is.na(tbc$nrpulm_lab_pct), 'nrpulm_lab_pct'] <- "–"
-tbc[is.na(tbc$notif_foreign_pct), 'notif_foreign_pct'] <- "–"
+# tbc[is.na(tbc$notif_foreign_pct), 'notif_foreign_pct'] <- "–"
 
 # rename
-tbc <- .shortnames(tbc, col='area')
+tbc <- .shortnames(tbc, col='area', ord = "hbc")
 
 # Add footnote for countries not reporting Lab confirmed (Thailand)
 # footnote.b <- ifelse(any(is.na(tbc$new_labconf)), paste('(b) LABORATORY CONFIRMED data for', paste(subset(tbc, is.na(new_labconf), 'area'), collapse=', '), 'refer to smear-positive cases only. Data on cases that were laboratory confirmed using other methods were not reported.'), "")
@@ -197,7 +197,7 @@ tbc <- .shortnames(tbc, col='area')
 
 # Add to file
   
-tbm <- xtable(tbc[c("area", "c_notified", "notif_foreign_pct", 'c_newinc', "new_labconf", "new_clindx", "new_ep", "ret_rel_labconf", "ret_rel_clindx", "ret_rel_ep", "nrpulm_lab_pct", "ret_nrel")])
+tbm <- xtable(tbc[c("area", "c_notified", 'c_newinc', "ret_nrel", "new_labconf", "new_clindx", "new_ep", "ret_rel_labconf", "ret_rel_clindx", "ret_rel_ep", "nrpulm_lab_pct")])
 
 digits(tbm) <- 0
 
@@ -207,9 +207,9 @@ print(tbm, type="html", file=glue("Tables/notif", Sys.Date(), ".htm"),include.ro
 "<TR> <TD colspan=4></TD> 
 	<TH colspan=3>NEW OR PREVIOUS TREATMENT HISTORY UNKNOWN</TH> 
   <TH colspan=3>RELAPSE</TH> 
-  <TD colspan=2></TD> </TR> 
+  <TD colspan=1></TD> </TR> 
   <TR> <TD></TD> <TD>TOTAL NOTIFIED</TD> 
-  <TD>PERCENT FOREIGN-BORN</TD> 
+  <TD>RETREATMENT EXCLUDING RELAPSE</TD> 
   <TD>NEW AND RELAPSE(a)</TD> 
   <TD>PULMONARY BACTERIOLOGICALLY CONFIRMED</TD>
   <TD>PULMONARY CLINICALLY DIAGNOSED</TD> 
@@ -217,10 +217,9 @@ print(tbm, type="html", file=glue("Tables/notif", Sys.Date(), ".htm"),include.ro
   <TD>PULMONARY BACTERIOLOGICALLY CONFIRMED</TD>
   <TD>PULMONARY CLINICALLY DIAGNOSED</TD> 
   <TD>EXTRAPULMONARY</TD> 
-  <TD>PERCENTAGE OF PULMONARY CASES LABORATORY CONFIRMED</TD> 
-  <TD>RETREATMENT EXCL. RELAPSE</TD> 
- </TR>", 
-	"<TR> <TD colspan=12>Blank cells indicate data not reported.<br>
+  <TD>PERCENTAGE OF PULMONARY CASES BACTERIOLOGICALLY CONFIRMED</TD> 
+  </TR>", 
+	"<TR> <TD colspan=11>Blank cells indicate data not reported.<br>
 (a) NEW AND RELAPSE includes cases for which the treatment history is unknown.</TD></TR>")))
 
 tablecopy("notif")
@@ -309,68 +308,88 @@ tablecopy("sp_tsr")
 
 
 # All (smear pos, extrapulm, ret)
-# allnew_tsr -------------------------------------------------------------------
+# all_tsr -------------------------------------------------------------------
 
-tcbb <- subset(o, year>=1995 & year<thisyear-1, select=c('country', 'year', 'g_hbc22', 'g_whoregion', 'new_sp_coh', 'new_sp_cur', 'new_sp_cmplt', 'new_snep_coh', 'new_snep_cmplt'))
+tcbb <- subset(o, year>=1995 & year<thisyear-1, select=c('country', 'year', 'g_hbc22', 'g_whoregion', 'new_sp_coh', 'new_sp_cur', 'new_sp_cmplt', 'new_snep_coh', 'new_snep_cmplt', "newrel_coh", "newrel_succ"))
 
-tcbb <- .shortnames(tcbb)
-tcbb <- tcbb[order(tcbb$country),]
+# tcbb <- .shortnames(tcbb)
+# tcbb <- tcbb[order(tcbb$country),]
 
-tcbb$succ <- .rowsums(tcbb[c('new_sp_cur', 'new_sp_cmplt', 'new_snep_cmplt')])
-tcbb$coh <- .rowsums(tcbb[c('new_sp_coh', 'new_snep_coh')])
+tcbb$new_succ <- .rowsums(tcbb[c('new_sp_cur', 'new_sp_cmplt', 'new_snep_cmplt')])
+tcbb$new_coh <- .rowsums(tcbb[c('new_sp_coh', 'new_snep_coh')])
 
-tcbbc <- tcbb[tcbb$g_hbc22=='high', c(1:2, 10:11)]
-names(tcbbc)[names(tcbbc)=="country"] <- 'area'
-tcbbh <- aggregate(tcbb[10:11], by=list(area=tcbb$g_hbc22, year=tcbb$year), FUN=sum, na.rm=TRUE)
-tcbbh <- tcbbh[tcbbh$area=='high',]
-tcbbh$area <- 'High-burden countries'
-tcbbr <- aggregate(tcbb[10:11], by=list(area=tcbb$g_whoregion, year=tcbb$year), FUN=sum, na.rm=TRUE)
-tcbbg <- aggregate(tcbb[10:11], by=list(year=tcbb$year), FUN=sum, na.rm=TRUE)
-tcbbg$area <- 'Global'
+# tcbbc <- tcbb[tcbb$g_hbc22=='high', c(1:2, 10:11)]
+# names(tcbbc)[names(tcbbc)=="country"] <- 'area'
+# tcbbh <- aggregate(tcbb[10:11], by=list(area=tcbb$g_hbc22, year=tcbb$year), FUN=sum, na.rm=TRUE)
+# tcbbh <- tcbbh[tcbbh$area=='high',]
+# tcbbh$area <- 'High-burden countries'
+# tcbbr <- aggregate(tcbb[10:11], by=list(area=tcbb$g_whoregion, year=tcbb$year), FUN=sum, na.rm=TRUE)
+# tcbbg <- aggregate(tcbb[10:11], by=list(year=tcbb$year), FUN=sum, na.rm=TRUE)
+# tcbbg$area <- 'Global'
+# 
+# tcba <- rbind(tcbbc, tcbbh, tcbbr, tcbbg)
 
-tcba <- rbind(tcbbc, tcbbh, tcbbr, tcbbg)
-tcba$tsr <- tcba$succ / tcba$coh * 100
-tcba <- .shortnames(tcba, col='area')
-order <- unique(tcba$area)
+# Combine together
+tcba <- glb.rpt.table(tcbb, column.nums = 10:ncol(tcbb), country.col = 1, year.col=2)
 
-tcbc <- cast(tcba, area~year, value='tsr')
-tcbd <- cast(tcba, area~year, value='coh')
+# Calculate TSR and coh, after 2011 it includes relapse as well.
+tcba$tsr <- ifelse(tcba$year > 2011, tcba$newrel_succ / tcba$newrel_coh, tcba$new_succ / tcba$new_coh) * 100
 
-tcbc$area <- factor(tcbc$area, levels=order)
-tcbc <- tcbc[order(tcbc$area),]
+tcba$coh <- ifelse(tcba$year > 2011, tcba$newrel_coh, tcba$new_coh)
 
-tcbd$area <- factor(tcbd$area, levels=order)
-tcbd <- tcbd[order(tcbd$area),]
+# Subset for 5 year intervals
+tcbb <- subset(tcba, year %in% c(seq(1995, thisyear-4, 5), (thisyear-4):(thisyear-2)))
 
-tcb_coh <- tcbd
+# tcba <- .shortnames(tcba, col='area')
+# order <- unique(tcba$area)
 
-for(col in 2:ncol(tcb_coh)){
-  tcb_coh[col] <- rounder(tcb_coh[[col]] / 1000, decimals=TRUE)
-}
+# Pretty the formatting
+
+tcbb$coh <- rounder(tcbb$coh / 1000, decimals=TRUE)
+
+tcbb$tsr <- ifelse(is.na(tcbb$tsr), '–', frmt(tcbb$tsr))
+
+
+
+# Put years up top
+tcbc1 <- cast(tcbb, area~year, value='tsr')
+tcbd <- cast(tcbb, area~year, value='coh')
+
+# Short names and ordering and asterisking
+tc2 <- .shortnames(subset(tb, rel_with_new_flg==1 & g_hbc22=="high" & year==thisyear-2, country))
+
+tcbc <- .shortnames(tcbc1, "area", ord="hbc")
+tcbc$area <- ifelse(tcbc$area %in% tc2$country, paste0(tcbc$area, "*"), tcbc$area)
+
+tcb_coh <- .shortnames(tcbd, "area", ord="hbc")
 
 names(tcbc)[1] <- names(tcb_coh)[1] <- ""
 
-# fill in – for missing tsr
+# tcbc$area <- factor(tcbc$area, levels=order)
+# tcbc <- tcbc[order(tcbc$area),]
+# 
+# tcbd$area <- factor(tcbd$area, levels=order)
+# tcbd <- tcbd[order(tcbd$area),]
 
-for(var in 2:ncol(tcbc)){
-  tcbc[var] <- ifelse(is.na(tcbc[[var]]), '–', frmt(tcbc[[var]]))
-}
+# tcb_coh <- tcbd
+
+
 
 # Add to file
 
-cat(paste("<h3>Treatment success for all new cases (%) and cohort size (thousands), 1995–", thisyear-2, "</h3>a. Treatment success (%)", sep=""), file=glue("Tables/allnew_tsr", Sys.Date(), ".htm"))
+cat(paste("<h3>Treatment success for all new cases (%) and cohort size (thousands), 1995–", thisyear-2, "</h3>a. Treatment success (%)", sep=""), file=glue("Tables/all_tsr", Sys.Date(), ".htm"))
 
 tcb_tsra <- xtable(tcbc)
 digits(tcb_tsra) <- 0
-print(tcb_tsra, type="html", file=glue("Tables/allnew_tsr", Sys.Date(), ".htm"),include.rownames=F, include.colnames=T, append=T, html.table.attributes="border=0 rules=rows width=900")
+print(tcb_tsra, type="html", file=glue("Tables/all_tsr", Sys.Date(), ".htm"),include.rownames=F, include.colnames=T, append=T, html.table.attributes="border=0 rules=rows width=900")
 
-cat("<br>b. Cohort size (thousands)", file=glue("Tables/allnew_tsr", Sys.Date(), ".htm"), append=T)
+cat("<br>b. Cohort size (thousands)", file=glue("Tables/all_tsr", Sys.Date(), ".htm"), append=T)
 
 tcb_coha <- xtable(tcb_coh)
 
-print(tcb_coha, type="html", file=glue("Tables/allnew_tsr", Sys.Date(), ".htm"),include.rownames=F, include.colnames=T, append=T, html.table.attributes="border=0 rules=rows width=900", add.to.row=list(pos=list(30), command=c(paste("<TR> <TD colspan=", thisyear-1995, ">Blank cells indicate data not reported. – indicates values that cannot be calculated.</TD></TR>", sep=""))))
+print(tcb_coha, type="html", file=glue("Tables/all_tsr", Sys.Date(), ".htm"),include.rownames=F, include.colnames=T, append=T, html.table.attributes="border=0 rules=rows width=900", add.to.row=list(pos=list(30), command=c(paste("<TR> <TD colspan=", thisyear-1995, ">Blank cells indicate data not reported. – indicates values that cannot be calculated.<br>* Data for 2012 include relapse cases.</TD></TR>", sep=""))))
 
-tablecopy("allnew_tsr")
+tablecopy("all_tsr")
 
 #-------------------------------------------------------------------
 # cdr
