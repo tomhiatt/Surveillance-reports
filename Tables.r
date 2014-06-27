@@ -704,6 +704,10 @@ tiasb$all.4564 <- .rowsums(tiasb[c("newrel_m4554", "newrel_m5564", "newrel_f4554
 tiasb$all.65 <- .rowsums(tiasb[c("newrel_m65", "newrel_f65")])
 tiasb$all.totalage <- .rowsums(tiasb[c('all.014', 'newrel_m15plus', 'newrel_f15plus', 'newrel_sexunk15plus')]) 
 
+tiasb$all.15plus <- .rowsums(tiasb[c('newrel_m15plus', 'newrel_f15plus', 'newrel_sexunk15plus')])
+
+tiasb$ageunk <- .rowsums(tiasb[c("newrel_mu", "newrel_fu")])
+
 tiasb$all.male <- .rowsums(tiasb[c("newrel_m014", 'newrel_m15plus', "newrel_mu")])
 tiasb$all.female <- .rowsums(tiasb[c("newrel_f014", 'newrel_f15plus', "newrel_fu")])
 
@@ -730,7 +734,7 @@ tiaa <- glb.rpt.table(df = tiasb, column.nums = 6:ncol(tiasb), country.col = 2)
 tiaa1 <- .shortnames(subset(tb, rel_in_agesex_flg==0 & g_hbc22=="high" & year==thisyear-1, country))
 tiaa$area <- ifelse(tiaa$area %in% tiaa1$country, paste0(tiaa$area, "*"), tiaa$area)
 
-tikeep <- c("area", "newrel_m014", "newrel_f014", "all.014", "all.1544", "all.4564", "all.65", "all.totalage", "all.male", "all.female") #"sn.ep.totalage",
+tikeep <- c("area", "newrel_m014", "newrel_f014", "all.014", "all.15plus", "ageunk", "all.totalage", "all.male", "all.female") #"sn.ep.totalage",
 
 tiaa <- tiaa[tikeep]
 
@@ -745,7 +749,7 @@ tiaa$all.child.pct <- ifelse(is.na(tiaa$all.totalage) , "–", frmt(tiaa$all.014
 # tiaa$new_sp.mf.ratio <- ifelse(is.na(tiaa$new_sp.male) | is.na(tiaa$new_sp.female) | tiaa$new_sp.male==0 | tiaa$new_sp.female==0, "–", frmt(tiaa$new_sp.male / tiaa$new_sp.female))
 tiaa$all.mf.ratio <- ifelse(is.na(tiaa$all.male) | is.na(tiaa$all.female) | tiaa$all.male==0 | tiaa$all.female==0, "–", frmt(tiaa$all.male / tiaa$all.female))
 
-for(var in tikeep[2:8]){
+for(var in tikeep[2:7]){
   tiaa[var] <- rounder(tiaa[[var]])
 }
 
@@ -755,7 +759,7 @@ for(var in tikeep[2:8]){
 # }
 
 # tiaa <- tiaa[order(tiaa$order),]
-tid <- xtable(subset(tiaa, select=c("area", "all.014", "all.1544", "all.4564", "all.65", "all.child.pct", "all.mf.ratio")))
+tid <- xtable(subset(tiaa, select=c("area", "all.014", "all.15plus", "ageunk", "all.child.pct", "all.mf.ratio")))
 
 # Add to file
 
@@ -765,10 +769,9 @@ print(tid, type="html", file=glue("Tables/agesex", Sys.Date(), ".htm"),include.r
         " 
         <TR> <TD></TD> 
         <TD>0–14 YEARS</TD>
-        <TD>15–44 YEARS</TD>
-        <TD>45–64 YEARS</TD>
-        <TD>&#8805;65 YEARS</TD>
-        <TD>% AGED &#60 15 YEARS</TD>
+        <TD>&#8805;15 YEARS</TD>
+        <TD>AGE UNKNOWN</TD>
+        <TD>% AGED &#8805; 15 YEARS</TD>
         <TD>MALE/FEMALE RATIO</TD>
         </TR>", 
 	"<TR> <TD colspan=7>Blank cells indicate data that could not be reported for the age categories shown.<br>– indicates values that cannot be calculated.<br>* New cases only.</TD> </TR>")))

@@ -551,30 +551,19 @@ figsave(gcd, gcb, "cpt_art_hiv_graph")
 
 gea <- merge(subset(n, year>=2005, select=c('iso3', 'year', 'hiv_tbscr')), subset(p, select=c('iso3', 'year', 'e_pop_num')))
 
-# # impute for latest year
-# gea$scrrt <- gea$hiv_tbscr / gea$e_pop_num
-# impute <- function(x){
-#   x[x$year==thisyear-1, 'scrrt'] <- ifelse(is.na(x[x$year==thisyear-1, 'scrrt']), x[x$year==thisyear-2, 'scrrt'], x[x$year==thisyear-1, 'scrrt'])
-#   return(x)
-# }
-# geaa <- ddply(gea, "iso3", impute)
-# geaa$tbscr2 <- geaa$scrrt * geaa$e_pop_num
-# warning('Data for tbscreen graph have been imputed for the latest year.')
+gea$area <- ifelse(gea$iso3 %in% c("IND"), "India", "Rest of the world")
 
-geb <- aggregate(gea['hiv_tbscr'], by=list(year=gea$year), FUN=sum, na.rm=T)
-# geb <- aggregate(geaa['tbscr2'], by=list(year=geaa$year), FUN=sum, na.rm=T)
+geb <- aggregate(gea['hiv_tbscr'], by=list(year=gea$year, area=gea$area), FUN=sum, na.rm=T)
 
-# gec <- melt(geb, id=1)
-# gec$value <- gec$value/1000000
+
 geb$tbscr2 <- geb$hiv_tbscr / 1000000
-# geb$type <- ifelse(geb$year==thisyear-1, 'imp', 'rep')
 
 fmt <- function(){
   function(x) ifelse(x==0, 0, format(x,nsmall = 1,scientific = FALSE))
 }
-# , labels=fmt() # This makes formatting look good if needed
+geb$area <- factor(geb$area, levels=c( "India", "Rest of the world"))
 
-ged <- ggplot(geb, aes(year, tbscr2)) + geom_line(size=1) + scale_y_continuous("Number of people screened (millions)") + theme_glb.rpt() + aes(ymin=0) + scale_x_continuous(name="", breaks=c(min(geb$year):max(geb$year))) + theme(legend.position="none") + ggtitle(paste("Intensified TB case-finding among people living with HIV, 2005", thisyear-1, sep="–")) + expand_limits(y=c(min(pretty(c(geb$tbscr2, min(geb$tbscr2) * (0.95)))), max(pretty(c(geb$tbscr2, max(geb$tbscr2) * (1.09))))))
+ged <- ggplot(geb, aes(year, tbscr2, fill=area)) + geom_area() + scale_y_continuous("Number of people screened (millions)") + theme_glb.rpt() + aes(ymin=0) + scale_x_continuous(name="") + ggtitle(paste("Intensified TB case-finding among people living with HIV, 2005", thisyear-1, sep="–")) + scale_fill_brewer("" )
 
 
 # windows (10,7); ged; dev.off()
@@ -604,15 +593,19 @@ figsave(ged, geb, "tbscr_graph")
 
 # hiv_ipt_graph -------------------------------------------------------------------
 
-gfa <- subset(n, year>=2005, select=c('iso3', 'year', 'hiv_ipt'))
+gfa <- subset(n, year>=2005, select=c('iso3', "g_whoregion", 'year', 'hiv_ipt'))
 
-gfb <- aggregate(gfa[3:ncol(gfa)], by=list(year=gfa$year), FUN=sum, na.rm=T)
+gfa$area <- ifelse(gfa$iso3 %in% c("ZAF"), "South Africa", ifelse(gfa$g_whoregion=="AFR", "Rest of AFR", "Rest of the world"))
 
-gfc <- melt(gfb, id=1)
+
+gfb <- aggregate(gfa[4], by=list(year=gfa$year, area=gfa$area), FUN=sum, na.rm=T)
+
+gfc <- melt(gfb, id=1:2)
 
 gfc$value <- gfc$value/1000
 
-gfd <- ggplot(gfc, aes(year, value)) + geom_line(size=1) + scale_y_continuous("Number of HIV-positive people without active TB (thousands)") + theme_glb.rpt() + scale_x_continuous(name="", breaks=c(min(gfc$year):max(gfc$year))) +  scale_color_brewer(name="Data provided", palette="Dark2") + theme(legend.position="none") + ggtitle(paste("Provision of isoniazid preventive therapy (IPT) to people living with HIV without active TB, 2005", thisyear-1, sep="–")) + expand_limits(y=c(min(pretty(c(gfc$value, min(gfc$value) * (0.95)))), max(pretty(c(gfc$value, max(gfc$value) * (1.05))))))
+gfd <- 
+  ggplot(gfc, aes(year, value, fill=area)) + geom_area() + scale_y_continuous("Number of HIV-positive people without active TB (thousands)") + theme_glb.rpt() + scale_x_continuous(name="", breaks=c(min(gfc$year):max(gfc$year))) +  scale_fill_brewer(name="Data provided", palette="Dark2") +  ggtitle(paste("Provision of isoniazid preventive therapy (IPT) to people living with HIV without active TB, 2005", thisyear-1, sep="–")) + expand_limits(y=c(min(pretty(c(gfc$value, min(gfc$value) * (0.95)))), max(pretty(c(gfc$value, max(gfc$value) * (1.05))))))
 
 # windows (10,7); gfd; dev.off()
 figsave(gfd, gfb, "hiv_ipt_graph")
