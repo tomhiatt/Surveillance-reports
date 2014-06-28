@@ -9,18 +9,20 @@ whoami <- "Tom"   # I hope you know the answer to this.
 if(whoami=="Tom"){
   Rprofile <- "d:/users/hiattt/Dropbox/Code/R/.Rprofile"
   basefolder <- "d:/users/hiattt/Google Drive/Work files/Global TB report/Tables and Figures"
+  scriptsfolder <- "D:/Users/hiattt/Dropbox/Code/Surveillance reports"
 }
 
 if(whoami=="Hazim"){
   Rprofile <- "d:/users/hiattt/Dropbox/Code/R/.Rprofile"
   basefolder <- "d:/users/hiattt/Google Drive/Work files/Global TB report/Tables and Figures"
+  scriptsfolder <- "D:/Users/hiattt/Dropbox/Code/Surveillance reports"
 }
 
 
 # A few details on my way of working. For the tables, figures, maps repeated from year to year, all the code is here and the data source is nearly 100% from the global database. Some people have to send me excel files which I save in the 'External data' folder. For other one-off tables I just save the final files in my folders and iterate with the creator to get them in a ready format.
 
 # -------------------------------------------------
-# bits to change if another dude is running this.
+
 start <- Sys.time()
 source(Rprofile)
 runprofile()
@@ -28,17 +30,12 @@ runprofile()
 
 # -------------------------------------------------
 
-# SETTINGS. Change these three things as appropriate
+# Find the report year
 thisyear <- as.numeric(format(Sys.time(),"%Y")) - ifelse(as.numeric(format(Sys.time(),"%m")) < 6, 1, 0) # This refers to the report year
 
 # Set-up
 
-libraries(c('reshape', 'ggplot2', 'grid', 'scales', 'xtable', 'stringr', 'timeSeries', 'ggthemes'))
-
-# library(treemap)
-# library(RODBC)
-# library(gtb)
-# rm(est, regional, global)
+libraries(c('reshape', 'ggplot2', 'grid', 'scales', 'xtable', 'stringr', 'timeSeries', 'ggthemes', 'plyr'))
 
 # Create a folder structure for saving files if doesn't exist yet 
 if(file.path(basefolder, 'FigData') %nin% list.dirs(basefolder, recursive=FALSE)){
@@ -50,20 +47,6 @@ dir.create(file.path(basefolder, "Slides"))
 dir.create(file.path(basefolder, "Tables"))
 }
 
-
-
-
-#for the date
-# todate <- Sys.Date()
-# if(file.path(versionfolders, todate) %nin% list.dirs(versionfolders, recursive=FALSE)){
-# dir.create(file.path(versionfolders, todate))
-# dir.create(file.path(versionfolders, todate, "FigData"))
-# dir.create(file.path(versionfolders, todate, "Figs"))
-# dir.create(file.path(versionfolders, todate, "CPFigs"))
-# dir.create(file.path(versionfolders, todate, "Slides"))
-# dir.create(file.path(versionfolders, todate, "Tables"))
-# }
-# outfolder <- file.path(versionfolders, todate)
 outfolder <- basefolder
 setwd(basefolder)
 
@@ -92,6 +75,7 @@ theme_glb.rpt <- function(base_size=12, base_family="") {
     )
 }
 
+# Dummy data ---------------------------------------------------
 # Create dummy data for latest year until data are available
 for(df in c('e', 'eraw', 'a', 'araw', 'n', 'd')){
   obj <- get(df)
@@ -104,6 +88,20 @@ for(df in c('e', 'eraw', 'a', 'araw', 'n', 'd')){
   }
   else(comb <- obj)
   assign(paste(df, "t", sep="."), comb)
+}
+
+while(max(araw.t$year) < 2015) { 
+  warning(paste('Still need to get updated forecast for araw!'))
+  copy <- araw.t[araw.t$year==max(araw.t$year),]
+  copy$year <- max(araw.t$year) + 1
+  araw.t <- rbind(araw.t, copy)
+}
+
+while(max(eraw.t$year) < 2015) { 
+  warning(paste('Still need to get updated forecast for eraw!'))
+  copy <- eraw.t[eraw.t$year==max(eraw.t$year),]
+  copy$year <- max(eraw.t$year) + 1
+  eraw.t <- rbind(eraw.t, copy)
 }
 
 # Load in estimate projections. Better to have this in the db, but Hazim is in the UK...
@@ -346,3 +344,9 @@ tableCat <- function(inFrame) {
   }))
   return(outText)
 }
+
+# Run everything ------------------------------------------------
+
+source(file.path(scriptsfolder, "Figures.r"))
+source(file.path(scriptsfolder, "Tables.r"))
+source(file.path(scriptsfolder, "Maps.r"))

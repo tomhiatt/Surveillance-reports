@@ -4,7 +4,7 @@
 # 10 July 2012, revised 23 June 2014
 # -------------------------------------------------
 
-source('d:/users/hiattt/Dropbox/Code/Surveillance reports/Setup.r')
+# source('d:/users/hiattt/Dropbox/Code/Surveillance reports/Setup.r')
 
 
 
@@ -16,11 +16,12 @@ source('d:/users/hiattt/Dropbox/Code/Surveillance reports/Setup.r')
 #   - label range always includes all data
 #   - All use same color palette
 
-#----------------------------------------------------
-# Global rates of incidence, prevalence and mortality - est_global
-#----------------------------------------------------
 
-eza <- subset(a.t, group_type=='global')
+# Global rates of incidence, prevalence and mortality - est_global
+# fig_global ----------------------------------------------------
+
+eza <- subset(araw.t, group_type=='global')
+eza$forecast <- ifelse(eza$year >= thisyear, "forecast", "current")
 
 p1 <- qplot(year, e_inc_100k, data=eza, geom='line', colour=I('#00FF33')) +
   geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I('#00FF33'), alpha=0.4) +
@@ -31,34 +32,21 @@ p1 <- qplot(year, e_inc_100k, data=eza, geom='line', colour=I('#00FF33')) +
   scale_x_continuous('', breaks=c(seq(1990, 2005, 5), thisyear-1)) + ylab('Rate per 100 000 population') +
   expand_limits(y=c(0, max(pretty(c(eza$e_inc_100k_hi, max(eza$e_inc_100k_hi) * (1.20)))))) + theme_glb.rpt() + theme(legend.position='none', plot.title = element_text(hjust = 0)) + ggtitle('Incidence')
   
-  
-  
-  
-  qplot(year, e_inc_100k, data=subset(a.t, group_type=='global'), geom='line', colour=I('blue')) +
-  geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I('blue'), alpha=0.4) +
-  geom_line(aes(year, e_inc_tbhiv_100k), colour=I('red')) +
-  geom_ribbon(aes(year, ymin=e_inc_tbhiv_100k_lo, ymax=e_inc_tbhiv_100k_hi), 
-              fill=I('red'), alpha=0.4) +
-  ylab('Rate per 100 000 population') + xlab('') +
-  expand_limits(y=0) +
-  theme_glb.rpt(base_size=10) + ggtitle('Incidence') +
-  theme(legend.position='none', plot.title = element_text(hjust = 0))
-
-p2 <- qplot(year, mort.nh, data=global.ff, geom='line', colour=I('blue'), linetype=forecast) +
-  geom_ribbon(aes(year, ymin=mort.nh.lo, ymax=mort.nh.hi), fill=I('blue'), alpha=0.4) +
-  geom_hline(aes(yintercept=mort.nh[1] / 2), linetype=2) +
+p2 <- qplot(year, e_mort_exc_tbhiv_100k, data=eza, geom='line', colour=I('blue'), linetype=forecast) +
+  geom_ribbon(aes(year, ymin=e_mort_exc_tbhiv_100k_lo, ymax=e_mort_exc_tbhiv_100k_hi), fill=I('blue'), alpha=0.4) +
+  geom_hline(aes(yintercept=eza[eza$year==1990, "e_mort_exc_tbhiv_100k"] / 2), linetype=2) +
   ylab('') + xlab('') +
   expand_limits(y=0) +
-  theme_glb.rpt(base_size=10) +
-  opts(legend.position='none', title='Mortality')
+  theme_glb.rpt() +
+  theme(legend.position='none') + ggtitle('Mortality')
 
-p3 <- qplot(year, prev, data=global.ff, geom='line', colour=I('blue'), linetype=forecast) +
-  geom_ribbon(aes(year, ymin=prev.lo, ymax=prev.hi), fill=I('blue'), alpha=0.4) +
-  geom_hline(aes(yintercept=prev[1] / 2), linetype=2) +
+p3 <- qplot(year, e_prev_100k, data=eza, geom='line', colour=I('blue'), linetype=forecast) +
+  geom_ribbon(aes(year, ymin=e_prev_100k_lo, ymax=e_prev_100k_hi), fill=I('blue'), alpha=0.4) +
+  geom_hline(aes(yintercept=eza[eza$year==1990, "e_prev_100k"] / 2), linetype=2) +
   ylab('') + xlab('') +
   expand_limits(y=0) +
-  theme_glb.rpt(base_size=10) +
-  opts(legend.position='none', title='Prevalence')
+  theme_glb.rpt() +
+  theme(legend.position='none') + ggtitle('Prevalence')
 
 pdf(width=8, height=4, file='Figs/fig_global.pdf', 
     title='Global trends in case notification rates and estimated rates of incidence, morality and prevalence.') 
@@ -70,48 +58,21 @@ write.csv(merge(global[c('year', 'inc', 'inc.lo', 'inc.hi', 'inc.h', 'inc.h.lo',
                 global.ff[c('year', 'mort.nh', 'mort.nh.lo', 'mort.nh.hi', 'prev', 'prev.lo', 'prev.hi')], all=T), 
           file=paste(outfolder, "/FigData/", "fig_global", ".csv", sep=""), row.names=F, na="")
 
-# No longer relevant I think
-# # Global incidence and case notifications; fig_global_incnotif
-# 
-# p1.1 <- qplot(year, inc, data=global, geom='line', colour=I('blue')) +
-#   geom_ribbon(aes(year, ymin=inc.lo, ymax=inc.hi), fill=I('blue'), alpha=0.4) +
-#   # geom_line(aes(year, inc.h), colour=I('red')) +
-#   geom_line(aes(year, newrel)) + 
-#   # geom_ribbon(aes(year, ymin=inc.h.lo, ymax=inc.h.hi), 
-#   # fill=I('red'), alpha=0.4) +
-#   ylab('Rate per 100 000 population') + xlab('') +
-#   expand_limits(y=0) +
-#   theme_glb.rpt(base_size=10) +
-#   opts(legend.position='none', title='Global trends in estimated incidence and case notification rates, 1990?2010')
-# 
-# # p1.1; dev.off()
-# ggsave(paste(outfolder, "/Figs/", "fig_global_incnotif", ".pdf", sep=""), p1.1, width=7, height=7)
-
-
-#----------------------------------------------------
 # Global rates of incidence, and notifications
-#----------------------------------------------------
+# inc_notif_glo ----------------------------------------------------
 
-eha <- subset(a.t, group_type=="global")
+eha <- subset(araw.t, group_type=="global")
 
 ehb <- merge(subset(eha, select=c("group_name", "year", "e_inc_100k", "e_inc_100k_lo", "e_inc_100k_hi", "e_inc_tbhiv_100k", "e_inc_tbhiv_100k_lo", "e_inc_tbhiv_100k_hi", "e_pop_num")), aggregate(n.t['c_newinc'], by=list(year=n.t$year), FUN=sum, na.rm=TRUE))
 
 ehb$newrel_100k <- ehb$c_newinc / ehb$e_pop_num * 100000
 
-ehc <- qplot(year, e_inc_100k, data=ehb, geom='line', colour=I('#00FF33')) +
-  geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I('#00FF33'), alpha=0.4) +
-  geom_line(aes(year, newrel_100k)) + 
-  # geom_line(aes(year, inc.h), colour=I('red')) +      
-  # geom_ribbon(aes(year, ymin=inc.h.lo, ymax=inc.h.hi), 
-  # fill=I('red'), alpha=0.4) +
-#   facet_wrap(~g_whoregion, scales='free_y') +
-  scale_x_continuous('', breaks=c(seq(1990, 2005, 5), thisyear-1)) + ylab('Rate per 100 000 population per year') +
-  expand_limits(y=c(0, max(pretty(c(ehb$e_inc_100k_hi, max(ehb$e_inc_100k_hi) * (1.20)))))) + theme_glb.rpt() + 
-  opts(title=paste('Global trends in case notification (black) and estimated TB \nincidence (green) rates, 1990–', thisyear-1, sep="")) 
+ehc <- qplot(year, e_inc_100k, data=ehb, geom='line', colour=I('#00FF33')) + geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I('#00FF33'), alpha=0.4) + geom_line(aes(year, newrel_100k)) + scale_x_continuous('', breaks=c(seq(1990, 2005, 5), thisyear-1)) + ylab('Rate per 100 000 population per year') + expand_limits(y=c(0, max(pretty(c(ehb$e_inc_100k_hi, max(ehb$e_inc_100k_hi) * (1.20)))))) + theme_glb.rpt() + ggtitle(paste('Global trends in case notification (black) and estimated TB \nincidence (green) rates, 1990–', thisyear-1, sep="")) 
 
 figsave(ehc, ehb, "inc_notif_glo", width=6, height=6)
 
 # Incidence only
+# inc_glo -----------------------------------------------------
 
 ehd <- qplot(year, e_inc_100k, data=ehb, geom='line', colour=I('#00FF33')) +
   geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I('#00FF33'), alpha=0.4) +
@@ -122,16 +83,15 @@ ehd <- qplot(year, e_inc_100k, data=ehb, geom='line', colour=I('#00FF33')) +
   #   facet_wrap(~g_whoregion, scales='free_y') +
   scale_x_continuous('', breaks=c(seq(1990, 2005, 5), thisyear-1)) + ylab('Rate per 100 000 population per year') +
   expand_limits(y=c(0, max(pretty(c(ehb$e_inc_100k_hi, max(ehb$e_inc_100k_hi) * (1.20)))))) + theme_glb.rpt() + 
-  opts(title=paste('Global trends in case notification (black) and estimated TB \nincidence (green) rates, 1990–', thisyear-1, '.', sep="")) 
+  ggtitle(paste('Global trends in case notification (black) and estimated TB \nincidence (green) rates, 1990–', thisyear-1, '.', sep="")) 
 
 figsave(ehd, ehb, "inc_glo", width=7)
 
 
-#----------------------------------------------------
 # Regional rates of incidence, and notifications
-#----------------------------------------------------
+# inc_notif_reg ----------------------------------------------------
 
-efa1 <- subset(a.t, group_type=="g_whoregion")
+efa1 <- subset(araw.t, group_type=="g_whoregion" & year < thisyear)
 
 # names(regional) <- gsub ('_', '\\.', names (regional))
 efa1$g_whoregion <- factor(efa1$group_name, labels=c("Africa", "The Americas", "Eastern Mediterranean", "Europe", "South-East Asia", "Western Pacific"))
@@ -157,11 +117,12 @@ efb <- qplot(year, e_inc_100k, data=efc, geom='line', colour=I('#00FF33')) +
   scale_x_continuous('', breaks=c(seq(1990, 2005, 5), thisyear-1)) + ylab('Rate per 100 000 population per year') +
   expand_limits(y=0) + geom_point(aes(year, top), alpha=0) +
   theme_glb.rpt() + 
-  opts(title=paste('Case notification and estimated TB incidence rates by WHO region, 1990–', thisyear-1, '.', sep="")) 
+  ggtitle(paste('Case notification and estimated TB incidence rates by WHO region, 1990–', thisyear-1, '.', sep="")) 
 
 figsave(efb, efa, "inc_notif_reg")
 
 # Incidence only
+# inc_reg ------------------------------------------------------
 
 efd <- qplot(year, e_inc_100k, data=efc, geom='line', colour=I('green')) +
   geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I('green'), alpha=0.4) +
@@ -177,11 +138,10 @@ efd <- qplot(year, e_inc_100k, data=efc, geom='line', colour=I('green')) +
 
 figsave(efd, efa, "inc_reg")
 
-#----------------------------------------------------
 # HBC rates of incidence, and notifications
-#----------------------------------------------------
+# inc_notif_hbc ----------------------------------------------------
 
-ega <- subset(e.t, g_hbc22=="high")
+ega <- subset(merge(eraw.t, e.t[e.t$year==thisyear-1,c("country", "g_hbc22")]), g_hbc22=="high" & year < thisyear) # This hack is until we add g_hbc22 to eraw.
 
 egb <- .shortnames(merge(subset(ega, select=c("country", "g_whoregion", "year", "e_inc_100k", "e_inc_100k_lo", "e_inc_100k_hi", "e_inc_tbhiv_100k", "e_inc_tbhiv_100k_lo", "e_inc_tbhiv_100k_hi", "e_pop_num")), subset(n.t, select=c('country', 'year', 'c_newinc'))), ord='multiyear')
 
@@ -197,9 +157,6 @@ egb$newrel_100k <- egb$c_newinc / egb$e_pop_num * 100000
 egd <- qplot(year, e_inc_100k, data=egb, geom='line', colour=I('green')) +
   geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I('green'), alpha=0.4) +
   geom_line(aes(year, newrel_100k)) + 
-  # geom_line(aes(year, inc.h), colour=I('red')) +      
-  # geom_ribbon(aes(year, ymin=inc.h.lo, ymax=inc.h.hi), 
-  # fill=I('red'), alpha=0.4) +
   facet_wrap(~country, scales='free_y') +
   scale_x_continuous('', breaks=c(seq(1990, 2005, 5), thisyear-1)) + ylab('Rate per 100 000 population per year') +
   expand_limits(y=0) + # geom_point(aes(year, top), alpha=0) +
@@ -209,6 +166,7 @@ egd <- qplot(year, e_inc_100k, data=egb, geom='line', colour=I('green')) +
 figsave(egd, egb, "inc_notif_hbc")
 
 # Incidence only
+# inc_hbc -----------------------------------------------------
 
 ege <- qplot(year, e_inc_100k, data=egb, geom='line', colour=I('green')) +
   geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I('green'), alpha=0.4) +
@@ -224,92 +182,50 @@ ege <- qplot(year, e_inc_100k, data=egb, geom='line', colour=I('green')) +
 
 figsave(ege, egb, "inc_hbc")
 
-#----------------------------------------------------
 # Global rates of TB prevalence
-#----------------------------------------------------
+# prev_glo ----------------------------------------------------
+# This graph seems redundant and unnecessary.
 
-# countryestimates <- load(url("https://dl.dropbox.com/u/454007/est.Rdata"))
-# regionalestimates <- load(url("https://dl.dropbox.com/u/454007/regional.Rdata"))
-# globalestimates <- load(url("https://dl.dropbox.com/u/454007/global.Rdata"))
+# epb <- subset(araw.t, group_type=="global", select=c("group_name", "year", "e_prev_100k", "e_prev_100k_lo", "e_prev_100k_hi"))
+# 
+# epc <- qplot(year, e_prev_100k, data=epb, geom='line', colour=I('orange')) +
+#   geom_ribbon(aes(year, ymin=e_prev_100k_lo, ymax=e_prev_100k_hi), fill=I('orange'), alpha=0.4) + scale_x_continuous('') + ylab('Rate per 100 000 population') + theme_glb.rpt() + 
+#   ggtitle(glue('Global trends in estimated TB prevalence rates, 1990–', thisyear-1, " \nand forecast TB prevalence rates ", thisyear, "–2015, by WHO region.")) 
+# 
+# figsave(epc, epb, "prev_glo", width=6, height=6)
 
-epb <- subset(a.t, group_type=="global", select=c("group_name", "year", "e_prev_100k", "e_prev_100k_lo", "e_prev_100k_hi"))
-
-epc <- qplot(year, e_prev_100k, data=epb, geom='line', colour=I('orange')) +
-  geom_ribbon(aes(year, ymin=e_prev_100k_lo, ymax=e_prev_100k_hi), fill=I('orange'), alpha=0.4) +
-  
-  #   facet_wrap(~g_whoregion, scales='free_y') +
-  scale_x_continuous('', breaks=c(seq(1990, 2005, 5), thisyear-1)) + ylab('Rate per 100 000 population') +
-  expand_limits(y=c(0, max(pretty(c(epb$e_inc_100k_hi, max(epb$e_inc_100k_hi) * (1.20)))))) + theme_glb.rpt() + 
-  opts(title=glue('Global trends in estimated TB prevalence rates, 1990–', thisyear-1, " \nand forecast TB prevalence rates ", thisyear, "–2015, by WHO region.")) 
-
-figsave(epc, epb, "prev_glo", width=6, height=6)
-
-
-#----------------------------------------------------
-# Regional rates of TB prevalence
-#----------------------------------------------------
+# Regional rates of TB prevalence and mortality
+# prev_reg ----------------------------------------------------
+# This currently doesn't have all the components, but it doesn't error. Same with Mort below.
 
 regional <- subset(araw.t, group_type=="g_whoregion")
-
+regional$forecast <- ifelse(regional$year >= thisyear, "forecast", "current")
   
 regional$g_whoregion <- factor(regional$group_name, labels=c("Africa", "The Americas", "Eastern Mediterranean", "Europe", "South-East Asia", "Western Pacific"))
 
-efa <- merge(subset(regional, select=c("group_name", "g_whoregion", "year", "e_inc_100k", "e_inc_100k_lo", "e_inc_100k_hi", "e_inc_tbhiv_100k", "e_inc_tbhiv_100k_lo", "e_inc_tbhiv_100k_hi", "e_pop_num")), aggregate(n.t['c_newinc'], by=list(group_name=n.t$g_whoregion, year=n.t$year), FUN=sum, na.rm=TRUE))
-
-efa$newrel_100k <- efa$c_newinc / efa$e_pop_num * 100000
-
-# a fudging to get values on top
-topper <- function(dat){
-  dat$top <- max(pretty(c(dat$e_inc_100k_hi, max(dat$e_inc_100k_hi) * (1.1))))
-  return(dat)
-}
-efc <- ddply(efa, "g_whoregion", topper)
-
-efb <- qplot(year, e_inc_100k, data=efc, geom='line', colour=I('orange')) +
-  geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I('orange'), alpha=0.4) +
-  geom_line(aes(year, newrel_100k)) + 
-  # geom_line(aes(year, inc.h), colour=I('red')) +      
-  # geom_ribbon(aes(year, ymin=inc.h.lo, ymax=inc.h.hi), 
-  # fill=I('red'), alpha=0.4) +
+efb <- ggplot(regional, aes(year, e_prev_100k, linetype=forecast)) + geom_line(colour=I('blue')) +
+  geom_ribbon(aes(year, ymin=e_prev_100k_lo, ymax=e_prev_100k_hi), fill=I('blue'), alpha=0.4) + 
+#   geom_hline(data=subset(regional, year==1990, e_prev_100k), aes(yintercept=e_prev_100k/2), linetype=2) +
   facet_wrap(~g_whoregion, scales='free_y') +
   scale_x_continuous('', breaks=c(seq(1990, 2005, 5), thisyear-1)) + ylab('Rate per 100 000 population') +
-  expand_limits(y=0) + geom_point(aes(year, top), alpha=0) +
-  theme_glb.rpt() + 
-  opts(title=paste('Case notification and estimated TB incidence rates by WHO region, 1990–', thisyear-1, '.', sep="")) 
+  expand_limits(y=0) + 
+  theme_glb.rpt() + theme(legend.position="none") +
+  ggtitle(paste('Estimated prevalence rates by WHO region, 1990–', thisyear-1, '.', sep="")) 
 
-figsave(efb, efa, "prev_reg")
+figsave(efb, regional, "prev_reg")
 
-#----------------------------------------------------
-# HBC rates of incidence, and notifications
-#----------------------------------------------------
+# mort_reg ----------------------------------------------------
 
-ega <- .shortnames(subset(e.t, g_hbc22=="high"))
+efg <- ggplot(regional, aes(year, e_mort_exc_tbhiv_100k, linetype=forecast)) + geom_line(colour=I('orange')) +
+  geom_ribbon(aes(year, ymin=e_mort_exc_tbhiv_100k_lo, ymax=e_mort_exc_tbhiv_100k_hi), fill=I('orange'), alpha=0.4) + 
+  #   geom_hline(data=subset(regional, year==1990, e_mort_exc_tbhiv_100k), aes(yintercept=e_prev_100k/2), linetype=2) +
+  facet_wrap(~g_whoregion, scales='free_y') +
+  scale_x_continuous('', breaks=c(seq(1990, 2005, 5), thisyear-1)) + ylab('Rate per 100 000 population') +
+  expand_limits(y=0) + 
+  theme_glb.rpt() + theme(legend.position="none") +
+  ggtitle(paste('Estimated mortality rates by WHO region, 1990–', thisyear-1, '.', sep="")) 
 
-egb <- merge(subset(ega, select=c("country", "g_whoregion", "year", "e_inc_100k", "e_inc_100k_lo", "e_inc_100k_hi", "e_inc_tbhiv_100k", "e_inc_tbhiv_100k_lo", "e_inc_tbhiv_100k_hi", "e_pop_num")), subset(n.t, select=c('country', 'year','c_newinc')))
-
-egb$newrel_100k <- egb$c_newinc / egb$e_pop_num * 100000
-
-# a fudging to get values on top
-topper <- function(dat){
-  dat$top <- max(pretty(c(dat$e_inc_100k_hi, max(dat$e_inc_100k_hi) * (1.1))))
-  return(dat)
-}
-egc <- ddply(egb, "country", topper)
-
-egd <- qplot(year, e_inc_100k, data=egc, geom='line', colour=I('orange')) +
-  geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I('orange'), alpha=0.4) +
-  geom_line(aes(year, newrel_100k)) + 
-  # geom_line(aes(year, inc.h), colour=I('red')) +      
-  # geom_ribbon(aes(year, ymin=inc.h.lo, ymax=inc.h.hi), 
-  # fill=I('red'), alpha=0.4) +
-  facet_wrap(~country, scales='free_y') +
-  scale_x_continuous('', breaks=c(seq(1990, 2005, 5), thisyear-1)) + ylab('Rate per 100 000 population per year') +
-  expand_limits(y=0) + geom_point(aes(year, top), alpha=0) +
-  theme_glb.rpt() + 
-  opts(title=paste('Case notification and estimated TB incidence rates, 22 high-burden countries, 1990–', thisyear-1, '.', sep="")) 
-
-figsave(egd, egb, "inc_notif_hbc")
-
+figsave(efg, regional, "mort_reg")
 
 #----------------------------------------------------
 # Country and regional Profiles - Incidence, prevalence and mortality in 22 HBCs
@@ -340,10 +256,7 @@ qplot(year, e_inc_100k, data=hest, geom='line', colour=I('green')) +
   scale_y_continuous(name = "") +
   scale_x_continuous(name="", expand = c(0, 0)) + 
   expand_limits(y=0) +
-  theme_glb.rpt(base_size=6) +
-  opts(legend.position='none', title='Incidence',
-       # panel.grid.major = theme_line(size = 0.5),
-       panel.grid.minor = theme_blank())
+  theme_glb.rpt(base_size=6) + theme(legend.position='none', panel.grid.minor = element_blank()) +  ggtitle('Incidence')
 dev.off()
 
 # Prevalence
@@ -357,11 +270,9 @@ p1 <- qplot(year, e_prev_100k, data=hest, geom='line', colour=I('blue')) +
   scale_x_continuous(name="", expand = c(0, 0)) + 
   expand_limits(y=0) +
   theme_glb.rpt(base_size=6) +
-  opts(legend.position='none', title='Prevalence',
-       panel.grid.minor = theme_blank())
-print(p1)
+  theme(legend.position='none', panel.grid.minor = element_blank()) + ggtitle('Prevalence')
+print(p1) 
 dev.off()
-
 
 # Mortality
 
@@ -374,8 +285,7 @@ p2 <- qplot(year, e_mort_exc_tbhiv_100k, data=hest, geom='line', colour=I('orang
   scale_x_continuous(name="", expand = c(0, 0)) + 
   expand_limits(y=0) +
   theme_glb.rpt(base_size=6) +
-  opts(legend.position='none', title='Mortality',
-       panel.grid.minor = theme_blank())
+  theme(legend.position='none', panel.grid.minor = element_blank()) + ggtitle('Mortality')
 print(p2)
 dev.off()
 
@@ -561,7 +471,7 @@ geb$tbscr2 <- geb$hiv_tbscr / 1000000
 fmt <- function(){
   function(x) ifelse(x==0, 0, format(x,nsmall = 1,scientific = FALSE))
 }
-geb$area <- factor(geb$area, levels=c( "India", "Rest of the world"))
+geb$area <- factor(geb$area, levels=c("Rest of the world", "India" ))
 
 ged <- ggplot(geb, aes(year, tbscr2, fill=area)) + geom_area() + scale_y_continuous("Number of people screened (millions)") + theme_glb.rpt() + aes(ymin=0) + scale_x_continuous(name="") + ggtitle(paste("Intensified TB case-finding among people living with HIV, 2005", thisyear-1, sep="–")) + scale_fill_brewer("" )
 
@@ -604,8 +514,10 @@ gfc <- melt(gfb, id=1:2)
 
 gfc$value <- gfc$value/1000
 
+gfc$area <- factor(gfc$area, levels=c("South Africa", "Rest of AFR", "Rest of the world"))
+
 gfd <- 
-  ggplot(gfc, aes(year, value, fill=area)) + geom_area() + scale_y_continuous("Number of HIV-positive people without active TB (thousands)") + theme_glb.rpt() + scale_x_continuous(name="", breaks=c(min(gfc$year):max(gfc$year))) +  scale_fill_brewer(name="Data provided", palette="Dark2") +  ggtitle(paste("Provision of isoniazid preventive therapy (IPT) to people living with HIV without active TB, 2005", thisyear-1, sep="–")) + expand_limits(y=c(min(pretty(c(gfc$value, min(gfc$value) * (0.95)))), max(pretty(c(gfc$value, max(gfc$value) * (1.05))))))
+  ggplot(gfc, aes(year, value, fill=area)) + geom_area() + scale_y_continuous("Number of HIV-positive people without active TB (thousands)") + theme_glb.rpt() + scale_x_continuous(name="", breaks=c(min(gfc$year):max(gfc$year))) +  scale_fill_brewer(name="Data provided", palette="Dark2") +  ggtitle(paste("Provision of isoniazid preventive therapy (IPT) to people living with HIV without active TB, 2005", thisyear-1, sep="–")) 
 
 # windows (10,7); gfd; dev.off()
 figsave(gfd, gfb, "hiv_ipt_graph")

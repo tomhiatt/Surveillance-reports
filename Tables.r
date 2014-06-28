@@ -4,22 +4,28 @@
 # 6 July 2012, updated 23 June 2014
 # -------------------------------------------------
 
-source('d:/users/hiattt/Dropbox/Code/Surveillance reports/Setup.r')
+# source('d:/users/hiattt/Dropbox/Code/Surveillance reports/Setup.r')
 
-# tb_burden -------------------------------------------------------------------
 
-# Numbers
+# burden_num ----------------------------------------------
 
-tag <- read.csv("D:/Users/hiattt/Google Drive/Work files/Global TB report/Tables and Figures/From others/PG/Code needs to access/tab2_1.csv")
-# tagvars <- c("e_pop_num", "e_mort_exc_tbhiv_num", "e_mort_exc_tbhiv_num_lo", "e_mort_exc_tbhiv_num_hi", "e_mort_tbhiv_num", "e_mort_tbhiv_num_lo", "e_mort_tbhiv_num_hi", "e_prev_num", "e_prev_num_lo", "e_prev_num_hi", "e_inc_num", "e_inc_num_lo", "e_inc_num_hi", "e_inc_tbhiv_num", "e_inc_tbhiv_num_lo", "e_inc_tbhiv_num_hi")
-# tag <- subset(tb, g_hbc22=='high' & year==thisyear-1, c('country', tagvars))
-# 
-# names(tag)[1] <- 'group_name'
-# tag <- rbind(tag, subset(araw, group_type %in% c('global', 'g_whoregion'), c('group_name', tagvars)))
-# 
-# names(tag)[1] <- 'rowname'
+# tag <- read.csv("D:/Users/hiattt/Google Drive/Work files/Global TB report/Tables and Figures/From others/PG/Code needs to access/tab2_1.csv")
+tagvars <- c("e_pop_num", "e_mort_exc_tbhiv_num", "e_mort_exc_tbhiv_num_lo", "e_mort_exc_tbhiv_num_hi", "e_mort_tbhiv_num", "e_mort_tbhiv_num_lo", "e_mort_tbhiv_num_hi", "e_prev_num", "e_prev_num_lo", "e_prev_num_hi", "e_inc_num", "e_inc_num_lo", "e_inc_num_hi", "e_inc_tbhiv_num", "e_inc_tbhiv_num_lo", "e_inc_tbhiv_num_hi")
+tag1 <- subset(e.t, g_hbc22=='high' & year==thisyear-1, c('country', tagvars))
 
-tag <- .shortnames(tag, col="rowname")
+names(tag1)[1] <- 'group_name'
+
+# Concoct HBC row
+
+tha <- data.frame(group_name="High-burden countries", e_pop_num = sum(tag1$e_pop_num))
+
+
+
+tag <- rbind(tag1, subset(araw.t, group_type %in% c('global', 'g_whoregion') & year==thisyear-1, c('group_name', tagvars)))
+
+names(tag)[1] <- 'rowname'
+
+# tag <- .shortnames(tag, col="rowname", ord="hbc")
 # tag <- .shortnames(tag, col="country", ord='hbc')
 # tag[1:22,] <- tag[order(tag[1:22, 'rowname']),]
 # tag[24:29,] <- tag[order(tag[23:28, 'rowname']),]
@@ -46,7 +52,7 @@ print(tai, type="html", file=glue("Tables/burden_num", Sys.Date(), ".htm"), incl
 
 tablecopy("burden_num")
 
-# Rates
+# burden_rt --------------------------------------------------------
 
 # tah <- read.csv("D:/Users/hiattt/Google Drive/Work files/Global TB report/Tables and Figures/From others/PG/Code needs to access/tab2_2.csv")
 tahvars <- c("e_pop_num", "e_mort_exc_tbhiv_100k", "e_mort_exc_tbhiv_100k_lo", "e_mort_exc_tbhiv_100k_hi", "e_mort_tbhiv_100k", "e_mort_tbhiv_100k_lo", "e_mort_tbhiv_100k_hi", "e_prev_100k", "e_prev_100k_lo", "e_prev_100k_hi", "e_inc_100k", "e_inc_100k_lo", "e_inc_100k_hi", "e_tbhiv_prct", "e_tbhiv_prct_lo", "e_tbhiv_prct_hi")
@@ -54,8 +60,8 @@ tai <- subset(tb, g_hbc22=='high' & year==thisyear-1, c('country', tahvars))
 
 
 # import PG's last 2 rows to get raw values (until db fixed)
-tbhivwa <- read.csv("D:/Users/hiattt/Google Drive/Work files/Global TB report/Tables and Figures/From others/PG/Code needs to access/tab2_2.csv")
-names(tbhivwa)[1] <- 'country'
+# tbhivwa <- read.csv("D:/Users/hiattt/Google Drive/Work files/Global TB report/Tables and Figures/From others/PG/Code needs to access/tab2_2.csv")
+# names(tbhivwa)[1] <- 'country'
 tai <- merge(tai, tbhivwa[1:22,c('country', "tbhiv", "tbhiv.lo", "tbhiv.hi")], all.x=TRUE)
 
 tai[c("e_tbhiv_prct", "e_tbhiv_prct_lo", "e_tbhiv_prct_hi")] <- tai[c("tbhiv", "tbhiv.lo", "tbhiv.hi")] * 100

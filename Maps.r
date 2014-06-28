@@ -4,7 +4,7 @@
 # 6 July 2012, updated 23 June 2014
 # -------------------------------------------------
 
-source('d:/users/hiattt/Dropbox/Code/Global TB control Reports/Tables and Figures/2013/Setup.r')
+# source('d:/users/hiattt/Dropbox/Code/Global TB control Reports/Tables and Figures/2013/Setup.r')
 
 # if map make is still broken, run this.
 # source('c:/delete/Functions.r')
