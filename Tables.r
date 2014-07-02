@@ -7,15 +7,18 @@
 # source('d:/users/hiattt/Dropbox/Code/Surveillance reports/Setup.r')
 
 
-# burden_num ----------------------------------------------
+# burden_rt & num ----------------------------------------------
 
 # tag <- read.csv("D:/Users/hiattt/Google Drive/Work files/Global TB report/Tables and Figures/From others/PG/Code needs to access/tab2_1.csv")
-tagvars <- c("e_pop_num", "e_mort_exc_tbhiv_num", "e_mort_exc_tbhiv_num_lo", "e_mort_exc_tbhiv_num_hi", "e_mort_tbhiv_num", "e_mort_tbhiv_num_lo", "e_mort_tbhiv_num_hi", "e_prev_num", "e_prev_num_lo", "e_prev_num_hi", "e_inc_num", "e_inc_num_lo", "e_inc_num_hi", "e_inc_tbhiv_num", "e_inc_tbhiv_num_lo", "e_inc_tbhiv_num_hi")
+tagvars <- c("e_pop_num", "e_mort_exc_tbhiv_100k", "e_mort_exc_tbhiv_100k_lo", "e_mort_exc_tbhiv_100k_hi", "e_mort_tbhiv_100k", "e_mort_tbhiv_100k_lo", "e_mort_tbhiv_100k_hi", "e_prev_100k", "e_prev_100k_lo", "e_prev_100k_hi", "e_inc_100k", "e_inc_100k_lo", "e_inc_100k_hi", "e_tbhiv_prct", "e_tbhiv_prct_lo", "e_tbhiv_prct_hi", "e_mort_exc_tbhiv_num", "e_mort_exc_tbhiv_num_lo", "e_mort_exc_tbhiv_num_hi", "e_mort_tbhiv_num", "e_mort_tbhiv_num_lo", "e_mort_tbhiv_num_hi", "e_prev_num", "e_prev_num_lo", "e_prev_num_hi", "e_inc_num", "e_inc_num_lo", "e_inc_num_hi", "e_inc_tbhiv_num", "e_inc_tbhiv_num_lo", "e_inc_tbhiv_num_hi")
 tag1 <- subset(e.t, g_hbc22=='high' & year==thisyear-1, c('country', tagvars))
 
 names(tag1)[1] <- 'group_name'
 
 # Concoct HBC row
+
+
+taga <- aggregate(tag1[2:ncol(tag1)], by=list())
 
 tha <- data.frame(group_name="High-burden countries", e_pop_num = sum(tag1$e_pop_num))
 
@@ -671,20 +674,16 @@ tablecopy("lab_capac")
 
 # lab_policy ####
 
-tff <- xtable(tfd[c("country", "g_hbc22", "g_hbmdr27", "dst_in_guide", "lc_rst_in_guide", "lpa_in_guide", "dx_alg_tbhiv_in_guide", "xpert_in_guide_TBHIV", "xpert_in_guide_MDR")], align=c('l', 'l', rep('c',8)))
+tff <- xtable(tfd[c("country", "g_hbc22", "g_hbmdr27", "xpert_in_guide_TBHIV", "xpert_in_guide_MDR")], align=c('l', 'l', rep('c',4)))
 
 print(tff, type="html", file=glue("Tables/lab_policy", Sys.Date(), ".htm"),include.rownames=F, include.colnames=F, #sanitize.text.function=identity, 
       html.table.attributes="border=0 rules=rows width=1100 cellpadding=0", add.to.row=list(pos=list(0, nrow(tff)), command=c(glue("<h2 align=\"left\">Incorporation of WHO policy guidance for diagnosis of TB, ", thisyear-1, "<sup>a</sup></h2>
 	<TR> <TH></TH> <TH>HIGH TB BURDEN</TH> <TH>HIGH MDR-TB BURDEN</TH>
-<TH>CONVENTIONAL DRUG SUSCEPTIBILITY TESTING (DST)</TH>
-<TH>LIQUID CULTURE AND RAPID SPECIATION TEST </TH>
-<TH>LINE-PROBE ASSAY FOR DETECTING RESISTANCE TO RIFAMPICIN</TH>
-<TH>ALGORITHM FOR THE DIAGNOSIS OF TB IN PEOPLE LIVING WITH HIV</TH>
-<TH>XPERT MTB/RIF FOR DIAGNOSIS OF TB IN PERSONS AT RISK OF HIV-ASSOCIATED TB</TH>
-<TH>XPERT MTB/RIF FOR DIAGNOSIS OF DRUG-RESISTANT TB IN PERSONS AT RISK</TH> </TR>"),
+<TH>XPERT MTB/RIF AS THE INITIAL DIAGNOSTIC TEST FOR TB IN PEOPLE LIVING WITH HIV</TH>
+<TH>XPERT MTB/RIF AS THE INITIAL DIAGNOSTIC TEST IN PEOPLE AT RISK OF DRUG-RESISTANT TB</TH> </TR>"),
 "<TR> <TD colspan=8>Blank cells indicate data not reported.<br>
 <sup>a</sup> The regional and global figures are aggregates of data reported by low- and middle-income countries and territories. Data for the variables shown in the table are not requested from high-income countries in the WHO data collection form. 
-<TD colspan=8></TD> </TR>")))
+<TD colspan=4></TD> </TR>")))
 
 tablecopy("lab_policy")
 
