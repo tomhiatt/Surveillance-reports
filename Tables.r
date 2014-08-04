@@ -4,165 +4,189 @@
 # 6 July 2012, updated 23 June 2014
 # -------------------------------------------------
 
+# HT: run the setup manually  ... but then change this with a whoami !!!!!
 # source('d:/users/hiattt/Dropbox/Code/Surveillance reports/Setup.r')
 
 
-# burden_rt & num ----------------------------------------------
-
-# tag <- read.csv("D:/Users/hiattt/Google Drive/Work files/Global TB report/Tables and Figures/From others/PG/Code needs to access/tab2_1.csv")
-tagvars <- c("e_pop_num", "e_mort_exc_tbhiv_100k", "e_mort_exc_tbhiv_100k_lo", "e_mort_exc_tbhiv_100k_hi", "e_mort_tbhiv_100k", "e_mort_tbhiv_100k_lo", "e_mort_tbhiv_100k_hi", "e_prev_100k", "e_prev_100k_lo", "e_prev_100k_hi", "e_inc_100k", "e_inc_100k_lo", "e_inc_100k_hi", "e_tbhiv_prct", "e_tbhiv_prct_lo", "e_tbhiv_prct_hi", "e_mort_exc_tbhiv_num", "e_mort_exc_tbhiv_num_lo", "e_mort_exc_tbhiv_num_hi", "e_mort_tbhiv_num", "e_mort_tbhiv_num_lo", "e_mort_tbhiv_num_hi", "e_prev_num", "e_prev_num_lo", "e_prev_num_hi", "e_inc_num", "e_inc_num_lo", "e_inc_num_hi", "e_inc_tbhiv_num", "e_inc_tbhiv_num_lo", "e_inc_tbhiv_num_hi")
-tag1 <- subset(e.t, g_hbc22=='high' & year==thisyear-1, c('country', tagvars))
-
-names(tag1)[1] <- 'group_name'
-
-# Concoct HBC row
-
-
-taga <- aggregate(tag1[2:ncol(tag1)], by=list())
-
-tha <- data.frame(group_name="High-burden countries", e_pop_num = sum(tag1$e_pop_num))
-
-
-
-tag <- rbind(tag1, subset(araw.t, group_type %in% c('global', 'g_whoregion') & year==thisyear-1, c('group_name', tagvars)))
-
-names(tag)[1] <- 'rowname'
-
-# tag <- .shortnames(tag, col="rowname", ord="hbc")
-# tag <- .shortnames(tag, col="country", ord='hbc')
-# tag[1:22,] <- tag[order(tag[1:22, 'rowname']),]
-# tag[24:29,] <- tag[order(tag[23:28, 'rowname']),]
-
-tag[2] <- rounder(tag[[2]]/1000)
-
-for(col in 3:ncol(tag)){
-  tag[col] <- ifelse(is.na(tag[[col]]), "–", frmt(tag[[col]]/1000))
-} 
-
-tag[tag$rowname=="India", "rowname"] <- "India(d)"
-# tag[tag$country=="India", "country"] <- "India(d)"
-
-cat(paste("<font size=5><b>Estimated epidemiological burden of TB, ", thisyear-1, ".</b> Numbers in thousands.<sup>a</sup></font>", sep=""), file=glue("Tables/burden_num", Sys.Date(), ".htm"))
-
-tai <- xtable(tag)
-print(tai, type="html", file=glue("Tables/burden_num", Sys.Date(), ".htm"), include.rownames=F, include.colnames=F, append=T,
-      html.table.attributes="border=0 rules=rows width=1100",
-      add.to.row=list(pos=list(0,30), command=c("<TR width=600> <TH colspan=2></TH> <TH colspan=3>MORTALITY<sup>b</sup></TH> <TH colspan=3>HIV-POSITIVE <br>TB MORTALITY</TH> 
-	<TH colspan=3>PREVALENCE</TH> <TH colspan=3>INCIDENCE</TH> 
-<TH colspan=3>HIV-POSITIVE <br>INCIDENT TB CASES</TH> </TR>
-<TR> <TH></TH> <TH>POPULATION</TH> <TH>BEST<sup>c</sup></TH> <TH>LOW</TH> <TH>HIGH</TH> <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH> <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH> <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH> <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH> </TR>", 
-"<TR> <TD colspan=14><sup>a</sup> Numbers for mortality, prevalence and incidence shown to two significant figures. Totals (HBCs, regional and global) are computed prior to rounding. <br><sup>b</sup> Mortality excludes deaths among HIV-positive TB cases. Deaths among HIV-positive TB cases are classified as HIV deaths according to ICD-10 and are shown separately in this table. <br><sup>c</sup> Best, low and high indicate the point estimate and lower and upper bounds of the 95% uncertainty interval. <br><sup>d</sup> Estimates for India have not yet been officially approved by the Ministry of Health & Family Welfare, Government of India, and should therefore be considered provisional.</TD></TR>")))
-
-tablecopy("burden_num")
-
-# burden_rt --------------------------------------------------------
-
-# tah <- read.csv("D:/Users/hiattt/Google Drive/Work files/Global TB report/Tables and Figures/From others/PG/Code needs to access/tab2_2.csv")
-tahvars <- c("e_pop_num", "e_mort_exc_tbhiv_100k", "e_mort_exc_tbhiv_100k_lo", "e_mort_exc_tbhiv_100k_hi", "e_mort_tbhiv_100k", "e_mort_tbhiv_100k_lo", "e_mort_tbhiv_100k_hi", "e_prev_100k", "e_prev_100k_lo", "e_prev_100k_hi", "e_inc_100k", "e_inc_100k_lo", "e_inc_100k_hi", "e_tbhiv_prct", "e_tbhiv_prct_lo", "e_tbhiv_prct_hi")
-tai <- subset(tb, g_hbc22=='high' & year==thisyear-1, c('country', tahvars))
-
-
-# import PG's last 2 rows to get raw values (until db fixed)
-# tbhivwa <- read.csv("D:/Users/hiattt/Google Drive/Work files/Global TB report/Tables and Figures/From others/PG/Code needs to access/tab2_2.csv")
-# names(tbhivwa)[1] <- 'country'
-tai <- merge(tai, tbhivwa[1:22,c('country', "tbhiv", "tbhiv.lo", "tbhiv.hi")], all.x=TRUE)
-
-tai[c("e_tbhiv_prct", "e_tbhiv_prct_lo", "e_tbhiv_prct_hi")] <- tai[c("tbhiv", "tbhiv.lo", "tbhiv.hi")] * 100
-
-tai <- tai[c('country', tahvars)]
-
-warning('Raw values not yet in DB. If I\'m wrong, then remove this part.')
+# Link -------------------------------------------------
+# Link GTBR2014 table numbers to code sections
+#
+# 4.1 case notifications: 4_1_notif
+# 4.2 case notifications by age and sex: 4_2_agesex.htm
+# 
+# 4.6 Treatment success for all new TB cases (%) and cohort size: 4_6_all_tsr
+# 
+# 6.1 Laboratory capacity: 6_1_lab_capac   (start at 6_1_2_lab_capac & lab_policy )
+# 6.2 Incorporation of WHO policy for diagnosis of TB: 6_2_lab_policy  (start at 6_1_2_lab_capac & lab_policy )
+# 
+# 7.1 HIV testing, treatment for HIV-positive TB patients ..etc: 7_1_tbhiv
+# 
+# -------------------------------------------------
 
 
 
-# AF and BG fix
-if(is.na(tai[tai$country=='Afghanistan', 'e_tbhiv_prct_lo'])){
-  tai[1:2, 'e_tbhiv_prct_lo'] <- tai[1:2, 'e_tbhiv_prct'] * 0.75
-  tai[1:2, 'e_tbhiv_prct_hi'] <- tai[1:2, 'e_tbhiv_prct'] * 1.25
-  warning('Afghanistan and Bangladesh TB/HIV ranges have been guesstimated.')
-}
 
-names(tai)[1] <- 'group_name'
-tah <- rbind(tai, subset(araw, group_type %in% c('global', 'g_whoregion') & year==thisyear-1, c('group_name', tahvars)))
-tah[nrow(tah)+1,'group_name'] <- 'High-burden countries'
 
-for(est in c("e_mort_exc_tbhiv_100k", "e_mort_tbhiv_100k", "e_prev_100k", "e_inc_100k", "e_tbhiv_prct")){
+#flag for whether or not to produce estimates figures
+flg_show_estimates <- FALSE
+
+if(flg_show_estimates){
   
-  tah[tah$group_name=='High-burden countries', c(est, glue(est, '_lo'), glue(est, '_hi'))] <- subset(add.rv(tai[est]/1e5, tai[glue(est, '_lo')]/1e5, tai[glue(est, '_hi')]/1e5, weights=tai$e_pop_num), select=c(r, r.lo, r.hi)) * 1e5
+  # burden_num ----------------------------------------------
+  
+  # tag <- read.csv("D:/Users/hiattt/Google Drive/Work files/Global TB report/Tables and Figures/From others/PG/Code needs to access/tab2_1.csv")
+  tagvars <- c("e_pop_num", "e_mort_exc_tbhiv_num", "e_mort_exc_tbhiv_num_lo", "e_mort_exc_tbhiv_num_hi", "e_mort_tbhiv_num", "e_mort_tbhiv_num_lo", "e_mort_tbhiv_num_hi", "e_prev_num", "e_prev_num_lo", "e_prev_num_hi", "e_inc_num", "e_inc_num_lo", "e_inc_num_hi", "e_inc_tbhiv_num", "e_inc_tbhiv_num_lo", "e_inc_tbhiv_num_hi")
+  tag1 <- subset(e.t, g_hbc22=='high' & year==thisyear-1, c('country', tagvars))
+  
+  names(tag1)[1] <- 'group_name'
+  
+  # Concoct HBC row
+  
+  tha <- data.frame(group_name="High-burden countries", e_pop_num = sum(tag1$e_pop_num))
+  
+  
+  
+  tag <- rbind(tag1, subset(araw.t, group_type %in% c('global', 'g_whoregion') & year==thisyear-1, c('group_name', tagvars)))
+  
+  names(tag)[1] <- 'rowname'
+  
+  # tag <- .shortnames(tag, col="rowname", ord="hbc")
+  # tag <- .shortnames(tag, col="country", ord='hbc')
+  # tag[1:22,] <- tag[order(tag[1:22, 'rowname']),]
+  # tag[24:29,] <- tag[order(tag[23:28, 'rowname']),]
+  
+  tag[2] <- rounder(tag[[2]]/1000)
+  
+  for(col in 3:ncol(tag)){
+    tag[col] <- ifelse(is.na(tag[[col]]), "-", frmt(tag[[col]]/1000))
+  } 
+  
+  tag[tag$rowname=="India", "rowname"] <- "India(d)"
+  # tag[tag$country=="India", "country"] <- "India(d)"
+  
+  cat(paste("<font size=5><b>Estimated epidemiological burden of TB, ", thisyear-1, ".</b> Numbers in thousands.<sup>a</sup></font>", sep=""), file=glue("Tables/burden_num", Sys.Date(), ".htm"))
+  
+  tai <- xtable(tag)
+  print(tai, type="html", file=glue("Tables/burden_num", Sys.Date(), ".htm"), include.rownames=F, include.colnames=F, append=T,
+        html.table.attributes="border=0 rules=rows width=1100",
+        add.to.row=list(pos=list(0,30), command=c("<TR width=600> <TH colspan=2></TH> <TH colspan=3>MORTALITY<sup>b</sup></TH> <TH colspan=3>HIV-POSITIVE <br>TB MORTALITY</TH> 
+                                                  <TH colspan=3>PREVALENCE</TH> <TH colspan=3>INCIDENCE</TH> 
+                                                  <TH colspan=3>HIV-POSITIVE <br>INCIDENT TB CASES</TH> </TR>
+                                                  <TR> <TH></TH> <TH>POPULATION</TH> <TH>BEST<sup>c</sup></TH> <TH>LOW</TH> <TH>HIGH</TH> <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH> <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH> <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH> <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH> </TR>", 
+                                                  "<TR> <TD colspan=14><sup>a</sup> Numbers for mortality, prevalence and incidence shown to two significant figures. Totals (HBCs, regional and global) are computed prior to rounding. <br><sup>b</sup> Mortality excludes deaths among HIV-positive TB cases. Deaths among HIV-positive TB cases are classified as HIV deaths according to ICD-10 and are shown separately in this table. <br><sup>c</sup> Best, low and high indicate the point estimate and lower and upper bounds of the 95% uncertainty interval. <br><sup>d</sup> Estimates for India have not yet been officially approved by the Ministry of Health & Family Welfare, Government of India, and should therefore be considered provisional.</TD></TR>")))
+  
+  tablecopy("burden_num")
+  
+  # burden_rt --------------------------------------------------------
+  
+  # tah <- read.csv("D:/Users/hiattt/Google Drive/Work files/Global TB report/Tables and Figures/From others/PG/Code needs to access/tab2_2.csv")
+  tahvars <- c("e_pop_num", "e_mort_exc_tbhiv_100k", "e_mort_exc_tbhiv_100k_lo", "e_mort_exc_tbhiv_100k_hi", "e_mort_tbhiv_100k", "e_mort_tbhiv_100k_lo", "e_mort_tbhiv_100k_hi", "e_prev_100k", "e_prev_100k_lo", "e_prev_100k_hi", "e_inc_100k", "e_inc_100k_lo", "e_inc_100k_hi", "e_tbhiv_prct", "e_tbhiv_prct_lo", "e_tbhiv_prct_hi")
+  tai <- subset(tb, g_hbc22=='high' & year==thisyear-1, c('country', tahvars))
+  
+  
+  # import PG's last 2 rows to get raw values (until db fixed)
+  # tbhivwa <- read.csv("D:/Users/hiattt/Google Drive/Work files/Global TB report/Tables and Figures/From others/PG/Code needs to access/tab2_2.csv")
+  # names(tbhivwa)[1] <- 'country'
+  tai <- merge(tai, tbhivwa[1:22,c('country', "tbhiv", "tbhiv.lo", "tbhiv.hi")], all.x=TRUE)
+  
+  tai[c("e_tbhiv_prct", "e_tbhiv_prct_lo", "e_tbhiv_prct_hi")] <- tai[c("tbhiv", "tbhiv.lo", "tbhiv.hi")] * 100
+  
+  tai <- tai[c('country', tahvars)]
+  
+  warning('Raw values not yet in DB. If I\'m wrong, then remove this part.')
+  
+  
+  
+  # AF and BG fix
+  if(is.na(tai[tai$country=='Afghanistan', 'e_tbhiv_prct_lo'])){
+    tai[1:2, 'e_tbhiv_prct_lo'] <- tai[1:2, 'e_tbhiv_prct'] * 0.75
+    tai[1:2, 'e_tbhiv_prct_hi'] <- tai[1:2, 'e_tbhiv_prct'] * 1.25
+    warning('Afghanistan and Bangladesh TB/HIV ranges have been guesstimated.')
+  }
+  
+  names(tai)[1] <- 'group_name'
+  tah <- rbind(tai, subset(araw, group_type %in% c('global', 'g_whoregion') & year==thisyear-1, c('group_name', tahvars)))
+  tah[nrow(tah)+1,'group_name'] <- 'High-burden countries'
+  
+  for(est in c("e_mort_exc_tbhiv_100k", "e_mort_tbhiv_100k", "e_prev_100k", "e_inc_100k", "e_tbhiv_prct")){
+    
+    tah[tah$group_name=='High-burden countries', c(est, glue(est, '_lo'), glue(est, '_hi'))] <- subset(add.rv(tai[est]/1e5, tai[glue(est, '_lo')]/1e5, tai[glue(est, '_hi')]/1e5, weights=tai$e_pop_num), select=c(r, r.lo, r.hi)) * 1e5
+  }
+  
+  tah[tah$group_name=='High-burden countries','e_pop_num'] <- sum(tai$e_pop_num)
+  
+  # for(est in c("e_tbhiv_prct")){ # Currently dropping Afghanistan
+  #   
+  #   tah[tah$group_name=='High-burden countries', c(est, glue(est, '_lo'), glue(est, '_hi'))] <- subset(add.rv(tai[2:22,est]/100, tai[2:22,glue(est, '_lo')]/100, tai[2:22,glue(est, '_hi')]/100, weights=tai[2:22,'e_pop_num']), select=c(r, r.lo, r.hi)) * 100
+  #   
+  # } # This ain't workin so I'll have to workaround in the meantime.
+  
+  # tbhivwa <- read.csv("D:/Users/hiattt/Google Drive/Work files/Global TB report/Tables and Figures/From others/PG/Code needs to access/tab2_2.csv")
+  # tah[tah$group_name=='High-burden countries', c('e_pop_num', "e_tbhiv_prct", "e_tbhiv_prct_lo", "e_tbhiv_prct_hi")] <- c(sum(tai$e_pop_num), subset(tbhivwa, rowname=='High-burden countries', c("tbhiv", "tbhiv.lo", "tbhiv.hi"))*100)
+  
+  
+  names(tah)[1] <- 'rowname'
+  
+  tah <- .shortnames(tah, col="rowname", ord='hbc')
+  
+  # tah[1:22,] <- tah[order(tah[1:22, 'rowname']),]
+  
+  tah[2] <- rounder(tah[[2]]/1000)
+  
+  for(col in 3:14){
+    tah[col] <- frmt(tah[[col]], rates=TRUE)
+  } 
+  
+  for(col in 15:17){
+    tah[col] <- ifelse(tah[[col]] < 0.1, "<0.1", ifelse(tah[[col]] < 1, signif(tah[[col]],2), signif(tah[[col]],3) ))
+  } 
+  
+  # for(col in 12:14){
+  #   tah[col] <- ifelse(is.na(tah[[col]]), "-", frmt(tah[[col]] * 100))
+  # } 
+  
+  tah[tah$rowname=="India", "rowname"] <- "India(c)"
+  
+  cat(paste("<font size=5><b>Estimated epidemiological burden of TB, ", thisyear-1, ".</b> Rates per 100 000 population except where indicated.<sup>a</sup></font>", sep=""), file=glue("Tables/burden_rt", Sys.Date(), ".htm"))
+  
+  taj <- xtable(tah)
+  print(taj, type="html", file=glue("Tables/burden_rt", Sys.Date(), ".htm"), include.rownames=F, include.colnames=F, append=T,
+        html.table.attributes="border=0 rules=rows width=1100",
+        add.to.row=list(pos=list(0,30), command=c("<TR width=600> <TH colspan=2></TH> <TH colspan=3>MORTALITY<sup>a</sup></TH> 
+                                                  <TH colspan=3>HIV-POSITIVE TB MORTALITY</TH> <TH colspan=3>PREVALENCE</TH> <TH colspan=3>INCIDENCE</TH> 
+                                                  <TH colspan=3>HIV PREVALENCE IN <br>INCIDENT TB CASES (%)</TH> </TR>
+                                                  <TR> <TH></TH> <TH>POPULATION<br>(THOUSANDS)</TH> <TH>BEST<sup>b</sup></TH> <TH>LOW</TH> <TH>HIGH</TH> <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH> <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH> <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH> <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH> </TR>", 
+                                                  "<TR> <TD colspan=17><sup>a</sup> Mortality excludes deaths among HIV-positive TB cases. Deaths among HIV-positive TB cases are classified as HIV deaths according to ICD-10 and are shown separately in this table. <br><sup>b</sup> Best, low and high indicate the point estimate and lower and upper bounds of the 95% uncertainty interval. <br><sup>c</sup> Estimates for India have not yet been officially approved by the Ministry of Health & Family Welfare, Government of India, and should therefore be considered provisional.</TD></TR>")))
+  
+  tablecopy("burden_rt")
+  
+  # for country profiles
+  
+  taca <- subset(e.t, g_hbc22=='high' & year==thisyear-1, select=c('country', 'year', "e_mort_exc_tbhiv_num", "e_mort_exc_tbhiv_num_lo", "e_mort_exc_tbhiv_num_hi", "e_mort_exc_tbhiv_100k", "e_mort_exc_tbhiv_100k_lo", "e_mort_exc_tbhiv_100k_hi", "e_prev_num", "e_prev_num_lo", "e_prev_num_hi", "e_prev_100k", "e_prev_100k_lo", "e_prev_100k_hi", "e_inc_num", "e_inc_num_lo", "e_inc_num_hi", "e_inc_100k", "e_inc_100k_lo", "e_inc_100k_hi", "e_inc_tbhiv_num", "e_inc_tbhiv_num_lo", "e_inc_tbhiv_num_hi", "e_inc_tbhiv_100k", "e_inc_tbhiv_100k_lo", "e_inc_tbhiv_100k_hi", "c_cdr", "c_cdr_lo", "c_cdr_hi"))
+  
+  nums <- names(taca)[grep("num", names(taca))]
+  rates <- names(taca)[grep("100k", names(taca))]
+  
+  tada <- taca
+  
+  for(var in nums){
+    tada[var] <- frmt(taca[[var]] / 1000, thou=TRUE)
+  }
+  for(var in rates){
+    tada[var] <- frmt(tada[[var]], rates=TRUE)
+  }
+  
+  # tada <- cbind(glue(taca$country, taca$year), taca)
+  
+  write.csv(tada, file=glue("Tables/burden_cp", Sys.Date(), ".csv"), row.names=FALSE)
 }
 
-tah[tah$group_name=='High-burden countries','e_pop_num'] <- sum(tai$e_pop_num)
 
-# for(est in c("e_tbhiv_prct")){ # Currently dropping Afghanistan
-#   
-#   tah[tah$group_name=='High-burden countries', c(est, glue(est, '_lo'), glue(est, '_hi'))] <- subset(add.rv(tai[2:22,est]/100, tai[2:22,glue(est, '_lo')]/100, tai[2:22,glue(est, '_hi')]/100, weights=tai[2:22,'e_pop_num']), select=c(r, r.lo, r.hi)) * 100
-#   
-# } # This ain't workin so I'll have to workaround in the meantime.
-
-# tbhivwa <- read.csv("D:/Users/hiattt/Google Drive/Work files/Global TB report/Tables and Figures/From others/PG/Code needs to access/tab2_2.csv")
-# tah[tah$group_name=='High-burden countries', c('e_pop_num', "e_tbhiv_prct", "e_tbhiv_prct_lo", "e_tbhiv_prct_hi")] <- c(sum(tai$e_pop_num), subset(tbhivwa, rowname=='High-burden countries', c("tbhiv", "tbhiv.lo", "tbhiv.hi"))*100)
-
-
-names(tah)[1] <- 'rowname'
-
-tah <- .shortnames(tah, col="rowname", ord='hbc')
-
-# tah[1:22,] <- tah[order(tah[1:22, 'rowname']),]
-
-tah[2] <- rounder(tah[[2]]/1000)
-
-for(col in 3:14){
-  tah[col] <- frmt(tah[[col]], rates=TRUE)
-} 
-
-for(col in 15:17){
-  tah[col] <- ifelse(tah[[col]] < 0.1, "<0.1", ifelse(tah[[col]] < 1, signif(tah[[col]],2), signif(tah[[col]],3) ))
-} 
-
-# for(col in 12:14){
-#   tah[col] <- ifelse(is.na(tah[[col]]), "–", frmt(tah[[col]] * 100))
-# } 
-
-tah[tah$rowname=="India", "rowname"] <- "India(c)"
-
-cat(paste("<font size=5><b>Estimated epidemiological burden of TB, ", thisyear-1, ".</b> Rates per 100 000 population except where indicated.<sup>a</sup></font>", sep=""), file=glue("Tables/burden_rt", Sys.Date(), ".htm"))
-
-taj <- xtable(tah)
-print(taj, type="html", file=glue("Tables/burden_rt", Sys.Date(), ".htm"), include.rownames=F, include.colnames=F, append=T,
-      html.table.attributes="border=0 rules=rows width=1100",
-      add.to.row=list(pos=list(0,30), command=c("<TR width=600> <TH colspan=2></TH> <TH colspan=3>MORTALITY<sup>a</sup></TH> 
-  <TH colspan=3>HIV-POSITIVE TB MORTALITY</TH> <TH colspan=3>PREVALENCE</TH> <TH colspan=3>INCIDENCE</TH> 
-  <TH colspan=3>HIV PREVALENCE IN <br>INCIDENT TB CASES (%)</TH> </TR>
-  <TR> <TH></TH> <TH>POPULATION<br>(THOUSANDS)</TH> <TH>BEST<sup>b</sup></TH> <TH>LOW</TH> <TH>HIGH</TH> <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH> <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH> <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH> <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH> </TR>", 
-"<TR> <TD colspan=17><sup>a</sup> Mortality excludes deaths among HIV-positive TB cases. Deaths among HIV-positive TB cases are classified as HIV deaths according to ICD-10 and are shown separately in this table. <br><sup>b</sup> Best, low and high indicate the point estimate and lower and upper bounds of the 95% uncertainty interval. <br><sup>c</sup> Estimates for India have not yet been officially approved by the Ministry of Health & Family Welfare, Government of India, and should therefore be considered provisional.</TD></TR>")))
-
-tablecopy("burden_rt")
-
-# for country profiles
-
-taca <- subset(e.t, g_hbc22=='high' & year==thisyear-1, select=c('country', 'year', "e_mort_exc_tbhiv_num", "e_mort_exc_tbhiv_num_lo", "e_mort_exc_tbhiv_num_hi", "e_mort_exc_tbhiv_100k", "e_mort_exc_tbhiv_100k_lo", "e_mort_exc_tbhiv_100k_hi", "e_prev_num", "e_prev_num_lo", "e_prev_num_hi", "e_prev_100k", "e_prev_100k_lo", "e_prev_100k_hi", "e_inc_num", "e_inc_num_lo", "e_inc_num_hi", "e_inc_100k", "e_inc_100k_lo", "e_inc_100k_hi", "e_inc_tbhiv_num", "e_inc_tbhiv_num_lo", "e_inc_tbhiv_num_hi", "e_inc_tbhiv_100k", "e_inc_tbhiv_100k_lo", "e_inc_tbhiv_100k_hi", "c_cdr", "c_cdr_lo", "c_cdr_hi"))
-
-nums <- names(taca)[grep("num", names(taca))]
-rates <- names(taca)[grep("100k", names(taca))]
-
-tada <- taca
-
-for(var in nums){
-  tada[var] <- frmt(taca[[var]] / 1000, thou=TRUE)
-}
-for(var in rates){
-  tada[var] <- frmt(tada[[var]], rates=TRUE)
-}
-
-# tada <- cbind(glue(taca$country, taca$year), taca)
-
-write.csv(tada, file=glue("Tables/burden_cp", Sys.Date(), ".csv"), row.names=FALSE)
-
-# notif -------------------------------------------------------------------
+# 4_1_notif -------------------------------------------------------------------
 
 tbb <- subset(n, year==thisyear-1, select=c('country', 'g_whoregion', 'g_hbc22', 'c_notified', 'c_newinc', "new_labconf", "new_clindx", "new_ep", "ret_rel_labconf", "ret_rel_clindx", "ret_rel_ep", "ret_nrel"))
 
-tbb$new.pulm <- .rowsums(tbb[c("new_labconf", "new_clindx", "ret_rel_labconf", "ret_rel_clindx")])
+#tbb$new.pulm <- .rowsums(tbb[c("new_labconf", "new_clindx", "ret_rel_labconf", "ret_rel_clindx")])
 
 tbb <- tbb[order(tbb$country),]
 names(tbb)[names(tbb)=='country'] <- 'area'
@@ -178,60 +202,55 @@ tbbga <- aggregate(tbbg[4:ncol(tbb)], by=list(area=tbbg$area), FUN=sum, na.rm=TR
 # combine together
 tbc <- rbind(tbb[tbb$g_hbc22=='high', c(1, 4:ncol(tbb))], tbbh, tbbr, tbbga)
 
-# Fill in data for countries not reporting lab confirmed (see below too)
-# tbc$new_labconf2 <- ifelse(is.na(tbc$new_labconf), tbc$new_sp, tbc$new_labconf)
 
 # calculate and format vars
-# tbc$labconf <- rowSums(tbc[c('new_labconf2', 'ret_labconf')]) 
-# tbc$notif_lab <- tbc$labconf / tbc$c_notified_lab * 100
-# tbc$ret_nrel <- tbc$c_ret - tbc$ret_rel
-tbc$nrpulm_lab_pct <- tbc$new_labconf / tbc$new.pulm * 100
 
-# tbc$notif_foreign_pct <- tbc$notif_foreign / tbc$c_notified * 100
+tbc$nrpulm_lab_pct <- .rowsums(tbc[c("new_labconf", "ret_rel_labconf")] )  * 100 / .rowsums(tbc[c("new_labconf", "new_clindx", "ret_rel_labconf", "ret_rel_clindx")])
 
 
 for(var in 2:ncol(tbc)){
   tbc[var] <- rounder(tbc[[var]])
 }
 
-tbc[is.na(tbc$nrpulm_lab_pct), 'nrpulm_lab_pct'] <- "–"
-# tbc[is.na(tbc$notif_foreign_pct), 'notif_foreign_pct'] <- "–"
+tbc[is.na(tbc$nrpulm_lab_pct), 'nrpulm_lab_pct'] <- "-"
 
 # rename
 tbc <- .shortnames(tbc, col='area', ord = "hbc")
 
-# Add footnote for countries not reporting Lab confirmed (Thailand)
-# footnote.b <- ifelse(any(is.na(tbc$new_labconf)), paste('(b) LABORATORY CONFIRMED data for', paste(subset(tbc, is.na(new_labconf), 'area'), collapse=', '), 'refer to smear-positive cases only. Data on cases that were laboratory confirmed using other methods were not reported.'), "")
-# tbc$new_labconf2 <- ifelse(is.na(tbc$new_labconf), glue(tbc$new_sp, "(b)"), tbc$new_labconf2)
 
 # Add to file
-  
+
 tbm <- xtable(tbc[c("area", "c_notified", 'c_newinc', "ret_nrel", "new_labconf", "new_clindx", "new_ep", "ret_rel_labconf", "ret_rel_clindx", "ret_rel_ep", "nrpulm_lab_pct")])
 
 digits(tbm) <- 0
 
-cat(paste("<h3>Case notifications,", thisyear-1, "</h3>"), file=glue("Tables/notif", Sys.Date(), ".htm"))
+cat(paste("<h3>Case notifications,", thisyear-1, "</h3>"), file=glue("Tables/4_1_notif", Sys.Date(), ".htm"))
 
-print(tbm, type="html", file=glue("Tables/notif", Sys.Date(), ".htm"),include.rownames=F, include.colnames=F, html.table.attributes="border=0 rules=rows width=1100 cellpadding=5", append=T, add.to.row=list(pos=list(0, nrow(tbm)), command=c(
-"<TR> <TD colspan=4></TD> 
-	<TH colspan=3>NEW OR PREVIOUS TREATMENT HISTORY UNKNOWN</TH> 
-  <TH colspan=3>RELAPSE</TH> 
-  <TD colspan=1></TD> </TR> 
-  <TR> <TD></TD> <TD>TOTAL NOTIFIED</TD> 
-  <TD>RETREATMENT EXCLUDING RELAPSE</TD> 
+print(tbm, type="html", file=glue("Tables/4_1_notif", Sys.Date(), ".htm"),include.rownames=F, include.colnames=F, html.table.attributes="border=0 rules=rows width=1100 cellpadding=5", append=T, add.to.row=list(pos=list(0, nrow(tbm)), command=c(
+  "<TR> 
+  <TD colspan='4' style='border-right: solid 2px black;'></TD> 
+  <TH colspan='3' style='border-right: solid 2px black;'>NEW OR PREVIOUS TREATMENT HISTORY UNKNOWN</TH> 
+  <TH colspan='3' style='border-right: solid 2px black;'>RELAPSE</TH> 
+  <TD></TD> 
+  </TR> 
+  <TR> 
+  <TD></TD> 
+  <TD>TOTAL NOTIFIED</TD> 
   <TD>NEW AND RELAPSE(a)</TD> 
+  <TD style='border-right: solid 2px black;'>RETREATMENT EXCLUDING RELAPSE</TD> 
   <TD>PULMONARY BACTERIOLOGICALLY CONFIRMED</TD>
   <TD>PULMONARY CLINICALLY DIAGNOSED</TD> 
-  <TD>EXTRAPULMONARY</TD>   
+  <TD style='border-right: solid 2px black;'>EXTRAPULMONARY</TD>   
   <TD>PULMONARY BACTERIOLOGICALLY CONFIRMED</TD>
   <TD>PULMONARY CLINICALLY DIAGNOSED</TD> 
-  <TD>EXTRAPULMONARY</TD> 
+  <TD style='border-right: solid 2px black;'>EXTRAPULMONARY</TD> 
   <TD>PERCENTAGE OF PULMONARY CASES BACTERIOLOGICALLY CONFIRMED</TD> 
-  </TR>", 
-	"<TR> <TD colspan=11>Blank cells indicate data not reported.<br>
-(a) NEW AND RELAPSE includes cases for which the treatment history is unknown.</TD></TR>")))
+  </TR> 
+  <TR>", 
+  "<TR> <TD colspan=11>Blank cells indicate data not reported.<br>
+  (a) NEW AND RELAPSE includes cases for which the treatment history is unknown.</TD></TR>")))
 
-tablecopy("notif")
+tablecopy("4_1_notif")
 
 # tsr new_sp and all
 
@@ -290,15 +309,15 @@ for(col in 2:ncol(tc_coh)){
 # remove country column names
 names(tc_tsr)[1] <- names(tc_coh)[1] <- ""
 
-# fill in – for missing tsr
+# fill in - for missing tsr
 
 for(var in 2:ncol(tc_tsr)){
-  tc_tsr[var] <- ifelse(is.na(tc_tsr[[var]]), '–', frmt(tc_tsr[[var]]))
+  tc_tsr[var] <- ifelse(is.na(tc_tsr[[var]]), '-', frmt(tc_tsr[[var]]))
 }
 
 # Add to file
 
-cat(paste("<h3>Treatment success for new smear-positive cases (%) and cohort size (thousands), 1995–", thisyear-2, "</h3>a. Treatment success (%)", sep=""), file=glue("Tables/sp_tsr", Sys.Date(), ".htm"))
+cat(paste("<h3>Treatment success for new smear-positive cases (%) and cohort size (thousands), 1995-", thisyear-2, "</h3>a. Treatment success (%)", sep=""), file=glue("Tables/sp_tsr", Sys.Date(), ".htm"))
 
 tc_tsra <- xtable(tc_tsr)
 digits(tc_tsra) <- 0
@@ -311,13 +330,13 @@ tc_coha <- xtable(tc_coh)
 
 print(tc_coha, type="html", file=glue("Tables/sp_tsr", Sys.Date(), ".htm"),include.rownames=F, include.colnames=T, append=T,
       html.table.attributes="border=0 rules=rows width=900",
-      add.to.row=list(pos=list(30), command=c(paste("<TR> <TD colspan=", thisyear-1995, ">Blank cells indicate data not reported. – indicates values that cannot be calculated.</TD></TR>", sep=""))))
+      add.to.row=list(pos=list(30), command=c(paste("<TR> <TD colspan=", thisyear-1995, ">Blank cells indicate data not reported. - indicates values that cannot be calculated.</TD></TR>", sep=""))))
 
 tablecopy("sp_tsr")
 
 
 # All (smear pos, extrapulm, ret)
-# all_tsr -------------------------------------------------------------------
+# 4_6_all_tsr -------------------------------------------------------------------
 
 tcbb <- subset(o, year>=1995 & year<thisyear-1, select=c('country', 'year', 'g_hbc22', 'g_whoregion', 'new_sp_coh', 'new_sp_cur', 'new_sp_cmplt', 'new_snep_coh', 'new_snep_cmplt', "newrel_coh", "newrel_succ"))
 
@@ -356,7 +375,7 @@ tcbb <- subset(tcba, year %in% c(seq(1995, thisyear-4, 5), (thisyear-4):(thisyea
 
 tcbb$coh <- rounder(tcbb$coh / 1000, decimals=TRUE)
 
-tcbb$tsr <- ifelse(is.na(tcbb$tsr), '–', frmt(tcbb$tsr))
+tcbb$tsr <- ifelse(is.na(tcbb$tsr), '-', frmt(tcbb$tsr))
 
 
 
@@ -371,8 +390,11 @@ tcbc <- .shortnames(tcbc1, "area", ord="hbc")
 tcbc$area <- ifelse(tcbc$area %in% tc2$country, paste0(tcbc$area, "*"), tcbc$area)
 
 tcb_coh <- .shortnames(tcbd, "area", ord="hbc")
+tcb_coh$area <- ifelse(tcb_coh$area %in% tc2$country, paste0(tcb_coh$area, "*"), tcb_coh$area)
 
 names(tcbc)[1] <- names(tcb_coh)[1] <- ""
+
+
 
 # tcbc$area <- factor(tcbc$area, levels=order)
 # tcbc <- tcbc[order(tcbc$area),]
@@ -386,19 +408,19 @@ names(tcbc)[1] <- names(tcb_coh)[1] <- ""
 
 # Add to file
 
-cat(paste("<h3>Treatment success for all new cases (%) and cohort size (thousands), 1995–", thisyear-2, "</h3>a. Treatment success (%)", sep=""), file=glue("Tables/all_tsr", Sys.Date(), ".htm"))
+cat(paste("<h3>Treatment success for all new cases (%) and cohort size (thousands), 1995-", thisyear-2, "</h3>a. Treatment success (%)", sep=""), file=glue("Tables/4_6_all_tsr", Sys.Date(), ".htm"))
 
 tcb_tsra <- xtable(tcbc)
 digits(tcb_tsra) <- 0
-print(tcb_tsra, type="html", file=glue("Tables/all_tsr", Sys.Date(), ".htm"),include.rownames=F, include.colnames=T, append=T, html.table.attributes="border=0 rules=rows width=900")
+print(tcb_tsra, type="html", file=glue("Tables/4_6_all_tsr", Sys.Date(), ".htm"),include.rownames=F, include.colnames=T, append=T, html.table.attributes="border=0 rules=rows width=900")
 
-cat("<br>b. Cohort size (thousands)", file=glue("Tables/all_tsr", Sys.Date(), ".htm"), append=T)
+cat("<br>b. Cohort size (thousands)", file=glue("Tables/4_6_all_tsr", Sys.Date(), ".htm"), append=T)
 
 tcb_coha <- xtable(tcb_coh)
 
-print(tcb_coha, type="html", file=glue("Tables/all_tsr", Sys.Date(), ".htm"),include.rownames=F, include.colnames=T, append=T, html.table.attributes="border=0 rules=rows width=900", add.to.row=list(pos=list(30), command=c(paste("<TR> <TD colspan=", thisyear-1995, ">Blank cells indicate data not reported. – indicates values that cannot be calculated.<br>* Data for 2012 include relapse cases.</TD></TR>", sep=""))))
+print(tcb_coha, type="html", file=glue("Tables/4_6_all_tsr", Sys.Date(), ".htm"),include.rownames=F, include.colnames=T, append=T, html.table.attributes="border=0 rules=rows width=900", add.to.row=list(pos=list(30), command=c(paste("<TR> <TD colspan=", thisyear-1995, ">Blank cells indicate data not reported. - indicates values that cannot be calculated.<br>* Data for 2012 include relapse cases.</TD></TR>", sep=""))))
 
-tablecopy("all_tsr")
+tablecopy("4_6_all_tsr")
 
 #-------------------------------------------------------------------
 # cdr
@@ -453,30 +475,30 @@ tde <- .shortnames(tdd, col='group_name')
 
 # format missings
 for(var in 2:ncol(tde)){
-  tde[var] <- ifelse(is.na(tde[[var]]), '–', frmt(tde[[var]]))
+  tde[var] <- ifelse(is.na(tde[[var]]), '-', frmt(tde[[var]]))
 }
 
-cat(paste("<font size=5><b>Estimates of the case detection rate for new and relapse cases (%), 1995–", thisyear-1, "</b><sup>a</sup></font>", sep=""), file=glue("Tables/cdr", Sys.Date(), ".htm"))
+cat(paste("<font size=5><b>Estimates of the case detection rate for new and relapse cases (%), 1995-", thisyear-1, "</b><sup>a</sup></font>", sep=""), file=glue("Tables/cdr", Sys.Date(), ".htm"))
 
 tdf <- xtable(tde)
 digits(tdf) <- 1
 print(tdf, type="html", file=glue("Tables/cdr", Sys.Date(), ".htm"),include.rownames=F, include.colnames=F, append=T,
       html.table.attributes="border=0 rules=rows width=900", add.to.row=list(pos=list(0,30), 
                                                                              command=c(paste("<TR> <TH></TH> <TH colspan=3>1995</TH> <TH colspan=3>2000</TH> <TH colspan=3>2005</TH> <TH colspan=3>2010</TH> <TH colspan=3>", thisyear-1, "</TH> </TR>
-<TR> <TH></TH> <TH>BEST<sup>b</sup></TH> <TH>LOW</TH> <TH>HIGH</TH> 
-<TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH> 
-<TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH> 
-<TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH> 
-<TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH>
-</TR>", sep=""), "<TR> <TD colspan=16>– indicates values that cannot be calculated.<br><sup>a</sup> Estimates for all years are recalculated as new information becomes available and techniques are refined, so they may differ from those published previously. <br><sup>b</sup> Best, low and high indicate best estimates followed by lower and upper bounds. The lower and upper bounds are defined as the 2.5th and 97.5th centiles of outcome distributions produced in simulations.</TD></TR>")))
+                                                                                             <TR> <TH></TH> <TH>BEST<sup>b</sup></TH> <TH>LOW</TH> <TH>HIGH</TH> 
+                                                                                             <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH> 
+                                                                                             <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH> 
+                                                                                             <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH> 
+                                                                                             <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH>
+                                                                                             </TR>", sep=""), "<TR> <TD colspan=16>- indicates values that cannot be calculated.<br><sup>a</sup> Estimates for all years are recalculated as new information becomes available and techniques are refined, so they may differ from those published previously. <br><sup>b</sup> Best, low and high indicate best estimates followed by lower and upper bounds. The lower and upper bounds are defined as the 2.5th and 97.5th centiles of outcome distributions produced in simulations.</TD></TR>")))
 
 tablecopy('cdr')
 
-# tbhiv -------------------------------------------------------------------
+# 7_1_tbhiv -------------------------------------------------------------------
 
-tea <- merge(n[c('country', 'year', "g_whoregion", 'g_hbhiv41', "hiv_tbscr", "hiv_ipt")], tbhiv[c('country', 'year', "hivtest", "hivtest_pct_denominator", "hivtest_pos_pct_denominator", "hivtest_pos_pct_numerator", "hiv_cpt_pct_numerator", "hiv_cpt_pct_denominator", "hiv_art_pct_numerator", "hiv_art_pct_denominator", 'hivtest_pct_numerator', 'hivtest_pos', 'hiv_cpt', 'hiv_art')])
+tea <- merge(n[c('country', 'year', "g_whoregion", 'g_hbhiv41', "hiv_ipt")], tbhiv[c('country', 'year', "hivtest", "hivtest_pct_denominator", "hivtest_pos_pct_denominator", "hivtest_pos_pct_numerator", "hiv_cpt_pct_numerator", "hiv_cpt_pct_denominator", "hiv_art_pct_numerator", "hiv_art_pct_denominator", 'hivtest_pct_numerator', 'hivtest_pos', 'hiv_cpt', 'hiv_art')])
 
-tea <- merge(tea, e[c('country', 'year', 'e_inc_tbhiv_num', 'e_inc_tbhiv_num_lo', 'e_inc_tbhiv_num_hi')], all.x=T)
+tea <- merge(tea, e.t[c('country', 'year', 'e_inc_tbhiv_num', 'e_inc_tbhiv_num_lo', 'e_inc_tbhiv_num_hi')], all.x=T)
 
 tea <- subset(tea, year==thisyear-1)
 
@@ -513,7 +535,10 @@ ted <- within(ted, {
   hivtest_pos_prct <- rounder(ifelse(type=='country', hivtest_pos / hivtest,hivtest_pos_pct_numerator / hivtest_pos_pct_denominator) * 100, decimals=TRUE)
   hiv_cpt_prct <- rounder(ifelse(type=='country', hiv_cpt / hivtest_pos, hiv_cpt_pct_numerator / hiv_cpt_pct_denominator) * 100, decimals=TRUE)
   hiv_art_prct <- rounder(ifelse(type=='country', hiv_art / hivtest_pos, hiv_art_pct_numerator / hiv_art_pct_denominator) * 100, decimals=TRUE)
-  hiv_tbscr2 <- rounder(hiv_tbscr / 1000, decimals=TRUE)
+  
+  # new in 2014, calculate ART coverage of ESTIMATED TB/HIV patients
+  hiv_art_est_prct <- rounder(ifelse(type=='country', hiv_art / e_inc_tbhiv_num, hiv_art_pct_numerator / e_inc_tbhiv_num) * 100, decimals=TRUE)
+  
   hiv_ipt2 <- rounder(hiv_ipt / 1000, decimals=TRUE)
 })
 
@@ -532,45 +557,40 @@ ted[43:nrow(ted), c('e_inc_tbhiv_num', 'e_inc_tbhiv_num_lo', 'e_inc_tbhiv_num_hi
 
 ted <- .shortnames(ted, ord='tbhiv')
 
-# ted[c('e_inc_tbhiv_num', 'e_inc_tbhiv_num_lo', 'e_inc_tbhiv_num_hi')] <- frmt(ted[c('e_inc_tbhiv_num', 'e_inc_tbhiv_num_lo', 'e_inc_tbhiv_num_hi')] / 1000
+
 ted$e_inc_tbhiv_num <- frmt(ted$e_inc_tbhiv_num / 1000, thou=TRUE)
 ted$e_inc_tbhiv_num_lo <- frmt(ted$e_inc_tbhiv_num_lo / 1000, thou=TRUE)
 ted$e_inc_tbhiv_num_hi <- frmt(ted$e_inc_tbhiv_num_hi / 1000, thou=TRUE)
 
 # Fix and footnote for Russian Federation
 ted[ted$country=='Russian Federation', 'hivtest1000'] <- glue(ted[ted$country=='Russian Federation', 'hivtest1000'], '(a)')
-
 ted[ted$country=='Russian Federation', c('hivtest_prct', 'hivtest_pos_prct')] <- NA
-
-# ted[ted$country=='Russian Federation', 'hivtest_prct'] <- glue(rounder(subset(n, iso2=='RU' & year==thisyear-1, hivtest_p) / subset(n, iso2=='RU' & year==thisyear-1, c_new) * 100, decimals=TRUE))
-
-# ted[ted$country=='Russian Federation', 'country'] <- 'Russian Federation(a)'
-
 warning("Russian Federation modification for the TB/HIV table is still in place. Delete this message when no longer applicable.")
-                                                                              
-tee <- xtable(ted[c("country", 'e_inc_tbhiv_num', 'e_inc_tbhiv_num_lo', 'e_inc_tbhiv_num_hi', "hivtest1000", "hivtest_prct", "hivtest_pos_prct", "hiv_cpt_prct", "hiv_art_prct", "hiv_tbscr2", "hiv_ipt2")], align=c('l', 'l', rep('c',10)))
+
+
+tee <- xtable(ted[c("country", 'e_inc_tbhiv_num', 'e_inc_tbhiv_num_lo', 'e_inc_tbhiv_num_hi', "hivtest1000", "hivtest_prct", "hivtest_pos_prct", "hiv_cpt_prct", "hiv_art_prct", "hiv_art_est_prct", "hiv_ipt2")], align=c('l', 'l', rep('c',10)))
 # digits(tee) <- 1
 
-cat(glue("<font size=3 align=\"left\"><b>HIV testing, treatment for HIV-positive TB patients and prevention of TB among people living with <b>HIV</b>, 41 high TB/HIV burden countries and WHO regions, ", thisyear-1, ".</b> Numbers in thousands except where indicated.</font><br><br>"), file=glue("Tables/tbhiv", Sys.Date(), ".htm"))
+cat(glue("<font size=3 align=\"left\"><b>HIV testing, treatment for HIV-positive TB patients and prevention of TB among people living with <b>HIV</b>, 41 high TB/HIV burden countries and WHO regions, ", thisyear-1, ".</b> Numbers in thousands except where indicated.</font><br><br>"), file=glue("Tables/7_1_tbhiv", Sys.Date(), ".htm"))
 
-print(tee, type="html", file=glue("Tables/tbhiv", Sys.Date(), ".htm"),include.rownames=F, include.colnames=F, append=T,
+print(tee, type="html", file=glue("Tables/7_1_tbhiv", Sys.Date(), ".htm"),include.rownames=F, include.colnames=F, append=T,
       html.table.attributes="border=0 rules=rows width=1100", add.to.row=list(pos=list(0, nrow(tee)), command=c("
-<TR> <TH></TH> <TH colspan=3>ESTIMATED HIV-POSTIVE INCIDENT TB CASES</TH> 
-<TH>NUMBER OF TB PATIENTS WITH  KNOWN HIV STATUS</TH> 
-<TH>% OF NOTIFIED TB PATIENTS TESTED FOR HIV</TH> 
-<TH>% OF TESTED TB PATIENTS HIV- POSITIVE</TH> 
-<TH>% OF IDENTIFIED HIV-POSITIVE TB PATIENTS STARTED ON CPT</TH> 
-<TH>% OF IDENTIFIED HIV-POSITIVE TB PATIENTS STARTED ON ART</TH> 
-<TH>NUMBER OF HIV- POSITIVE PEOPLE SCREENED FOR TB</TH> 
-<TH>NUMBER OF HIV- POSITIVE PEOPLE PROVIDED WITH IPT</TH>  </TR>
-<TR> <TH></TH> <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH>",
-"<TR> <TD colspan=11>Blank cells indicate data not reported.<br>
-<sup>a</sup> Data for the Russian Federation exclude retreatment cases and cases from prisons.<TD colspan=8></TD> </TR>")))
+                                                                                                                <TR> <TH></TH> <TH colspan=3>ESTIMATED HIV-POSTIVE INCIDENT TB CASES</TH> 
+                                                                                                                <TH>NUMBER OF NOTIFIED TB PATIENTS WITH KNOWN HIV STATUS</TH> 
+                                                                                                                <TH>% OF NOTIFIED TB PATIENTS WITH KNOWN HIV STATUS</TH> 
+                                                                                                                <TH>% OF NOTIFIED TB PATIENTS WITH HIV-POSITIVE TEST</TH> 
+                                                                                                                <TH>% OF NOTIFIED HIV-POSITIVE TB PATIENTS STARTED ON CPT</TH> 
+                                                                                                                <TH>% OF NOTIFIED HIV-POSITIVE TB PATIENTS STARTED ON ART</TH> 
+                                                                                                                <TH>% OF ESTIMATED HIV-POSITIVE INCIDENT TB CASES STARTED ON ART</TH> 
+                                                                                                                <TH>NUMBER OF HIV- POSITIVE PEOPLE PROVIDED WITH IPT</TH>  </TR>
+                                                                                                                <TR> <TH></TH> <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH>",
+                                                                                                                "<TR> <TD colspan=11>Blank cells indicate data not reported.<br>
+                                                                                                                <sup>a</sup> Data for the Russian Federation exclude retreatment cases and cases from prisons.<TD colspan=8></TD> </TR>")))
 
-tablecopy("tbhiv")
+tablecopy("7_1_tbhiv")
 
 
-# lab_capac & lab_policy --------------------------------------------------------
+# 6_1_2_lab_capac & lab_policy --------------------------------------------------------
 
 # 2013 fix
 # if(thisyear==2013) load('d:/users/hiattt/Dropbox/Tom_global_report/view_TME_master_strategy_2013-07-22.Rdata')
@@ -622,15 +642,15 @@ for(poli in c("dst_in_guide", "lc_rst_in_guide", "lpa_in_guide", "sp_case_dfn_in
 }
 
 tfd <- within(tfd, {
-  c_sm_100k <- ifelse(is.na(lab_sm_f), '–', round.conv(lab_sm_f / pop_sm * 100000))
-  c_cul_5m <- ifelse(is.na(lab_cul_f), '–', round.conv(lab_cul_f / pop_cul * 5000000))
-  c_dst_5m <- ifelse(is.na(lab_dst_f), '–', round.conv(lab_dst_f / pop_dst * 5000000))
-  c_lpa_5m <- ifelse(is.na(lab_lpa_f), '–', round.conv(lab_lpa_f / pop_lpa * 5000000))
+  c_sm_100k <- ifelse(is.na(lab_sm_f), '-', round.conv(lab_sm_f / pop_sm * 100000))
+  c_cul_5m <- ifelse(is.na(lab_cul_f), '-', round.conv(lab_cul_f / pop_cul * 5000000))
+  c_dst_5m <- ifelse(is.na(lab_dst_f), '-', round.conv(lab_dst_f / pop_dst * 5000000))
+  c_lpa_5m <- ifelse(is.na(lab_lpa_f), '-', round.conv(lab_lpa_f / pop_lpa * 5000000))
   
   g_hbc22 <- ifelse(g_hbc22=='high', 'X', NA)
   g_hbmdr27 <- ifelse(g_hbmdr27=='high', 'X', NA)
   
-  lab_sm_led_pct <- ifelse(is.na(lab_sm_led) | is.na(lab_sm_f), '–', rounder(lab_sm_led / lab_sm_f * 100))
+  lab_sm_led_pct <- ifelse(is.na(lab_sm_led) | is.na(lab_sm_f), '-', rounder(lab_sm_led / lab_sm_f * 100))
   lab_sm_f <- rounder(lab_sm_f)
   lab_cul_f <- rounder(lab_cul_f)  
   lab_dst_f <- rounder(lab_dst_f)  
@@ -639,105 +659,81 @@ tfd <- within(tfd, {
 })
 
 # Remove aggregates for sums 
-tfd[37:45, c("lab_sm_f", "lab_sm_led", "lab_cul_f", "lab_dst_f", "lab_lpa_f", "lab_xpert")] <- '–'
+tfd[37:45, c("lab_sm_f", "lab_sm_led", "lab_cul_f", "lab_dst_f", "lab_lpa_f", "lab_xpert")] <- '-'
 
-# lab_capac ####
+# 6_1_lab_capac ####
 
 tfe <- xtable(tfd[c("country", "g_hbc22", "g_hbmdr27", "lab_sm_f", "c_sm_100k", "lab_sm_led_pct", "lab_cul_f", "c_cul_5m", "lab_dst_f", "c_dst_5m", "lab_lpa_f", "c_lpa_5m", "lab_xpert")], align=c('l', 'l', rep('c',12)))
 
-print(tfe, type="html", file=glue("Tables/lab_capac", Sys.Date(), ".htm"),include.rownames=F, include.colnames=F, #sanitize.text.function=identity, #this makes <0.1 disappear in word even if not in a browser. 
+print(tfe, type="html", file=glue("Tables/6_1_lab_capac", Sys.Date(), ".htm"),include.rownames=F, include.colnames=F, #sanitize.text.function=identity, #this makes <0.1 disappear in word even if not in a browser. 
       html.table.attributes="border=0 rules=rows width=1100 cellpadding=5", add.to.row=list(pos=list(0, nrow(tfe)), command=c(glue("<h2 align=\"left\" >Laboratory capacity, ", thisyear-1, "<sup>a</sup></h2>
-  <TR> <TH></TH> <TH></TH> <TH></TH> <TH colspan=3>SMEAR MICROSCOPY</TH> 
-<TH colspan=2>CULTURE</TH>
-<TH colspan=2>DRUG SUSCEPTIBILITY TESTING</TH>
-<TH colspan=2>LINE PROBE ASSAY</TH>
-<TH colspan=1>XPERT MTB/RIF</TH>
-</TR>
-<TR> <TD></TD> <TD>HIGH TB BURDEN</TD>
-<TD>HIGH MDR-TB BURDEN</TD>
-<TD>NUMBER OF LABORATORIES</TD>
-<TD>LABORATORIES PER 100 000 POPULATION</TD>
-<TD>PERCENTAGE OF LABORATORIES USING LED MICROSCOPES</TD>
-<TD>NUMBER OF LABORATORIES</TD>
-<TD>LABORATORIES PER 5 MILLION POPULATION</TD>
-<TD>NUMBER OF LABORATORIES</TD>
-<TD>LABORATORIES PER 5 MILLION POPULATION</TD>
-<TD>NUMBER OF LABORATORIES</TD>
-<TD>LABORATORIES PER 5 MILLION POPULATION</TD>
-<TD>NUMBER OF SITES</TD>
-</TR>"),
-	"<TR> <TD colspan=11>Blank cells indicate data not reported.<br>
-– indicates values that cannot be calculated.<br>
-<sup>a</sup> The regional and global figures are aggregates of data reported by low- and middle-income countries and territories. Data for the variables shown in the table are not requested from high-income countries in the WHO data collection form. <TD colspan=8></TD> </TR>")))
+                                                                                                                                   <TR> <TH></TH> <TH></TH> <TH></TH> <TH colspan=3>SMEAR MICROSCOPY</TH> 
+                                                                                                                                   <TH colspan=2>CULTURE</TH>
+                                                                                                                                   <TH colspan=2>DRUG SUSCEPTIBILITY TESTING</TH>
+                                                                                                                                   <TH colspan=2>LINE PROBE ASSAY</TH>
+                                                                                                                                   <TH colspan=1>XPERT MTB/RIF</TH>
+                                                                                                                                   </TR>
+                                                                                                                                   <TR> <TD></TD> <TD>HIGH TB BURDEN</TD>
+                                                                                                                                   <TD>HIGH MDR-TB BURDEN</TD>
+                                                                                                                                   <TD>NUMBER OF LABORATORIES</TD>
+                                                                                                                                   <TD>LABORATORIES PER 100 000 POPULATION</TD>
+                                                                                                                                   <TD>PERCENTAGE OF LABORATORIES USING LED MICROSCOPES</TD>
+                                                                                                                                   <TD>NUMBER OF LABORATORIES</TD>
+                                                                                                                                   <TD>LABORATORIES PER 5 MILLION POPULATION</TD>
+                                                                                                                                   <TD>NUMBER OF LABORATORIES</TD>
+                                                                                                                                   <TD>LABORATORIES PER 5 MILLION POPULATION</TD>
+                                                                                                                                   <TD>NUMBER OF LABORATORIES</TD>
+                                                                                                                                   <TD>LABORATORIES PER 5 MILLION POPULATION</TD>
+                                                                                                                                   <TD>NUMBER OF SITES</TD>
+                                                                                                                                   </TR>"),
+                                                                                                                              "<TR> <TD colspan=11>Blank cells indicate data not reported.<br>
+                                                                                                                              - indicates values that cannot be calculated.<br>
+                                                                                                                              <sup>a</sup> The regional and global figures are aggregates of data reported by low- and middle-income countries and territories. Data for the variables shown in the table are not requested from high-income countries in the WHO data collection form. <TD colspan=8></TD> </TR>")))
 
-tablecopy("lab_capac")
+tablecopy("6_1_lab_capac")
 
-# lab_policy ####
+# B6_2_1_lab_policy ####
 
 tff <- xtable(tfd[c("country", "g_hbc22", "g_hbmdr27", "xpert_in_guide_TBHIV", "xpert_in_guide_MDR")], align=c('l', 'l', rep('c',4)))
 
-print(tff, type="html", file=glue("Tables/lab_policy", Sys.Date(), ".htm"),include.rownames=F, include.colnames=F, #sanitize.text.function=identity, 
-      html.table.attributes="border=0 rules=rows width=1100 cellpadding=0", add.to.row=list(pos=list(0, nrow(tff)), command=c(glue("<h2 align=\"left\">Incorporation of WHO policy guidance for diagnosis of TB, ", thisyear-1, "<sup>a</sup></h2>
-	<TR> <TH></TH> <TH>HIGH TB BURDEN</TH> <TH>HIGH MDR-TB BURDEN</TH>
-<TH>XPERT MTB/RIF AS THE INITIAL DIAGNOSTIC TEST FOR TB IN PEOPLE LIVING WITH HIV</TH>
-<TH>XPERT MTB/RIF AS THE INITIAL DIAGNOSTIC TEST IN PEOPLE AT RISK OF DRUG-RESISTANT TB</TH> </TR>"),
-"<TR> <TD colspan=8>Blank cells indicate data not reported.<br>
-<sup>a</sup> The regional and global figures are aggregates of data reported by low- and middle-income countries and territories. Data for the variables shown in the table are not requested from high-income countries in the WHO data collection form. 
-<TD colspan=4></TD> </TR>")))
+print(tff, type="html", file=glue("Tables/6_2_lab_policy", Sys.Date(), ".htm"),include.rownames=F, include.colnames=F, #sanitize.text.function=identity, 
+      html.table.attributes="border=0 rules=rows width=1100 cellpadding=0", add.to.row=list(pos=list(0, nrow(tff)), command=c(glue("<h2 align=\"left\">Incorporation of WHO policy guidance on Xpert MTB/RIF, ", thisyear-1, "<sup>a</sup></h2>
+                                                                                                                                   <TR> <TH></TH> <TH>HIGH TB BURDEN</TH> <TH>HIGH MDR-TB BURDEN</TH>
+                                                                                                                                   <TH>XPERT MTB/RIF AS THE INITIAL DIAGNOSTIC TEST FOR TB IN PEOPLE LIVING WITH HIV</TH>
+                                                                                                                                   <TH>XPERT MTB/RIF AS THE INITIAL DIAGNOSTIC TEST IN PEOPLE AT RISK OF DRUG-RESISTANT TB</TH> </TR>"),
+                                                                                                                              "<TR> <TD colspan=8>Blank cells indicate data not reported.<br>
+                                                                                                                              <sup>a</sup> The regional and global figures are aggregates of data reported by low- and middle-income countries and territories. Data for the variables shown in the table are not requested from high-income countries in the WHO data collection form. 
+                                                                                                                              <TD colspan=8></TD> </TR>")))
 
-tablecopy("lab_policy")
+tablecopy("B6_2_1_lab_policy")
 
-# agesex -------------------------------------------------------------------
+# 4_2_agesex -------------------------------------------------------------------
 
 # Get country data
 
-tiasb <- subset(n.t, year == thisyear-1, select=c("iso3", "country", "year", "g_whoregion", "g_hbc22", "newrel_m04", "newrel_m514", "newrel_m014", "newrel_m1524", "newrel_m2534", "newrel_m3544", "newrel_m4554", "newrel_m5564", "newrel_m65", "newrel_mu", "newrel_f04", "newrel_f514", "newrel_f014", "newrel_f1524", "newrel_f2534", "newrel_f3544", "newrel_f4554", "newrel_f5564", "newrel_f65", "newrel_fu", 'newrel_m15plus', 'newrel_f15plus', 'newrel_sexunk014', 'newrel_sexunk15plus'))
+tiasb <- subset(n.t, year == thisyear-1, select=c("iso3", "country", "year", "g_whoregion", "g_hbc22", "newrel_m014", "newrel_mu",  "newrel_f014", "newrel_fu", 'newrel_m15plus', 'newrel_f15plus', 'newrel_sexunk014', 'newrel_sexunk15plus', "newrel_sexunkageunk"))
 
-# Order by country
-# tiasb <- tiasb[order(tiasb$country),]
-
-# for alternate report age or sex reported (measured by total)
-tiasb$snep.age.alt <- .rowsums(tiasb[c("newrel_m014", "newrel_f014", 'newrel_sexunk014', "newrel_m15plus", "newrel_f15plus", 'newrel_sexunk15plus')])  #excludes vars where age is unknown
-
-tiasb$snep.sex.alt <- .rowsums(tiasb[c("newrel_m014", "newrel_m15plus", "newrel_mu", "newrel_f014", "newrel_f15plus", "newrel_fu")]) #excludes vars where sex is unknown
 
 # combine all vars
 tiasb$all.014 <- .rowsums(tiasb[c("newrel_m014", "newrel_f014", 'newrel_sexunk014')]) # (unknowns will be removed for this var later, but for now they are needed for age % and aggregates)
 
-tiasb$all.1544 <- .rowsums(tiasb[c("newrel_m1524",  "newrel_m2534", "newrel_m3544", "newrel_f1524",  "newrel_f2534", "newrel_f3544")])
-tiasb$all.4564 <- .rowsums(tiasb[c("newrel_m4554", "newrel_m5564", "newrel_f4554", "newrel_f5564")])
-tiasb$all.65 <- .rowsums(tiasb[c("newrel_m65", "newrel_f65")])
+
 tiasb$all.totalage <- .rowsums(tiasb[c('all.014', 'newrel_m15plus', 'newrel_f15plus', 'newrel_sexunk15plus')]) 
 
 tiasb$all.15plus <- .rowsums(tiasb[c('newrel_m15plus', 'newrel_f15plus', 'newrel_sexunk15plus')])
 
-tiasb$ageunk <- .rowsums(tiasb[c("newrel_mu", "newrel_fu")])
+tiasb$ageunk <- .rowsums(tiasb[c("newrel_mu", "newrel_fu", "newrel_sexunkageunk")])
 
 tiasb$all.male <- .rowsums(tiasb[c("newrel_m014", 'newrel_m15plus', "newrel_mu")])
 tiasb$all.female <- .rowsums(tiasb[c("newrel_f014", 'newrel_f15plus', "newrel_fu")])
 
 # Assemble aggregates
-# tiasr <- aggregate(tiasb[6:ncol(tiasb)], by=list(group_name=tiasb$g_whoregion, year=tiasb$year), FUN='sum', na.rm=T)
-# 
-# tiash <- aggregate(tiasb[6:ncol(tiasb)], by=list(hbc=tiasb$g_hbc22, year=tiasb$year), FUN='sum', na.rm=T)
-# tiash$group_name <- 'High-burden countries'
-# tiash <- tiash[tiash$hbc=='high',-1]
-# 
-# tiasg <- aggregate(tiasb[6:ncol(tiasb)], by=list(year=tiasb$year), FUN='sum', na.rm=T)
-# tiasg$group_name <- 'Global'
-# 
-# tiasj <- rbind(tiash, tiasr, tiasg)
-# # tiasj$type <- "aggs"
-# tiasj$iso3 <- "aggs"
-# tiasj$g_whoregion <- tiasj$group_name
-# 
-# # tiasb$type <- 'countries'
-# names(tiasb)[names(tiasb)=="country"] <- "group_name"
-
 tiaa <- glb.rpt.table(df = tiasb, column.nums = 6:ncol(tiasb), country.col = 2)
 
 tiaa1 <- .shortnames(subset(tb, rel_in_agesex_flg==0 & g_hbc22=="high" & year==thisyear-1, country))
-tiaa$area <- ifelse(tiaa$area %in% tiaa1$country, paste0(tiaa$area, "*"), tiaa$area)
+
+#Add an asterisk to the name if country did not include relapse cases in the age/sex table, but only if they reported some data!
+tiaa$area <- ifelse(tiaa$area %in% tiaa1$country & !is.na(tiaa$all.014) , paste0(tiaa$area, "*"), tiaa$area)
 
 tikeep <- c("area", "newrel_m014", "newrel_f014", "all.014", "all.15plus", "ageunk", "all.totalage", "all.male", "all.female") #"sn.ep.totalage",
 
@@ -747,12 +743,12 @@ tiaa <- tiaa[tikeep]
 # tiaa$order <- 1:nrow(tiaa)
 
 # Calculate % child. (Removed for all new where countries didn't report)
-# tiaa$new_sp.child.pct <- ifelse(is.na(tiaa$new_sp.totalage), "–", frmt(tiaa$new_sp.014 / tiaa$new_sp.totalage * 100))
-tiaa$all.child.pct <- ifelse(is.na(tiaa$all.totalage) , "–", frmt(tiaa$all.014 / tiaa$all.totalage * 100))
+# tiaa$new_sp.child.pct <- ifelse(is.na(tiaa$new_sp.totalage), "-", frmt(tiaa$new_sp.014 / tiaa$new_sp.totalage * 100))
+tiaa$all.child.pct <- ifelse(is.na(tiaa$all.totalage) , "-", frmt(tiaa$all.014 / tiaa$all.totalage * 100))
 
 # Calculate male female ratio. (Removed for all new where countries didn't report)
-# tiaa$new_sp.mf.ratio <- ifelse(is.na(tiaa$new_sp.male) | is.na(tiaa$new_sp.female) | tiaa$new_sp.male==0 | tiaa$new_sp.female==0, "–", frmt(tiaa$new_sp.male / tiaa$new_sp.female))
-tiaa$all.mf.ratio <- ifelse(is.na(tiaa$all.male) | is.na(tiaa$all.female) | tiaa$all.male==0 | tiaa$all.female==0, "–", frmt(tiaa$all.male / tiaa$all.female))
+# tiaa$new_sp.mf.ratio <- ifelse(is.na(tiaa$new_sp.male) | is.na(tiaa$new_sp.female) | tiaa$new_sp.male==0 | tiaa$new_sp.female==0, "-", frmt(tiaa$new_sp.male / tiaa$new_sp.female))
+tiaa$all.mf.ratio <- ifelse(is.na(tiaa$all.male) | is.na(tiaa$all.female) | tiaa$all.male==0 | tiaa$all.female==0, "-", frmt(tiaa$all.male / tiaa$all.female))
 
 for(var in tikeep[2:7]){
   tiaa[var] <- rounder(tiaa[[var]])
@@ -768,42 +764,45 @@ tid <- xtable(subset(tiaa, select=c("area", "all.014", "all.15plus", "ageunk", "
 
 # Add to file
 
-cat(glue("<h2>Notifications of new and relapse TB cases by age and sex, ", thisyear-1, '</h2>'), file=glue("Tables/agesex", Sys.Date(), ".htm"))
+cat(glue("<h2>Notifications of new and relapse TB cases by age and sex, ", thisyear-1, '</h2>'), file=glue("Tables/4_2_agesex", Sys.Date(), ".htm"))
 
-print(tid, type="html", file=glue("Tables/agesex", Sys.Date(), ".htm"),include.rownames=F, include.colnames=F, append=TRUE, add.to.row=list(pos=list(0,nrow(tid)), command=c(
-        " 
-        <TR> <TD></TD> 
-        <TD>0–14 YEARS</TD>
-        <TD>&#8805;15 YEARS</TD>
-        <TD>AGE UNKNOWN</TD>
-        <TD>% AGED &#8805; 15 YEARS</TD>
-        <TD>MALE/FEMALE RATIO</TD>
-        </TR>", 
-	"<TR> <TD colspan=7>Blank cells indicate data that could not be reported for the age categories shown.<br>– indicates values that cannot be calculated.<br>* New cases only.</TD> </TR>")))
+print(tid, type="html", file=glue("Tables/4_2_agesex", Sys.Date(), ".htm"),include.rownames=F, include.colnames=F, append=TRUE, add.to.row=list(pos=list(0,nrow(tid)), command=c(
+  " 
+  <TR> <TD></TD> 
+  <TD>0-14 YEARS</TD>
+  <TD>&#8805;15 YEARS</TD>
+  <TD>AGE UNKNOWN</TD>
+  <TD>% AGED &#8804; 15 YEARS</TD>
+  <TD>MALE/FEMALE RATIO</TD>
+  </TR>", 
+  "<TR> <TD colspan=7>Blank cells indicate data that could not be reported for the age categories shown.<br>- indicates values that cannot be calculated.<br>* New cases only.</TD> </TR>")))
 
-tablecopy("agesex")
+tablecopy("4_2_agesex")
 
-#==========================
-# Pieces of the 'top 10 countries' table
-
-tma <- subset(e.t, year==thisyear-1, c(country, e_mort_100k, e_pop_num, e_mort_exc_tbhiv_num))
-
-tma$e_mort_num <- tma$e_mort_100k / 1e5 * tma$e_pop_num
-
-.maxplus <- function(df, vect, num.rows){
-  df1 <- df[order(df[vect], decreasing=TRUE),]
-  head(df1,num.rows)
+if(flg_show_estimates){
+  
+  #==========================
+  # Pieces of the 'top 10 countries' table
+  
+  tma <- subset(e.t, year==thisyear-1, c(country, e_mort_100k, e_pop_num, e_mort_exc_tbhiv_num))
+  
+  tma$e_mort_num <- tma$e_mort_100k / 1e5 * tma$e_pop_num
+  
+  .maxplus <- function(df, vect, num.rows){
+    df1 <- df[order(df[vect], decreasing=TRUE),]
+    head(df1,num.rows)
+  }
+  
+  tmb <- .maxplus(tma, 'e_mort_num', 10)
+  tmb$e_mort_num <- signif(tmb$e_mort_num, 2)
+  write.cb(tmb[c('country', 'e_mort_num')])
+  
+  tmc <- .maxplus(tma, 'e_mort_100k', 10)
+  write.cb(tmc[c('country', 'e_mort_100k')])
+  
+  
+  subset(tma, e_mort_num %in% .maxplus(tma$e_mort_num,10), c(country, e_mort_num))
+  
 }
-
-tmb <- .maxplus(tma, 'e_mort_num', 10)
-tmb$e_mort_num <- signif(tmb$e_mort_num, 2)
-write.cb(tmb[c('country', 'e_mort_num')])
-
-tmc <- .maxplus(tma, 'e_mort_100k', 10)
-write.cb(tmc[c('country', 'e_mort_100k')])
-
-
-subset(tma, e_mort_num %in% .maxplus(tma$e_mort_num,10), c(country, e_mort_num))
-
 
 # END ===================================================

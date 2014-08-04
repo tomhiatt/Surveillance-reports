@@ -4,6 +4,7 @@
 # 6 July 2012, revised 28 June 2013
 # -------------------------------------------------
 
+# bits to change if another dude is running this.
 whoami <- "Tom"   # I hope you know the answer to this.
 
 if(whoami=="Tom"){
@@ -13,9 +14,9 @@ if(whoami=="Tom"){
 }
 
 if(whoami=="Hazim"){
-  Rprofile <- "d:/users/hiattt/Dropbox/Code/R/.Rprofile"
-  basefolder <- "d:/users/hiattt/Google Drive/Work files/Global TB report/Tables and Figures"
-  scriptsfolder <- "D:/Users/hiattt/Dropbox/Code/Surveillance reports"
+  Rprofile <- "d:/TMEData/TomsCode/MyEnvironment/.Rprofile"
+  basefolder <- "D:/Extracted Data/Extracted Data2014/GTBR2014_internal/tables_figures"
+  scriptsfolder <- "D:/TMEData/TomsCode/Global TB control Reports/Tables and figures"
 }
 
 
@@ -39,12 +40,12 @@ libraries(c('reshape', 'ggplot2', 'grid', 'scales', 'xtable', 'stringr', 'timeSe
 
 # Create a folder structure for saving files if doesn't exist yet 
 if(file.path(basefolder, 'FigData') %nin% list.dirs(basefolder, recursive=FALSE)){
-dir.create(file.path(basefolder, "Review"))
-dir.create(file.path(basefolder, "FigData"))
-dir.create(file.path(basefolder, "Figs"))
-dir.create(file.path(basefolder, "CPFigs"))
-dir.create(file.path(basefolder, "Slides"))
-dir.create(file.path(basefolder, "Tables"))
+  dir.create(file.path(basefolder, "Review"))
+  dir.create(file.path(basefolder, "FigData"))
+  dir.create(file.path(basefolder, "Figs"))
+  dir.create(file.path(basefolder, "CPFigs"))
+  dir.create(file.path(basefolder, "Slides"))
+  dir.create(file.path(basefolder, "Tables"))
 }
 
 outfolder <- basefolder
@@ -71,12 +72,14 @@ theme_glb.rpt <- function(base_size=12, base_family="") {
       strip.background = element_rect(fill="white", colour=NA),
       strip.text = element_text(hjust=0),
       plot.title = element_text(hjust=0)
-#       plot.margin = unit(c(0,0))
+      #       plot.margin = unit(c(0,0))
     )
 }
 
 # Dummy data ---------------------------------------------------
 # Create dummy data for latest year until data are available
+# new dataframes have names with .t appended ...
+
 for(df in c('e', 'eraw', 'a', 'araw', 'n', 'd')){
   obj <- get(df)
   if(max(obj["year"]) < thisyear-1) {
@@ -104,19 +107,6 @@ while(max(eraw.t$year) < 2015) {
   eraw.t <- rbind(eraw.t, copy)
 }
 
-# Load in estimate projections. Better to have this in the db, but Hazim is in the UK...
-# 
-# if(max(araw.t$year < 2015)) {  
-#   save.spot <- 'D:/Users/hiattt/Google Drive/Work files/Global TB report/Tables and Figures/From others'
-#   for(piece in c('regional', 'est', 'global')){
-#     load(file.path(save.spot, glue(piece, '.Rdata')))     
-#   }
-#   names(regional) <- gsub ('\\.', '_', names (regional))
-# araw.t <- merge()
-#   
-#   # okay Im wasting my time now...okay no choice
-#   print('got from dropbox')
-# }
 
 # functions
 # rounding convention
@@ -124,7 +114,7 @@ while(max(eraw.t$year) < 2015) {
 round.conv <- function(x) {
   ifelse(x==0, 0, ifelse(x < 0.1, "<0.1", ifelse(signif(x, 2) < 1, formatC(round(x,1), format='f', digits=1),
                                                  ifelse(signif(x, 2) < 10, sapply(signif(x,2), sprintf, fmt="%#.2g"), signif(x, 2)))))
-}	# Note: The second method for trailing 0s does not work with 9.99
+}  # Note: The second method for trailing 0s does not work with 9.99
 
 # rounding convention for rates
 # 0 is 0, under .1 to "<0.1", under 1 to 1 sig fig, under 100 to 2 sig figs,
@@ -165,8 +155,8 @@ rounder <- function(x, decimals=FALSE) {
                           ifelse(d[[col]]=='SEA', 'SEAR', 
                                  ifelse(d[[col]]=='global', 'Global', d[[col]]))))
   if(ord %nin% c('hbc')) warning('Not ordering.')
-if(ord=='hbc')  d <- d[match(c("Afghanistan", "Bangladesh", "Brazil", "Cambodia", "China", "DR Congo", "Ethiopia", "India", "Indonesia", "Kenya", "Mozambique",  "Myanmar", "Nigeria", "Pakistan", "Philippines", "Russian Federation", "South Africa", "Thailand", "Uganda", "UR Tanzania", "Viet Nam", "Zimbabwe", "High-burden countries", "AFR", "AMR", "EMR", "EUR", "SEAR", "WPR", "Global"), d[[col]]),]
-
+  if(ord=='hbc')  d <- d[match(c("Afghanistan", "Bangladesh", "Brazil", "Cambodia", "China", "DR Congo", "Ethiopia", "India", "Indonesia", "Kenya", "Mozambique",  "Myanmar", "Nigeria", "Pakistan", "Philippines", "Russian Federation", "South Africa", "Thailand", "Uganda", "UR Tanzania", "Viet Nam", "Zimbabwe", "High-burden countries", "AFR", "AMR", "EMR", "EUR", "SEAR", "WPR", "Global"), d[[col]]),]
+  
   
   return(d)
 }
@@ -299,10 +289,10 @@ glb.rpt.table <- function(df, column.nums, country.col=1, year.col=NA){
     
     # combine together
     com2 <- rbind(hbcs, agg1, agg2, agg3b)
-
+    
   }
   
-
+  
   
   return(com2)
 }
