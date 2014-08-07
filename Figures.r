@@ -31,7 +31,7 @@
 
 
 #flag for whether or not to produce estimates figures
-flg_show_estimates <- TRUE
+flg_show_estimates <- FALSE
 
 
 
@@ -88,7 +88,7 @@ if(flg_show_estimates){
             file=paste(outfolder, "/FigData/", "fig_global", ".csv", sep=""), row.names=F, na="")
   
   # Global rates of incidence, and notifications
-  # inc_notif_glo ----------------------------------------------------
+  # 4_2_inc_notif_glo ----------------------------------------------------
   
   eha <- subset(araw.t, group_type=="global")
   
@@ -96,9 +96,9 @@ if(flg_show_estimates){
   
   ehb$newrel_100k <- ehb$c_newinc / ehb$e_pop_num * 100000
   
-  ehc <- qplot(year, e_inc_100k, data=ehb, geom='line', colour=I('#00FF33')) + geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I('#00FF33'), alpha=0.4) + geom_line(aes(year, newrel_100k)) + scale_x_continuous('') + ylab('Rate per 100 000 population per year')  + theme_glb.rpt() + ggtitle(paste('Global trends in case notification (black) and estimated TB \nincidence (green) rates, 1990-', thisyear-1, sep="")) 
+  inc_notif_glo <- qplot(year, e_inc_100k, data=ehb, geom='line', colour=I('#00FF33')) + geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I('#00FF33'), alpha=0.4) + geom_line(aes(year, newrel_100k)) + scale_x_continuous('') + ylab('Rate per 100 000 population per year')  + theme_glb.rpt() + ggtitle(paste('Global trends in case notification (black) and estimated TB \nincidence (green) rates, 1990-', thisyear-1, sep="")) 
   
-  figsave(ehc, ehb, "4_2_inc_notif_glo", width=6, height=6)
+  figsave(inc_notif_glo, ehb, "4_2_inc_notif_glo", width=6, height=6)
   
   # Incidence only
   # inc_glo -----------------------------------------------------
@@ -319,10 +319,10 @@ gac$hivtest_pct <- gac$hivtest_pct_numerator / gac$hivtest_pct_denominator * 100
 
 gadstart <- 2004
 
-gad <- ggplot(subset(gac, year >= gadstart), aes(year, hivtest_pct, colour=area)) +   geom_line(size=1.5) + geom_text(data=subset(gac, year==max(gac$year)), aes(label = area), hjust=-.1, vjust=0, size=5) + scale_y_continuous(name = "Percentage of notified TB patients", limits=c(0,100), expand=c(0,0)) + scale_x_continuous("", labels=gadstart:(thisyear-1), breaks=gadstart:(thisyear-1)) + scale_color_brewer(name="WHO region", palette="Dark2") + expand_limits(x=c(gadstart, thisyear+0.5)) + ggtitle(glue('Percentage of notified TB patients with known HIV status, ', gadstart, "–", thisyear-1)) + theme_glb.rpt() + theme(legend.position="none")
+hivtest_graph <- ggplot(subset(gac, year >= gadstart), aes(year, hivtest_pct, colour=area)) +   geom_line(size=1.5) + geom_text(data=subset(gac, year==max(gac$year)), aes(label = area), hjust=-.1, vjust=0, size=5) + scale_y_continuous(name = "Percentage of notified TB patients", limits=c(0,100), expand=c(0,0)) + scale_x_continuous("", labels=gadstart:(thisyear-1), breaks=gadstart:(thisyear-1)) + scale_color_brewer(name="WHO region", palette="Dark2") + expand_limits(x=c(gadstart, thisyear+0.5)) + ggtitle(glue('Percentage of notified TB patients with known HIV status, ', gadstart, "\u2013", thisyear-1)) + theme_glb.rpt() + theme(legend.position="none")
 
 # windows(11, 7); gad; dev.off()
-figsave(gad, gac, "7_1_hivtest_graph")
+figsave(hivtest_graph, gac, "7_1_hivtest_graph")
 
 
 # 7_xxxx_hivtest_num -------------------------------------------------------------------
@@ -787,6 +787,40 @@ hac <- ggplot(hab, aes(area, value, fill=variable)) + geom_bar(stat="identity", 
 
 figsave(hac, hab, "4_5_txsucc")
 
+# 4_1_agesex_reg -------------------------------------------------------------
+
+fa <- subset(tb, year==thisyear-1, c("country", "g_whoregion", "newrel_m014", "newrel_m1524", "newrel_m2534", "newrel_m3544", "newrel_m4554", "newrel_m5564", "newrel_m65", "newrel_f014", "newrel_f1524", "newrel_f2534", "newrel_f3544", "newrel_f4554", "newrel_f5564", "newrel_f65"))
+
+fb <- subset(p, year==thisyear-1, c("country", "e_pop_m014", "e_pop_m1524", "e_pop_m2534", "e_pop_m3544", "e_pop_m4554", "e_pop_m5564", "e_pop_m65", "e_pop_f014", "e_pop_f1524", "e_pop_f2534", "e_pop_f3544", "e_pop_f4554", "e_pop_f5564", "e_pop_f65"))
+
+fc <- merge(fa, fb)
+
+# Drop pop numbers from non reporters
+fc$check <- .rowsums(fc[c("newrel_m1524", "newrel_m2534", "newrel_m3544", "newrel_m4554", "newrel_m5564", "newrel_m65", "newrel_f1524", "newrel_f2534", "newrel_f3544", "newrel_f4554", "newrel_f5564", "newrel_f65")] )
+
+fc1 <- fc[!is.na(fc$check), -ncol(fc)]
+
+fd <- aggregate(fc1[3:ncol(fc1)], by=list(Region=fc1$g_whoregion), FUN=sum, na.rm=TRUE)
+
+fe <- melt(fd, id=1)
+
+fe$type <- str_extract(fe$variable, "newrel|e_pop")
+fe$sex <- str_extract(fe$variable, "m|f")
+fe$age <- str_extract(fe$variable, "014|1524|2534|3544|4554|5564|65")
+
+fg <- cast(fe, Region+age~type, fun.aggregate = sum) # This aggregates male and female
+
+fg$newrel_100k <- fg$newrel / fg$e_pop * 1e5
+
+fg <- .shortnames(fg, col="Region")
+fg$age <- factor(fg$age, levels=c("014", "1524", "2534", "3544", "4554", "5564", "65"), labels=c("0\u201314", "15\u201324", "25\u201334", "35\u201344", "45\u201354", "55\u201364", "\u226565"))
+
+agesex_reg <- ggplot(fg, aes(age, newrel_100k, colour=Region, group=Region)) + geom_line(size=1) + scale_y_continuous(name = "Rate per 100 000 population per year") + scale_x_discrete("", labels=levels(fg$age)) + scale_color_brewer(name="WHO region", palette="Dark2") + ggtitle(paste("Regional TB notification rates by age,", thisyear-1)) + theme_glb.rpt() 
+
+
+# windows(11, 7); gad; dev.off()
+figsave(agesex_reg, fg, "4_1_agesex_reg")
+
 # B4_6_hiv_ts_d ---------------------------------------------------
 
 # In order to have the 2004 graph I'm putting this old code here.
@@ -794,7 +828,7 @@ figsave(hac, hab, "4_5_txsucc")
 # hiv_txout
 #-------------------------------------------------------------------
 
-gha <- subset(o, year==2004 & !is.na(hiv_new_sp_cur), select=c('iso3', 'country', 'g_hbhiv63', 'year', 'hiv_new_sp_coh', 'hiv_new_sp_cur', 'hiv_new_sp_cmplt', 'hiv_new_sp_died', 'hiv_new_sp_fail', 'hiv_new_sp_def', 'new_sp_coh', 'new_sp_cur','new_sp_cmplt', 'new_sp_died', 'new_sp_fail', 'new_sp_def', 'hiv_new_snep_coh','hiv_new_snep_cmplt', 'hiv_new_snep_died', 'hiv_new_snep_fail', 'hiv_new_snep_def', 'new_snep_coh', 'new_snep_cmplt', 'new_snep_died', 'new_snep_fail',  'new_snep_def', 'hiv_ret_coh', 'hiv_ret_cur', 'hiv_ret_cmplt', 'hiv_ret_died', 'hiv_ret_fail', 'hiv_ret_def', 'ret_coh', 'ret_cur', 'ret_cmplt', 'ret_died', 'ret_fail', 'ret_def', "c_new_sp_neval", "c_new_snep_neval", "c_ret_neval", "c_hiv_new_sp_neval", "c_hiv_new_snep_neval", "c_hiv_ret_neval"))
+gha <- subset(o, year==2004 & !is.na(hiv_new_sp_cur), select=c('country', 'country', 'g_hbhiv63', 'year', 'hiv_new_sp_coh', 'hiv_new_sp_cur', 'hiv_new_sp_cmplt', 'hiv_new_sp_died', 'hiv_new_sp_fail', 'hiv_new_sp_def', 'new_sp_coh', 'new_sp_cur','new_sp_cmplt', 'new_sp_died', 'new_sp_fail', 'new_sp_def', 'hiv_new_snep_coh','hiv_new_snep_cmplt', 'hiv_new_snep_died', 'hiv_new_snep_fail', 'hiv_new_snep_def', 'new_snep_coh', 'new_snep_cmplt', 'new_snep_died', 'new_snep_fail',  'new_snep_def', 'hiv_ret_coh', 'hiv_ret_cur', 'hiv_ret_cmplt', 'hiv_ret_died', 'hiv_ret_fail', 'hiv_ret_def', 'ret_coh', 'ret_cur', 'ret_cmplt', 'ret_died', 'ret_fail', 'ret_def', "c_new_sp_neval", "c_new_snep_neval", "c_ret_neval", "c_hiv_new_sp_neval", "c_hiv_new_snep_neval", "c_hiv_ret_neval"))
 
 gha$count <- 1
 
@@ -822,27 +856,29 @@ gha <- within(gha, {
   
 })
 
-hma1 <- subset(gha, select=c(iso3, year, newrel_coh, newrel_succ, newrel_fail, newrel_died, newrel_lost, c_newrel_neval, ret_nrel_coh, ret_nrel_succ, ret_nrel_fail, ret_nrel_died, ret_nrel_lost, c_ret_nrel_neval, tbhiv_coh, tbhiv_succ, tbhiv_fail, tbhiv_died, tbhiv_lost, c_tbhiv_neval))
+hma1 <- subset(gha, select=c(country, year, newrel_coh, newrel_succ, newrel_fail, newrel_died, newrel_lost, c_newrel_neval, ret_nrel_coh, ret_nrel_succ, ret_nrel_fail, ret_nrel_died, ret_nrel_lost, c_ret_nrel_neval, tbhiv_coh, tbhiv_succ, tbhiv_fail, tbhiv_died, tbhiv_lost, c_tbhiv_neval))
 
 # end of the 2004 rigamarol
 
 
 # Remove non-HIV outcomes reporters (because otherwise we can't minus out the HIV)
-hma2 <- subset(tb, year==thisyear-2 & !is.na(tbhiv_succ) & !is.na(newrel_succ), c(iso3, year, newrel_coh, newrel_succ, newrel_fail, newrel_died, newrel_lost, c_newrel_neval, ret_nrel_coh, ret_nrel_succ, ret_nrel_fail, ret_nrel_died, ret_nrel_lost, c_ret_nrel_neval, tbhiv_coh, tbhiv_succ, tbhiv_fail, tbhiv_died, tbhiv_lost, c_tbhiv_neval)) 
+hma2 <- subset(tb, year==thisyear-2 & !is.na(tbhiv_succ) & !is.na(newrel_succ), c(country, year, newrel_coh, newrel_succ, newrel_fail, newrel_died, newrel_lost, c_newrel_neval, ret_nrel_coh, ret_nrel_succ, ret_nrel_fail, ret_nrel_died, ret_nrel_lost, c_ret_nrel_neval, tbhiv_coh, tbhiv_succ, tbhiv_fail, tbhiv_died, tbhiv_lost, c_tbhiv_neval)) 
 
 if(thisyear==2014){
-  hma2 <- subset(hma2, iso3 %nin% c('COD', "MOZ"))
+  hma2 <- subset(hma2, country %nin% c('COD', "MOZ"))
   warning("DRC and Mozambique numbers removed!!!")
 }
 
-hma <- rbind(hma1, hma2) 
+# hma <- rbind(hma1, hma2) 
+hma <- rbind(subset(hma1, country %in% hma2$country), subset(hma2, country %in% hma1$country)) # This only includes countries who reported for both 2004 and the latest year.
+# hma <- hma2 # This is ignoring the 2004
 
 
 
 
 hma[1] <- "global"
 
-hmb <- aggregate(hma[3:ncol(hma)], by=list(area=hma$iso3, year=hma$year), FUN=sum, na.rm=TRUE)
+hmb <- aggregate(hma[3:ncol(hma)], by=list(area=hma$country, year=hma$year), FUN=sum, na.rm=TRUE)
 
 hmc <- melt(hmb, id=1:2)
 hmc$type <- str_extract(hmc$variable, "tbhiv|newrel|ret_nrel")
@@ -876,7 +912,7 @@ hmi <- hmg; hmi$duh <- ""
 
 # hmj <- ggplot(hmi, aes(duh, value, fill=type)) + geom_bar(stat="identity", position="dodge", width=0.5) + facet_wrap(~variable, scales="free") + theme_glb.rpt() + labs(x="") + scale_y_continuous("Percentage of cohort") + scale_fill_brewer("", type = "qual", palette=6)
 
-hmj <- ggplot(hmg, aes(variable, value, fill=type)) + geom_bar(stat="identity", position="dodge", width=0.5) + facet_wrap(~year, nrow=1) + theme_glb.rpt() + labs(x="") + scale_y_continuous("Percentage of cohort", limits=c(0,100)) + scale_fill_brewer("", type = "qual", palette=6) + ggtitle(paste("Outcomes of TB treatment by HIV status, 2004 and", thisyear-2, sep=""))
+hmj <- ggplot(hmg, aes(variable, value, fill=type)) + geom_bar(stat="identity", position="dodge", width=0.5) + facet_wrap(~year, nrow=1) + theme_glb.rpt() + labs(x="") + scale_y_continuous("Percentage of cohort", limits=c(0,100)) + scale_fill_brewer("", type = "qual", palette=6) + ggtitle(paste("Outcomes of TB treatment by HIV status, 2004 and ", thisyear-2, sep=""))
 
 # figsave(hmh, hmg, "hiv_ts_d_oldversion")
 figsave(hmj, hmg, "B4_6_hiv_ts_d")
