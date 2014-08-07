@@ -823,43 +823,6 @@ figsave(agesex_reg, fg, "4_1_agesex_reg")
 
 # B4_6_hiv_ts_d ---------------------------------------------------
 
-# In order to have the 2004 graph I'm putting this old code here.
-#-------------------------------------------------------------------
-# hiv_txout
-#-------------------------------------------------------------------
-
-gha <- subset(o, year==2004 & !is.na(hiv_new_sp_cur), select=c('country', 'country', 'g_hbhiv63', 'year', 'hiv_new_sp_coh', 'hiv_new_sp_cur', 'hiv_new_sp_cmplt', 'hiv_new_sp_died', 'hiv_new_sp_fail', 'hiv_new_sp_def', 'new_sp_coh', 'new_sp_cur','new_sp_cmplt', 'new_sp_died', 'new_sp_fail', 'new_sp_def', 'hiv_new_snep_coh','hiv_new_snep_cmplt', 'hiv_new_snep_died', 'hiv_new_snep_fail', 'hiv_new_snep_def', 'new_snep_coh', 'new_snep_cmplt', 'new_snep_died', 'new_snep_fail',  'new_snep_def', 'hiv_ret_coh', 'hiv_ret_cur', 'hiv_ret_cmplt', 'hiv_ret_died', 'hiv_ret_fail', 'hiv_ret_def', 'ret_coh', 'ret_cur', 'ret_cmplt', 'ret_died', 'ret_fail', 'ret_def', "c_new_sp_neval", "c_new_snep_neval", "c_ret_neval", "c_hiv_new_sp_neval", "c_hiv_new_snep_neval", "c_hiv_ret_neval"))
-
-gha$count <- 1
-
-# Generate tx success and not evaluated vars
-gha <- within(gha, {
-  newrel_coh <- rowSums(cbind(new_sp_coh, new_snep_coh, ret_coh), na.rm=T)
-  newrel_succ <- rowSums(cbind(new_sp_cur, new_sp_cmplt, new_snep_cmplt, ret_cur, ret_cmplt), na.rm=T)
-  newrel_fail <- rowSums(cbind(new_sp_fail, new_snep_fail, ret_fail), na.rm=T)  
-  newrel_died <- rowSums(cbind(new_sp_died, new_snep_died, ret_died), na.rm=T)
-  newrel_lost <- rowSums(cbind(new_sp_def, new_snep_def, ret_def), na.rm=T)
-  c_newrel_neval <- rowSums(cbind(c_new_sp_neval, c_new_snep_neval, c_ret_neval), na.rm=T)
-  ret_nrel_coh <- 0
-  ret_nrel_succ <- 0
-  ret_nrel_fail <- 0
-  ret_nrel_died <- 0
-  ret_nrel_lost <- 0
-  c_ret_nrel_neval <- 0
-  
-  tbhiv_coh <- rowSums(cbind(hiv_new_sp_coh, hiv_new_snep_coh, hiv_ret_coh), na.rm=T)
-  tbhiv_succ <- rowSums(cbind(hiv_new_sp_cur, hiv_new_sp_cmplt, hiv_new_snep_cmplt, hiv_ret_cur, hiv_ret_cmplt), na.rm=T)
-  tbhiv_fail <- rowSums(cbind(hiv_new_sp_fail, hiv_new_snep_fail, hiv_ret_fail), na.rm=T)  
-  tbhiv_died <- rowSums(cbind(hiv_new_sp_died, hiv_new_snep_died, hiv_ret_died), na.rm=T)
-  tbhiv_lost <- rowSums(cbind(hiv_new_sp_def, hiv_new_snep_def, hiv_ret_def), na.rm=T)
-  c_tbhiv_neval <- rowSums(cbind(c_hiv_new_sp_neval, c_hiv_new_snep_neval, c_hiv_ret_neval), na.rm=T)
-  
-})
-
-hma1 <- subset(gha, select=c(country, year, newrel_coh, newrel_succ, newrel_fail, newrel_died, newrel_lost, c_newrel_neval, ret_nrel_coh, ret_nrel_succ, ret_nrel_fail, ret_nrel_died, ret_nrel_lost, c_ret_nrel_neval, tbhiv_coh, tbhiv_succ, tbhiv_fail, tbhiv_died, tbhiv_lost, c_tbhiv_neval))
-
-# end of the 2004 rigamarol
-
 
 # Remove non-HIV outcomes reporters (because otherwise we can't minus out the HIV)
 hma2 <- subset(tb, year==thisyear-2 & !is.na(tbhiv_succ) & !is.na(newrel_succ), c(country, year, newrel_coh, newrel_succ, newrel_fail, newrel_died, newrel_lost, c_newrel_neval, ret_nrel_coh, ret_nrel_succ, ret_nrel_fail, ret_nrel_died, ret_nrel_lost, c_ret_nrel_neval, tbhiv_coh, tbhiv_succ, tbhiv_fail, tbhiv_died, tbhiv_lost, c_tbhiv_neval)) 
@@ -869,12 +832,7 @@ if(thisyear==2014){
   warning("DRC and Mozambique numbers removed!!!")
 }
 
-# hma <- rbind(hma1, hma2) 
-hma <- rbind(subset(hma1, country %in% hma2$country), subset(hma2, country %in% hma1$country)) # This only includes countries who reported for both 2004 and the latest year.
-# hma <- hma2 # This is ignoring the 2004
-
-
-
+hma <- hma2 
 
 hma[1] <- "global"
 
@@ -906,15 +864,8 @@ hmf$`Not evaluated` <- hmf$neval / hmf$coh * 100
 
 hmg <- melt(as.data.frame(hmf[c(1:2,9:ncol(hmf))]), id=1:2) # It's a melt and cast fiesta!
 
-hmh <- ggplot(hmg, aes(type, value, fill=variable)) + geom_bar(stat="identity", position="stack", width=0.5) + theme_glb.rpt() + labs(x="") + scale_y_continuous("Percentage of cohort") + scale_fill_brewer("", type = "qual", palette=6) + ggtitle(paste("Outcomes of TB treatment by HIV status,", thisyear-2, sep=" "))
+hmj <- ggplot(hmg, aes(variable, value, fill=type)) + geom_bar(stat="identity", position="dodge", width=0.5) + theme_glb.rpt() + labs(x="") + scale_y_continuous("Percentage of cohort", limits=c(0,100)) + scale_fill_brewer("", type = "qual", palette=6) + ggtitle(paste("Outcomes of TB treatment by HIV status, ", thisyear-2, sep=""))
 
-hmi <- hmg; hmi$duh <- ""
-
-# hmj <- ggplot(hmi, aes(duh, value, fill=type)) + geom_bar(stat="identity", position="dodge", width=0.5) + facet_wrap(~variable, scales="free") + theme_glb.rpt() + labs(x="") + scale_y_continuous("Percentage of cohort") + scale_fill_brewer("", type = "qual", palette=6)
-
-hmj <- ggplot(hmg, aes(variable, value, fill=type)) + geom_bar(stat="identity", position="dodge", width=0.5) + facet_wrap(~year, nrow=1) + theme_glb.rpt() + labs(x="") + scale_y_continuous("Percentage of cohort", limits=c(0,100)) + scale_fill_brewer("", type = "qual", palette=6) + ggtitle(paste("Outcomes of TB treatment by HIV status, 2004 and ", thisyear-2, sep=""))
-
-# figsave(hmh, hmg, "hiv_ts_d_oldversion")
 figsave(hmj, hmg, "B4_6_hiv_ts_d")
 
 # Garbage at the end ---------------------------------------------------

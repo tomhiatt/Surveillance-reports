@@ -572,28 +572,31 @@ ted2 <- ted[c("country", 'e_inc_tbhiv_num', 'e_inc_tbhiv_num_lo', 'e_inc_tbhiv_n
 
 # replace uncalculatables
 for(var in 6:10){
-  ted2[var] <- ifelse(is.na(ted2[[var]]), "–", ted2[[var]])
+  ted2[var] <- ifelse(is.na(ted2[[var]]), "\u2013", ted2[[var]])
 }
 
-tee <- xtable(ted2, align=c('l', 'l', rep('c',10)))
-# digits(tee) <- 1
+# combine estimates to two lines
+ted2$est_rg <- paste0("(", ted2$e_inc_tbhiv_num_lo, "\u2013", ted2$e_inc_tbhiv_num_hi, ")")
+
+ted3 <- ted2[c("country", 'e_inc_tbhiv_num', 'est_rg', "hivtest1000", "hivtest_prct", "hivtest_pos_prct", "hiv_cpt_prct", "hiv_art_prct", "hiv_art_est_prct", "hiv_ipt2")]
+
+tee <- xtable(ted3, align=c('l', 'l', 'r', 'l', rep('c',7)))
 
 cat(glue("<font size=3 align=\"left\"><b>HIV testing, treatment for HIV-positive TB patients and prevention of TB among people living with <b>HIV</b>, 41 high TB/HIV burden countries and WHO regions, ", thisyear-1, ".</b> Numbers in thousands except where indicated.</font><br><br>"), file=glue("Tables/7_1_tbhiv", Sys.Date(), ".htm"))
 
 print(tee, type="html", file=glue("Tables/7_1_tbhiv", Sys.Date(), ".htm"),include.rownames=F, include.colnames=F, append=T,
       html.table.attributes="border=0 rules=rows width=1100", add.to.row=list(pos=list(0, nrow(tee)), command=c("
-                                                                                                                <TR> <TH></TH> <TH colspan=3>ESTIMATED HIV-POSTIVE INCIDENT TB CASES</TH> 
-                                                                                                                <TH>NUMBER OF NOTIFIED TB PATIENTS WITH KNOWN HIV STATUS</TH> 
-                                                                                                                <TH>% OF NOTIFIED TB PATIENTS WITH KNOWN HIV STATUS</TH> 
-                                                                                                                <TH>% OF NOTIFIED TB PATIENTS WITH HIV-POSITIVE TEST</TH> 
-                                                                                                                <TH>% OF NOTIFIED HIV-POSITIVE TB PATIENTS STARTED ON CPT</TH> 
-                                                                                                                <TH>% OF NOTIFIED HIV-POSITIVE TB PATIENTS STARTED ON ART</TH> 
-                                                                                                                <TH>% OF ESTIMATED HIV-POSITIVE INCIDENT TB CASES STARTED ON ART</TH> 
-                                                                                                                <TH>NUMBER OF HIV- POSITIVE PEOPLE PROVIDED WITH IPT</TH>  </TR>
-                                                                                                                <TR> <TH></TH> <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH>",
-                                                                                                                "<TR> <TD colspan=11>Blank cells indicate data not reported. 
+<TR> <TH></TH> <TH colspan=2>ESTIMATED HIV-POSTIVE INCIDENT TB CASES</TH> 
+<TH>NUMBER OF NOTIFIED TB PATIENTS WITH KNOWN HIV STATUS</TH> 
+<TH>% OF NOTIFIED TB PATIENTS WITH KNOWN HIV STATUS</TH> 
+<TH>% OF NOTIFIED TB PATIENTS WITH HIV-POSITIVE TEST</TH> 
+<TH>% OF NOTIFIED HIV-POSITIVE TB PATIENTS STARTED ON CPT</TH> 
+<TH>% OF NOTIFIED HIV-POSITIVE TB PATIENTS STARTED ON ART</TH> 
+<TH>% OF ESTIMATED HIV-POSITIVE INCIDENT TB CASES STARTED ON ART</TH> 
+<TH>NUMBER OF HIV- POSITIVE PEOPLE PROVIDED WITH IPT</TH>  </TR>",
+"<TR> <TD colspan=11>Blank cells indicate data not reported. 
 <br>– indicates values that cannot be calculated.<br>
-                                                                                                                <sup>a</sup> Data for the Russian Federation exclude retreatment cases and cases from prisons.<TD colspan=8></TD> </TR>")))
+<sup>a</sup> Data for the Russian Federation exclude retreatment cases and cases from prisons.<TD colspan=8></TD> </TR>")))
 
 tablecopy("7_1_tbhiv")
 
@@ -673,6 +676,9 @@ tfd[37:45, c("lab_sm_f", "lab_sm_led", "lab_cul_f", "lab_dst_f", "lab_lpa_f", "l
 
 tfe <- xtable(tfd[c("country", "g_hbc22", "g_hbmdr27", "lab_sm_f", "c_sm_100k", "lab_sm_led_pct", "lab_cul_f", "c_cul_5m", "lab_dst_f", "c_dst_5m", "lab_lpa_f", "c_lpa_5m", "lab_xpert")], align=c('l', 'l', rep('c',12)))
 
+# Footnote 1
+# tffoot <- ifelse(any(is.na(tff[4:ncol(tff)])), "Blank cells indicate data not reported.<br>", "")
+
 print(tfe, type="html", file=glue("Tables/6_1_lab_capac", Sys.Date(), ".htm"),include.rownames=F, include.colnames=F, #sanitize.text.function=identity, #this makes <0.1 disappear in word even if not in a browser. 
       html.table.attributes="border=0 rules=rows width=1100 cellpadding=5", add.to.row=list(pos=list(0, nrow(tfe)), command=c(glue("<h2 align=\"left\" >Laboratory capacity, ", thisyear-1, "<sup>a</sup></h2>
                                                                                                                                    <TR> <TH></TH> <TH></TH> <TH></TH> <TH colspan=3>SMEAR MICROSCOPY</TH> 
@@ -704,14 +710,16 @@ tablecopy("6_1_lab_capac")
 
 tff <- xtable(tfd[c("country", "g_hbc22", "g_hbmdr27", "xpert_in_guide_TBHIV", "xpert_in_guide_MDR")], align=c('l', 'l', rep('c',4)))
 
-print(tff, type="html", file=glue("Tables/6_2_lab_policy", Sys.Date(), ".htm"),include.rownames=F, include.colnames=F, #sanitize.text.function=identity, 
+# Footnote 1
+tffoot <- ifelse(any(is.na(tff[4:ncol(tff)])), "Blank cells indicate data not reported.<br>", "")
+
+print(tff, type="html", file=glue("Tables/B6_2_1_lab_policy", Sys.Date(), ".htm"),include.rownames=F, include.colnames=F, #sanitize.text.function=identity, 
       html.table.attributes="border=0 rules=rows width=1100 cellpadding=0", add.to.row=list(pos=list(0, nrow(tff)), command=c(glue("<h2 align=\"left\">Incorporation of WHO policy guidance on Xpert MTB/RIF, ", thisyear-1, "<sup>a</sup></h2>
-                                                                                                                                   <TR> <TH></TH> <TH>HIGH TB BURDEN</TH> <TH>HIGH MDR-TB BURDEN</TH>
-                                                                                                                                   <TH>XPERT MTB/RIF AS THE INITIAL DIAGNOSTIC TEST FOR TB IN PEOPLE LIVING WITH HIV</TH>
-                                                                                                                                   <TH>XPERT MTB/RIF AS THE INITIAL DIAGNOSTIC TEST IN PEOPLE AT RISK OF DRUG-RESISTANT TB</TH> </TR>"),
-                                                                                                                              "<TR> <TD colspan=8>Blank cells indicate data not reported.<br>
-                                                                                                                              <sup>a</sup> The regional and global figures are aggregates of data reported by low- and middle-income countries and territories. Data for the variables shown in the table are not requested from high-income countries in the WHO data collection form. 
-                                                                                                                              <TD colspan=8></TD> </TR>")))
+<TR> <TH></TH> <TH>HIGH TB BURDEN</TH> <TH>HIGH MDR-TB BURDEN</TH>
+<TH>XPERT MTB/RIF AS THE INITIAL DIAGNOSTIC TEST FOR TB IN PEOPLE LIVING WITH HIV</TH>
+<TH>XPERT MTB/RIF AS THE INITIAL DIAGNOSTIC TEST IN PEOPLE AT RISK OF DRUG-RESISTANT TB</TH> </TR>"),
+paste0("<TR> <TD colspan=8>", tffoot, "<sup>a</sup> The regional and global figures are aggregates of data reported by low- and middle-income countries and territories. Data for the variables shown in the table are not requested from high-income countries in the WHO data collection form. 
+<TD colspan=8></TD> </TR>"))))
 
 tablecopy("B6_2_1_lab_policy")
 

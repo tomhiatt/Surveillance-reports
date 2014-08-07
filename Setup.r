@@ -53,7 +53,7 @@ setwd(basefolder)
 
 # Graph theme components
 # ---------------------------
-theme_glb.rpt <- function(base_size=12, base_family="") {
+theme_glb.rpt <- function(base_size=10, base_family="") {
   colors <- ggthemes_data$few
   gray <- colors$medium['gray']
   black <- colors$dark['black'] # I don't know why these last 3 parts are needed, but they are. List is here: http://docs.ggplot2.org/0.9.2.1/theme.html
