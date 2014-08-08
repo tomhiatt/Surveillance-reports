@@ -49,9 +49,9 @@ mc$cat <- factor(mc$cat, levels = c("0-14", "15-49",  "50-74", ">=75"))
 
 # HIV testing map (ugly colors are for easier design)
 
-mc1 <- WHOmap.print(mc, paste("Percentage of notified TB patients with known HIV status by country,", thisyear-1, "(a)"), "Percentage of \nnotified TB patients", copyright=FALSE, colors=c('yellow', 'lightgreen', 'green', 'darkgreen'), show=FALSE)
+hivtest_map <- WHOmap.print(mc, paste("Percentage of notified TB patients with known HIV status \nby country,", thisyear-1, "(a)"), "Percentage of \nnotified TB patients", copyright=FALSE, colors=c('yellow', 'lightgreen', 'green', 'darkgreen'), show=FALSE)
 
-figsave(mc1, mc, "7_2_hivtest_map")
+figsave(hivtest_map, mc, "7_2_hivtest_map")
 
 
 # 7_6_HIVart_map -------------------------------------------------

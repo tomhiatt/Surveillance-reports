@@ -58,7 +58,7 @@ if(flg_show_estimates){
   tag[2] <- rounder(tag[[2]]/1000)
   
   for(col in 3:ncol(tag)){
-    tag[col] <- ifelse(is.na(tag[[col]]), "–", frmt(tag[[col]]/1000))
+    tag[col] <- ifelse(is.na(tag[[col]]), "\u2013", frmt(tag[[col]]/1000))
   } 
   
   tag[tag$rowname=="India", "rowname"] <- "India(d)"
@@ -142,7 +142,7 @@ if(flg_show_estimates){
   } 
   
   # for(col in 12:14){
-  #   tah[col] <- ifelse(is.na(tah[[col]]), "–", frmt(tah[[col]] * 100))
+  #   tah[col] <- ifelse(is.na(tah[[col]]), "\u2013", frmt(tah[[col]] * 100))
   # } 
   
   tah[tah$rowname=="India", "rowname"] <- "India(c)"
@@ -212,7 +212,7 @@ for(var in 2:ncol(tbc)){
   tbc[var] <- rounder(tbc[[var]])
 }
 
-tbc[is.na(tbc$nrpulm_lab_pct), 'nrpulm_lab_pct'] <- "–"
+tbc[is.na(tbc$nrpulm_lab_pct), 'nrpulm_lab_pct'] <- "\u2013"
 
 # rename
 tbc <- .shortnames(tbc, col='area', ord = "hbc")
@@ -312,7 +312,7 @@ names(tc_tsr)[1] <- names(tc_coh)[1] <- ""
 # fill in - for missing tsr
 
 for(var in 2:ncol(tc_tsr)){
-  tc_tsr[var] <- ifelse(is.na(tc_tsr[[var]]), "–", frmt(tc_tsr[[var]]))
+  tc_tsr[var] <- ifelse(is.na(tc_tsr[[var]]), "\u2013", frmt(tc_tsr[[var]]))
 }
 
 # Add to file
@@ -375,7 +375,7 @@ tcbb <- subset(tcba, year %in% c(seq(1995, thisyear-4, 5), (thisyear-4):(thisyea
 
 tcbb$coh <- rounder(tcbb$coh / 1000, decimals=TRUE)
 
-tcbb$tsr <- ifelse(is.na(tcbb$tsr), "–", frmt(tcbb$tsr))
+tcbb$tsr <- ifelse(is.na(tcbb$tsr), "\u2013", frmt(tcbb$tsr))
 
 
 
@@ -408,7 +408,7 @@ names(tcbc)[1] <- names(tcb_coh)[1] <- ""
 
 # Add to file
 
-cat(paste("<h3>Treatment success for all new cases (%) and cohort size (thousands), 1995", "–", thisyear-2, "</h3>a. Treatment success (%)", sep=""), file=glue("Tables/4_6_all_tsr", Sys.Date(), ".htm"))
+cat(paste("<h3>Treatment success for all new cases (%) and cohort size (thousands), 1995", "\u2013", thisyear-2, "</h3>a. Treatment success (%)", sep=""), file=glue("Tables/4_6_all_tsr", Sys.Date(), ".htm"))
 
 tcb_tsra <- xtable(tcbc)
 digits(tcb_tsra) <- 0
@@ -418,7 +418,7 @@ cat("<br>b. Cohort size (thousands)", file=glue("Tables/4_6_all_tsr", Sys.Date()
 
 tcb_coha <- xtable(tcb_coh)
 
-print(tcb_coha, type="html", file=glue("Tables/4_6_all_tsr", Sys.Date(), ".htm"),include.rownames=F, include.colnames=T, append=T, html.table.attributes="border=0 rules=rows width=900", add.to.row=list(pos=list(30), command=c(paste("<TR> <TD colspan=", thisyear-1995, ">Blank cells indicate data not reported. – indicates values that cannot be calculated.<br>* Data for 2012 include relapse cases.</TD></TR>", sep=""))))
+print(tcb_coha, type="html", file=glue("Tables/4_6_all_tsr", Sys.Date(), ".htm"),include.rownames=F, include.colnames=T, append=T, html.table.attributes="border=0 rules=rows width=900", add.to.row=list(pos=list(30), command=c(paste("<TR> <TD colspan=", thisyear-1995, ">Blank cells indicate data not reported. \u2013 indicates values that cannot be calculated.<br>* Data for 2012 include relapse cases.</TD></TR>", sep=""))))
 
 tablecopy("4_6_all_tsr")
 
@@ -474,7 +474,7 @@ tde <- .shortnames(tdd, col='group_name')
 
 # format missings
 for(var in 2:ncol(tde)){
-  tde[var] <- ifelse(is.na(tde[[var]]), "–", frmt(tde[[var]]))
+  tde[var] <- ifelse(is.na(tde[[var]]), "\u2013", frmt(tde[[var]]))
 }
 
 cat(paste("<font size=5><b>Estimates of the case detection rate for new and relapse cases (%), 1995-", thisyear-1, "</b><sup>a</sup></font>", sep=""), file=glue("Tables/4_5_cdr", Sys.Date(), ".htm"))
@@ -489,7 +489,7 @@ print(tdf, type="html", file=glue("Tables/4_5_cdr", Sys.Date(), ".htm"),include.
                                                                                              <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH> 
                                                                                              <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH> 
                                                                                              <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH>
-                                                                                             </TR>", sep=""), "<TR> <TD colspan=16>– indicates values that cannot be calculated.<br><sup>a</sup> Estimates for all years are recalculated as new information becomes available and techniques are refined, so they may differ from those published previously. <br><sup>b</sup> Best, low and high indicate best estimates followed by lower and upper bounds. The lower and upper bounds are defined as the 2.5th and 97.5th centiles of outcome distributions produced in simulations.</TD></TR>")))
+                                                                                             </TR>", sep=""), "<TR> <TD colspan=16>\u2013 indicates values that cannot be calculated.<br><sup>a</sup> Estimates for all years are recalculated as new information becomes available and techniques are refined, so they may differ from those published previously. <br><sup>b</sup> Best, low and high indicate best estimates followed by lower and upper bounds. The lower and upper bounds are defined as the 2.5th and 97.5th centiles of outcome distributions produced in simulations.</TD></TR>")))
 
 tablecopy('4_5_cdr')
 
@@ -595,7 +595,7 @@ print(tee, type="html", file=glue("Tables/7_1_tbhiv", Sys.Date(), ".htm"),includ
 <TH>% OF ESTIMATED HIV-POSITIVE INCIDENT TB CASES STARTED ON ART</TH> 
 <TH>NUMBER OF HIV- POSITIVE PEOPLE PROVIDED WITH IPT</TH>  </TR>",
 "<TR> <TD colspan=11>Blank cells indicate data not reported. 
-<br>– indicates values that cannot be calculated.<br>
+<br>\u2013 indicates values that cannot be calculated.<br>
 <sup>a</sup> Data for the Russian Federation exclude retreatment cases and cases from prisons.<TD colspan=8></TD> </TR>")))
 
 tablecopy("7_1_tbhiv")
@@ -653,15 +653,15 @@ for(poli in c("dst_in_guide", "lc_rst_in_guide", "lpa_in_guide", "sp_case_dfn_in
 }
 
 tfd <- within(tfd, {
-  c_sm_100k <- ifelse(is.na(lab_sm_f), "–", round.conv(lab_sm_f / pop_sm * 100000))
-  c_cul_5m <- ifelse(is.na(lab_cul_f), "–", round.conv(lab_cul_f / pop_cul * 5000000))
-  c_dst_5m <- ifelse(is.na(lab_dst_f), "–", round.conv(lab_dst_f / pop_dst * 5000000))
-  c_lpa_5m <- ifelse(is.na(lab_lpa_f), "–", round.conv(lab_lpa_f / pop_lpa * 5000000))
+  c_sm_100k <- ifelse(is.na(lab_sm_f), "\u2013", round.conv(lab_sm_f / pop_sm * 100000))
+  c_cul_5m <- ifelse(is.na(lab_cul_f), "\u2013", round.conv(lab_cul_f / pop_cul * 5000000))
+  c_dst_5m <- ifelse(is.na(lab_dst_f), "\u2013", round.conv(lab_dst_f / pop_dst * 5000000))
+  c_lpa_5m <- ifelse(is.na(lab_lpa_f), "\u2013", round.conv(lab_lpa_f / pop_lpa * 5000000))
   
   g_hbc22 <- ifelse(g_hbc22=='high', 'X', NA)
   g_hbmdr27 <- ifelse(g_hbmdr27=='high', 'X', NA)
   
-  lab_sm_led_pct <- ifelse(is.na(lab_sm_led) | is.na(lab_sm_f), "–", rounder(lab_sm_led / lab_sm_f * 100))
+  lab_sm_led_pct <- ifelse(is.na(lab_sm_led) | is.na(lab_sm_f), "\u2013", rounder(lab_sm_led / lab_sm_f * 100))
   lab_sm_f <- rounder(lab_sm_f)
   lab_cul_f <- rounder(lab_cul_f)  
   lab_dst_f <- rounder(lab_dst_f)  
@@ -670,7 +670,7 @@ tfd <- within(tfd, {
 })
 
 # Remove aggregates for sums 
-tfd[37:45, c("lab_sm_f", "lab_sm_led", "lab_cul_f", "lab_dst_f", "lab_lpa_f", "lab_xpert")] <- "–"
+tfd[37:45, c("lab_sm_f", "lab_sm_led", "lab_cul_f", "lab_dst_f", "lab_lpa_f", "lab_xpert")] <- "\u2013"
 
 # 6_1_lab_capac ####
 
@@ -759,12 +759,12 @@ tiaa <- tiaa[tikeep]
 # tiaa$order <- 1:nrow(tiaa)
 
 # Calculate % child. (Removed for all new where countries didn't report)
-# tiaa$new_sp.child.pct <- ifelse(is.na(tiaa$new_sp.totalage), "–", frmt(tiaa$new_sp.014 / tiaa$new_sp.totalage * 100))
-tiaa$all.child.pct <- ifelse(is.na(tiaa$all.totalage) , "–", frmt(tiaa$all.014 / tiaa$all.totalage * 100))
+# tiaa$new_sp.child.pct <- ifelse(is.na(tiaa$new_sp.totalage), "\u2013", frmt(tiaa$new_sp.014 / tiaa$new_sp.totalage * 100))
+tiaa$all.child.pct <- ifelse(is.na(tiaa$all.totalage) , "\u2013", frmt(tiaa$all.014 / tiaa$all.totalage * 100))
 
 # Calculate male female ratio. (Removed for all new where countries didn't report)
-# tiaa$new_sp.mf.ratio <- ifelse(is.na(tiaa$new_sp.male) | is.na(tiaa$new_sp.female) | tiaa$new_sp.male==0 | tiaa$new_sp.female==0, "–", frmt(tiaa$new_sp.male / tiaa$new_sp.female))
-tiaa$all.mf.ratio <- ifelse(is.na(tiaa$all.male) | is.na(tiaa$all.female) | tiaa$all.male==0 | tiaa$all.female==0, "–", frmt(tiaa$all.male / tiaa$all.female))
+# tiaa$new_sp.mf.ratio <- ifelse(is.na(tiaa$new_sp.male) | is.na(tiaa$new_sp.female) | tiaa$new_sp.male==0 | tiaa$new_sp.female==0, "\u2013", frmt(tiaa$new_sp.male / tiaa$new_sp.female))
+tiaa$all.mf.ratio <- ifelse(is.na(tiaa$all.male) | is.na(tiaa$all.female) | tiaa$all.male==0 | tiaa$all.female==0, "\u2013", frmt(tiaa$all.male / tiaa$all.female))
 
 for(var in tikeep[2:7]){
   tiaa[var] <- rounder(tiaa[[var]])
@@ -791,7 +791,7 @@ print(tid, type="html", file=glue("Tables/4_2_agesex", Sys.Date(), ".htm"),inclu
   <TD>% AGED &#8804; 15 YEARS</TD>
   <TD>MALE/FEMALE RATIO</TD>
   </TR>", 
-  "<TR> <TD colspan=7>Blank cells indicate data that could not be reported for the age categories shown.<br>– indicates values that cannot be calculated.<br>* New cases only.</TD> </TR>")))
+  "<TR> <TD colspan=7>Blank cells indicate data that could not be reported for the age categories shown.<br>\u2013 indicates values that cannot be calculated.<br>* New cases only.</TD> </TR>")))
 
 tablecopy("4_2_agesex")
 

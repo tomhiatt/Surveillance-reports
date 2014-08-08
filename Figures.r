@@ -19,8 +19,8 @@
 # 
 # 7.1 Percentage of TB patients with known HIV status: 7_1_hivtest_graph
 #
-# 7.3 Number of HIV-positive TB patients enrolled on CPT and ART: 7_3_cpt_art_hiv_graph
-# 7.4 % TB patients HIV+, and % HIV+ TB patients on CPT and ART: 7_4_hivprog_graph_all
+# 7.4 Number of HIV-positive TB patients enrolled on CPT and ART: 7_4_cpt_art_hiv_graph
+# 7.3 % TB patients HIV+, and % HIV+ TB patients on CPT and ART: 7_3_hivprog_graph_all
 #
 # 7.7 IPT for PLHIV without active TB : 7_7_hiv_ipt_graph
 # -------------------------------------------------
@@ -42,6 +42,62 @@ flg_show_estimates <- FALSE
 #   - Titles left justified
 #   - label range always includes all data
 #   - All use same color palette
+
+# Redundant section to delete -----------------------------------
+# 4_2_inc_notif_glo ----------------------------------------------------
+
+eha <- subset(araw.t, group_type=="global")
+
+ehb <- merge(subset(eha, select=c("group_name", "year", "e_inc_100k", "e_inc_100k_lo", "e_inc_100k_hi", "e_inc_tbhiv_100k", "e_inc_tbhiv_100k_lo", "e_inc_tbhiv_100k_hi", "e_pop_num")), aggregate(n.t['c_newinc'], by=list(year=n.t$year), FUN=sum, na.rm=TRUE))
+
+ehb$newrel_100k <- ehb$c_newinc / ehb$e_pop_num * 100000
+
+inc_notif_glo <- qplot(year, e_inc_100k, data=ehb, geom='line', colour=I('#00FF33')) + geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I('#00FF33'), alpha=0.4) + geom_line(aes(year, newrel_100k)) + scale_x_continuous('') + ylab('Rate per 100 000 population per year')  + theme_glb.rpt() + ggtitle(paste('Global trends in case notification (black) and estimated TB \nincidence (green) rates, 1990-', thisyear-1, sep="")) 
+
+figsave(inc_notif_glo, ehb, "4_2_inc_notif_glo", width=6, height=6)
+
+
+# 4_3_inc_notif_reg ----------------------------------------------------
+
+efa1 <- subset(araw.t, group_type=="g_whoregion" & year < thisyear)
+
+# names(regional) <- gsub ('_', '\\.', names (regional))
+efa1$g_whoregion <- factor(efa1$group_name, labels=c("Africa", "The Americas", "Eastern Mediterranean", "Europe", "South-East Asia", "Western Pacific"))
+
+efa <- merge(subset(efa1, select=c("group_name", "g_whoregion", "year", "e_inc_100k", "e_inc_100k_lo", "e_inc_100k_hi", "e_inc_tbhiv_100k", "e_inc_tbhiv_100k_lo", "e_inc_tbhiv_100k_hi", "e_pop_num")), aggregate(n.t['c_newinc'], by=list(group_name=n.t$g_whoregion, year=n.t$year), FUN=sum, na.rm=TRUE))
+
+efa$newrel_100k <- efa$c_newinc / efa$e_pop_num * 100000
+
+#   # a fudging to get values on top
+#   topper <- function(dat){
+#     dat$top <- max(pretty(c(dat$e_inc_100k_hi, max(dat$e_inc_100k_hi) * (1.1))))
+#     return(dat)
+#   }
+#   efc <- ddply(efa, "g_whoregion", topper)
+#   
+inc_notif_reg <- qplot(year, e_inc_100k, data=efa, geom='line', colour=I('#00FF33')) + geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I('#00FF33'), alpha=0.4) + geom_line(aes(year, newrel_100k)) + facet_wrap(~g_whoregion, scales='free_y') + scale_x_continuous('') + ylab('Rate per 100 000 population per year') +expand_limits(y=0) + theme_glb.rpt() +  ggtitle(paste('Case notification and estimated TB incidence rates by WHO region, 1990-', thisyear-1, '.', sep="")) 
+
+figsave(inc_notif_reg, efa, "4_3_inc_notif_reg")
+
+# 4_4_inc_notif_hbc ----------------------------------------------------
+
+ega <- subset(merge(eraw.t, e.t[e.t$year==thisyear-1,c("country", "g_hbc22")]), g_hbc22=="high" & year < thisyear) # This hack is until we add g_hbc22 to eraw.
+
+egb <- .shortnames(merge(subset(ega, select=c("country", "g_whoregion", "year", "e_inc_100k", "e_inc_100k_lo", "e_inc_100k_hi", "e_inc_tbhiv_100k", "e_inc_tbhiv_100k_lo", "e_inc_tbhiv_100k_hi", "e_pop_num")), subset(n.t, select=c('country', 'year', 'c_newinc'))), ord='multiyear')
+
+egb$newrel_100k <- egb$c_newinc / egb$e_pop_num * 100000
+
+# a fudging to get values on top
+# topper <- function(dat){
+#   dat$top <- max(pretty(c(dat$e_inc_100k_hi, max(dat$e_inc_100k_hi) * (1.1))))
+#   return(dat)
+# }
+# egc <- ddply(egb, "country", topper)
+
+inc_notif_hbc <- qplot(year, e_inc_100k, data=egb, geom='line', colour=I('green')) + geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I('green'), alpha=0.4) + geom_line(aes(year, newrel_100k)) + facet_wrap(~country, scales='free_y') + scale_x_continuous('', breaks=c(seq(1990, 2005, 5), thisyear-1)) + ylab('Rate per 100 000 population per year') + expand_limits(y=0) + theme_glb.rpt() + ggtitle(paste('Case notification and estimated TB incidence rates, 22 high-burden countries, 1990-', thisyear-1, '.', sep="")) 
+
+figsave(inc_notif_hbc, egb, "4_4_inc_notif_hbc")
+# end of redundant ------------------------------------
 
 if(flg_show_estimates){
   
@@ -118,7 +174,7 @@ if(flg_show_estimates){
   
   
   # Regional rates of incidence, and notifications
-  # inc_notif_reg ----------------------------------------------------
+  # 4_3_inc_notif_reg ----------------------------------------------------
   
   efa1 <- subset(araw.t, group_type=="g_whoregion" & year < thisyear)
   
@@ -136,9 +192,9 @@ if(flg_show_estimates){
 #   }
 #   efc <- ddply(efa, "g_whoregion", topper)
 #   
-  efb <- qplot(year, e_inc_100k, data=efa, geom='line', colour=I('#00FF33')) + geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I('#00FF33'), alpha=0.4) + geom_line(aes(year, newrel_100k)) + facet_wrap(~g_whoregion, scales='free_y') + scale_x_continuous('') + ylab('Rate per 100 000 population per year') +expand_limits(y=0) + theme_glb.rpt() +  ggtitle(paste('Case notification and estimated TB incidence rates by WHO region, 1990-', thisyear-1, '.', sep="")) 
+inc_notif_reg <- qplot(year, e_inc_100k, data=efa, geom='line', colour=I('#00FF33')) + geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I('#00FF33'), alpha=0.4) + geom_line(aes(year, newrel_100k)) + facet_wrap(~g_whoregion, scales='free_y') + scale_x_continuous('') + ylab('Rate per 100 000 population per year') +expand_limits(y=0) + theme_glb.rpt() +  ggtitle(paste('Case notification and estimated TB incidence rates by WHO region, 1990-', thisyear-1, '.', sep="")) 
   
-  figsave(efb, efa, "4_3_inc_notif_reg")
+  figsave(inc_notif_reg, efa, "4_3_inc_notif_reg")
   
   # Incidence only
   # inc_reg ------------------------------------------------------
@@ -158,7 +214,7 @@ if(flg_show_estimates){
   figsave(efd, efa, "inc_reg")
   
   # HBC rates of incidence, and notifications
-  # inc_notif_hbc ----------------------------------------------------
+  # 4_4_inc_notif_hbc ----------------------------------------------------
   
   ega <- subset(merge(eraw.t, e.t[e.t$year==thisyear-1,c("country", "g_hbc22")]), g_hbc22=="high" & year < thisyear) # This hack is until we add g_hbc22 to eraw.
   
@@ -173,9 +229,9 @@ if(flg_show_estimates){
   # }
   # egc <- ddply(egb, "country", topper)
   
-  egd <- qplot(year, e_inc_100k, data=egb, geom='line', colour=I('green')) + geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I('green'), alpha=0.4) + geom_line(aes(year, newrel_100k)) + facet_wrap(~country, scales='free_y') + scale_x_continuous('', breaks=c(seq(1990, 2005, 5), thisyear-1)) + ylab('Rate per 100 000 population per year') + expand_limits(y=0) + theme_glb.rpt() + ggtitle(paste('Case notification and estimated TB incidence rates, 22 high-burden countries, 1990-', thisyear-1, '.', sep="")) 
+inc_notif_hbc <- qplot(year, e_inc_100k, data=egb, geom='line', colour=I('green')) + geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I('green'), alpha=0.4) + geom_line(aes(year, newrel_100k)) + facet_wrap(~country, scales='free_y') + scale_x_continuous('', breaks=c(seq(1990, 2005, 5), thisyear-1)) + ylab('Rate per 100 000 population per year') + expand_limits(y=0) + theme_glb.rpt() + ggtitle(paste('Case notification and estimated TB incidence rates, 22 high-burden countries, 1990-', thisyear-1, '.', sep="")) 
   
-  figsave(egd, egb, "4_4_inc_notif_hbc")
+  figsave(inc_notif_hbc, egb, "4_4_inc_notif_hbc")
   
   # Incidence only
   # inc_hbc -----------------------------------------------------
@@ -348,27 +404,32 @@ gjb <- aggregate(gja[4:ncol(gja)], by=list(year=gja$year), FUN=sum, na.rm=TRUE)
 gje <- melt(gjb,id.vars=c('year'), measure.vars=c('pos', 'neg'))
 gje$value2 <- gje$value/1000
 
-gjf <- ggplot(gje, aes(factor(year), value2, fill=variable)) + geom_bar(width=0.6, stat='identity') + scale_y_continuous(name = "TB patients (thousands)", expand=c(0,0), limits=c(0,3100)) + scale_x_discrete("") + scale_fill_brewer(name="HIV status", palette="Dark2", breaks=rev(levels(gje$variable)), labels=c('Negative', 'Positive')) + theme_glb.rpt() + ggtitle(glue('Number of TB patients with known HIV status, ', min(gje$year), "–", max(gje$year))) + theme(legend.position=c(0.15, 0.75))
+gjf <- ggplot(gje, aes(factor(year), value2, fill=variable)) + geom_bar(width=0.6, stat='identity') + scale_y_continuous(name = "TB patients (thousands)", expand=c(0,0), limits=c(0,3100)) + scale_x_discrete("") + scale_fill_brewer(name="HIV status", palette="Dark2", breaks=rev(levels(gje$variable)), labels=c('Negative', 'Positive')) + theme_glb.rpt() + ggtitle(glue('Number of TB patients with known HIV status, ', min(gje$year), "\u2013", max(gje$year))) + theme(legend.position=c(0.15, 0.75))
 
 # windows(11, 7); gjf; dev.off()
 figsave(gjf, gje, "7_xxxx_hivtest_num")
 
-# 7_3_cpt_art_hiv_graph -------------------------------------------------------------------
-# 7_5_hiv_art_etbhiv_graph
+# 7_4_hiv_art_etbhiv -------------------------------------------------------------------
+# 7_5_hiv_art_etbhiv_graph (below)
 
-gca <- subset(tbhiv, year>=2004, select=c('iso3', 'year', 'hivtest_pos', 'hiv_cpt', 'hiv_art'))
+gca <- subset(tbhiv, year>=2004, select=c('iso3', 'year', 'hivtest_pos', 'hiv_art'))
 
 gcb <- aggregate(gca[3:ncol(gca)], by=list(year=gca$year), FUN=sum, na.rm=T)
 
-gcc <- melt(gcb, id=1)
-gcc$variable <- factor(gcc$variable, levels = c("hivtest_pos", "hiv_cpt", "hiv_art"), labels = c('HIV-positive','CPT','ART'))
+gcb1 <- merge(subset(araw, group_name=="global", c(year, e_inc_tbhiv_num_lo, e_inc_tbhiv_num_hi, e_inc_tbhiv_num)), gcb)
+
+gcc <- melt(gcb1, id=1:3)
 
 gcc$value <- gcc$value/1000
 
-gcd <- ggplot(gcc, aes(year, value, color=variable)) + geom_line(size=1) + scale_y_continuous("Number of TB patients (thousands)") + theme_glb.rpt() + scale_x_continuous(name="", breaks=2004:(thisyear-1)) +  scale_colour_brewer(name="Data provided", palette="Dark2") + geom_text(data=gcc[gcc$year==thisyear-2, ], aes(label=variable), vjust=3, hjust=1)  + ggtitle(paste("Number of notified HIV-positive TB patients enrolled on co-trimoxazole preventive therapy (CPT) \nand antiretroviral therapy (ART), 2004", thisyear-1, sep="–")) + expand_limits(y=c(min(pretty(c(gcc$value, min(gcc$value) * (0.95)))), max(pretty(c(gcc$value, max(gcc$value) * (1.05)))))) + theme(legend.position="none")
+# gcc1 <- cast()
+
+gcc$variable <- factor(gcc$variable, levels = c("e_inc_tbhiv_num", "hivtest_pos", "hiv_art"), labels = c("TB incidence, HIV-positive people", 'HIV-positive TB patients reported by NTPs', 'HIV-positive TB patients on ART'))
+
+hiv_art_etbhiv <- ggplot(gcc, aes(year, value, color=variable)) + geom_ribbon(aes(year, ymin=e_inc_tbhiv_num_lo/1000, ymax=e_inc_tbhiv_num_hi/1000), alpha=0.4, fill="red", color=NA) + geom_line(size=1) + scale_y_continuous("Numbers in thousands", limits=c(0,1500)) + theme_glb.rpt() + scale_x_continuous(name="") +  scale_colour_manual(name="", values=c("red", "firebrick", "dark blue")) + geom_text(data=gcc[gcc$year==thisyear-2, ], aes(label=variable), vjust=3, hjust=1)  + ggtitle(paste("ART enrolment among HIV-positive TB patients compared with the reported number of HIV-positive \nTB patients and the estimated number of HIV-positive people who developed TB, 2004", thisyear-1, sep="\u2013")) + theme(legend.position="none")
 
 # windows (10,7); gcd; dev.off()
-figsave(gcd, gcb, "7_3_cpt_art_hiv_graph")
+figsave(hiv_art_etbhiv, gcb, "7_4_hiv_art_etbhiv")
 
 # bars with estimate added and cpt dropped
 
@@ -406,8 +467,9 @@ ggplot(df2, aes(year, value, fill=var, order=var)) + geom_bar(stat="identity", p
 
 qplot(factor(cyl), data=mtcars, geom="bar", fill=factor(gear), order = -gear)
 
-gcd <- ggplot(gcc[gcc$variable!="CPT",], aes(year, value, fill=variable)) + geom_bar(stat="identity", position = "dodge") + scale_y_continuous("Number of TB patients (thousands)") + theme_glb.rpt() + scale_x_continuous(name="", breaks=2004:(thisyear-1)) +  scale_colour_brewer(name="Data provided", palette="Dark2") + geom_text(data=gcc[gcc$year==thisyear-2, ], aes(label=variable), vjust=3, hjust=1)  + ggtitle(paste("Number of notified HIV-positive TB patients enrolled on co-trimoxazole preventive therapy (CPT) \nand antiretroviral therapy (ART), 2004", thisyear-1, sep="–")) + expand_limits(y=c(min(pretty(c(gcc$value, min(gcc$value) * (0.95)))), max(pretty(c(gcc$value, max(gcc$value) * (1.05)))))) + theme(legend.position="none")
+gcd <- ggplot(gcc[gcc$variable!="CPT",], aes(year, value, fill=variable)) + geom_bar(stat="identity", position = "dodge") + scale_y_continuous("Number of TB patients (thousands)") + theme_glb.rpt() + scale_x_continuous(name="", breaks=2004:(thisyear-1)) +  scale_colour_brewer(name="Data provided", palette="Dark2") + geom_text(data=gcc[gcc$year==thisyear-2, ], aes(label=variable), vjust=3, hjust=1)  + ggtitle(paste("Number of notified HIV-positive TB patients enrolled on co-trimoxazole preventive therapy (CPT) \nand antiretroviral therapy (ART), 2004", thisyear-1, sep="\u2013")) + expand_limits(y=c(min(pretty(c(gcc$value, min(gcc$value) * (0.95)))), max(pretty(c(gcc$value, max(gcc$value) * (1.05)))))) + theme(legend.position="none")
 
+# I GIVE UP ON THIS DYNAMITE PLOT!!!
 
 # 
 # # cpt_graph delete -------------------------------------------------------------------
@@ -531,7 +593,7 @@ fmt <- function(){
 }
 geb$area <- factor(geb$area, levels=c("Rest of the world", "India" ))
 
-ged <- ggplot(geb, aes(year, tbscr2, fill=area)) + geom_area() + scale_y_continuous("Number of people screened (millions)") + theme_glb.rpt() + aes(ymin=0) + scale_x_continuous(name="") + ggtitle(paste("Intensified TB case-finding among people living with HIV, 2005", thisyear-1, sep="–")) + scale_fill_brewer("" )
+ged <- ggplot(geb, aes(year, tbscr2, fill=area)) + geom_area() + scale_y_continuous("Number of people screened (millions)") + theme_glb.rpt() + aes(ymin=0) + scale_x_continuous(name="") + ggtitle(paste("Intensified TB case-finding among people living with HIV, 2005", thisyear-1, sep="\u2013")) + scale_fill_brewer("" )
 
 
 # windows (10,7); ged; dev.off()
@@ -550,7 +612,7 @@ figsave(ged, geb, "7_xxxx_tbscr_graph")
 #   opts(legend.position="none", panel.grid.major = theme_blank(),
 #        panel.grid.minor = theme_blank(), 
 #        title=paste("Intensified TB case-finding among people living with HIV, 
-# 	2005", thisyear-1, sep="–"), 
+# 	2005", thisyear-1, sep="\u2013"), 
 # 	plot.title=theme_text(size=22), axis.title.y=theme_text(size=15, angle=90),
 #        axis.text.y=theme_text(size=15), axis.text.x=theme_text(size=15)) 
 # 
@@ -559,26 +621,35 @@ figsave(ged, geb, "7_xxxx_tbscr_graph")
 # 
 # write.csv(geb, file=paste(outfolder, "/FigData/", "tbscr_graph", Sys.Date(), ".csv", sep=""), row.names=F, na="")
 
-# 7_7_hiv_ipt_graph -------------------------------------------------------------------
+# 7_6_hiv_ipt_graph -------------------------------------------------------------------
 
 gfa <- subset(n, year>=2005, select=c('iso3', "g_whoregion", 'year', 'hiv_ipt'))
 
-gfa$area <- ifelse(gfa$iso3 %in% c("ZAF"), "1.South Africa", ifelse(gfa$g_whoregion=="AFR", "2.Rest of AFR", "3.Rest of the world"))
+gfa$area <- ifelse(gfa$iso3 %in% c("ZAF"), "South Africa", ifelse(gfa$g_whoregion=="AFR", "Rest of AFR", "Rest of world"))
 
 
 gfb <- aggregate(gfa[4], by=list(year=gfa$year, area=gfa$area), FUN=sum, na.rm=T)
 
-gfc <- melt(gfb, id=1:2)
+gfb1 <- aggregate(gfa[4], by=list(year=gfa$year), FUN=sum, na.rm=T)
+gfb1$area <- "Global"
+
+gfb2 <- rbind(gfb, gfb1)
+
+gfc <- melt(gfb2, id=1:2)
 
 gfc$value <- gfc$value/1000
 
-gfc$area <- factor(gfc$area, levels=c("1.South Africa", "2.Rest of AFR", "3.Rest of the world" ))
+gfc$area <- factor(gfc$area, levels=c("Global", "Rest of world", "Rest of AFR", "South Africa"))
 
-gfd <- ggplot(gfc, aes(year, value, fill=area)) + geom_bar(width=0.7, stat='identity') + scale_y_continuous("Number of HIV-positive people without active TB (thousands)") + theme_glb.rpt() + scale_x_continuous(name="", breaks=c(min(gfc$year):max(gfc$year))) +  scale_fill_brewer(name="Data provided", palette="Dark2") + guides(fill = guide_legend(reverse = TRUE)) + ggtitle(paste("Provision of isoniazid preventive therapy (IPT) to people living with HIV without active TB, 2005", thisyear-1, sep="–")) 
+hiv_ipt_graph <- ggplot(gfc, aes(year, value, fill=area, order=area)) + geom_bar(width=0.7, stat='identity') + scale_y_continuous("Number of HIV-positive people (thousands)") + theme_glb.rpt() + scale_x_continuous(name="", breaks=c(min(gfc$year):max(gfc$year))) +  scale_fill_brewer(name="", palette="Dark2") + guides(fill = guide_legend(reverse = TRUE)) + ggtitle(paste("Provision of isoniazid preventive therapy (IPT) to people living with HIV, 2005", thisyear-1, sep="\u2013")) 
 
 # windows (10,7); gfd; dev.off()
-figsave(gfd, gfb, "7_7_hiv_ipt_graph")
+figsave(hiv_ipt_graph, gfb, "7_6_hiv_ipt_graph")
 
+# Note: ggplot bar chart gots some annoying bugs. Make sure you have order in there and control that with factor.
+
+# line option
+hiv_ipt_graph <- ggplot(gfc, aes(year, value, color=area)) + geom_line(size=1) + scale_y_continuous("Number of HIV-positive people (thousands)") + theme_glb.rpt() + scale_x_continuous(name="", breaks=c(min(gfc$year):max(gfc$year))) +  scale_color_brewer(name="", palette="Dark2") + guides(color = guide_legend(reverse = TRUE)) + ggtitle(paste("Provision of isoniazid preventive therapy (IPT) to people living with HIV, 2005", thisyear-1, sep="\u2013")) 
 
 
 
@@ -591,7 +662,7 @@ figsave(gfd, gfb, "7_7_hiv_ipt_graph")
 #                        # vjust=3, hjust=2, colour="black", size=6) +
 #                        opts(legend.position="none", panel.grid.major = theme_blank(),
 #                             panel.grid.minor = theme_blank(), 
-#                             title=paste("IPT provision among HIV-positive people, 2005", thisyear-1, sep="–"), 
+#                             title=paste("IPT provision among HIV-positive people, 2005", thisyear-1, sep="\u2013"), 
 #                             plot.title=theme_text(size=22), axis.title.y=theme_text(size=15, angle=90),
 #                             axis.text.y=theme_text(size=15), axis.text.x=theme_text(size=15)) 
 # 
@@ -641,7 +712,7 @@ figsave(gnc, gnb, "hivdist_graph")
 # 
 # write.csv(gnb, file=paste(outfolder, "/FigData/", "hivdist_graph", Sys.Date(), ".csv", sep=""), row.names=F, na="")
 
-# 7_4_hivprog_graph_all -------------------------------------------------------------------
+# 7_3_hivprog_graph_all -------------------------------------------------------------------
 
 gg <- subset(tbhiv, year>=2003, select=c('iso3', 'year', 'g_hbhiv63', 'hivtest', 'hivtest_pos', 'hiv_cpt', 'hiv_art', 'hiv_cpt_pct_numerator', 'hiv_cpt_pct_denominator', 'hiv_art_pct_numerator', 'hiv_art_pct_denominator', 'c_notified', 'hivtest_pos_pct_denominator', 'hivtest_pos_pct_numerator'))
 
@@ -739,10 +810,10 @@ gak <- gaj[gaj$year>=2007 & gaj$Percentages!='% of notified TB patients with kno
 
 gak[c("best", "hi", "lo")] <- gak[c("best", "hi", "lo")] * 100
 
-gal <- ggplot(gak, aes(year, best)) + geom_line(size=1, alpha=.5) + geom_ribbon(aes (year, best, ymin=lo, ymax=hi), alpha=0.2) + facet_wrap(~Percentages, ncol=3) + scale_y_continuous(limits = c(0, 100), name = "Percentage of notified TB patients", breaks=c(0, 20, 40, 60, 80, 100)) + scale_x_continuous("") + theme_glb.rpt()  + ggtitle(paste0('Percentage of notified TB patients with known HIV status who were HIV positive, and percentage of notified \nHIV-positive TB patients enrolled on co-trimoxazole preventive therapy (CPT) and antiretroviral therapy (ART),\n ', min(gak$year), '–', max(gak$year), '(a)'))
+hivprog_graph_all <- ggplot(gak, aes(year, best)) + geom_line(size=1, alpha=.5) + geom_ribbon(aes (year, best, ymin=lo, ymax=hi), alpha=0.2) + facet_wrap(~Percentages, ncol=3) + scale_y_continuous(limits = c(0, 100), name = "Percentage of notified TB patients", breaks=c(0, 20, 40, 60, 80, 100)) + scale_x_continuous("") + theme_glb.rpt()  + ggtitle(paste0('Percentage of notified TB patients with known HIV status who were HIV positive, and percentage of notified \nHIV-positive TB patients enrolled on co-trimoxazole preventive therapy (CPT) and antiretroviral therapy (ART),\n ', min(gak$year), '\u2013', max(gak$year), '(a)'))
 
 # windows(13,6); gal
-figsave(gal, gak, "7_4_hivprog_graph_all")
+figsave(hivprog_graph_all, gak, "7_3_hivprog_graph_all")
 
 
 
@@ -783,9 +854,9 @@ haa$`Not evaluated` <- haa$c_newrel_neval / haa$newrel_coh * 100
 
 hab <- melt(haa[c(1, 8:12)], id=1)
 
-hac <- ggplot(hab, aes(area, value, fill=variable)) + geom_bar(stat="identity", position="stack") + geom_hline(yintercept=85, color="grey70") + geom_text(data=subset(hab, variable=="Treatment success"), aes(label=round(value,0)), hjust=1.25, vjust=0.3, size=4, color="white") + theme_glb.rpt() + coord_flip() +   scale_fill_brewer("", type = "qual", palette = 8) + labs(x="", y="Percentage of cohort") + theme(legend.position="bottom", panel.grid=element_blank()) + expand_limits(c(0,0)) + ggtitle(paste0("Treatment outcomes for new and relapse cases, ", thisyear-2, ", globally, for the six WHO regions and 22 high-burden countries")) 
+txsucc <- ggplot(hab, aes(area, value, fill=variable)) + geom_bar(stat="identity", position="stack") + geom_hline(yintercept=85, color="grey70") + geom_text(data=subset(hab, variable=="Treatment success"), aes(label=round(value,0)), hjust=1.25, vjust=0.3, size=4, color="white") + theme_glb.rpt() + coord_flip() +   scale_fill_brewer("", type = "qual", palette = 8) + labs(x="", y="Percentage of cohort") + theme(legend.position="bottom", panel.grid=element_blank()) + expand_limits(c(0,0)) + ggtitle(paste0("Treatment outcomes for new and relapse cases, ", thisyear-2, ", globally, \nfor the six WHO regions and 22 high-burden countries")) 
 
-figsave(hac, hab, "4_5_txsucc")
+figsave(txsucc, hab, "4_5_txsucc")
 
 # 4_1_agesex_reg -------------------------------------------------------------
 
@@ -864,9 +935,9 @@ hmf$`Not evaluated` <- hmf$neval / hmf$coh * 100
 
 hmg <- melt(as.data.frame(hmf[c(1:2,9:ncol(hmf))]), id=1:2) # It's a melt and cast fiesta!
 
-hmj <- ggplot(hmg, aes(variable, value, fill=type)) + geom_bar(stat="identity", position="dodge", width=0.5) + theme_glb.rpt() + labs(x="") + scale_y_continuous("Percentage of cohort", limits=c(0,100)) + scale_fill_brewer("", type = "qual", palette=6) + ggtitle(paste("Outcomes of TB treatment by HIV status, ", thisyear-2, sep=""))
+hiv_ts_d <- ggplot(hmg, aes(variable, value, fill=type)) + geom_bar(stat="identity", position="dodge", width=0.5) + theme_glb.rpt() + labs(x="") + scale_y_continuous("Percentage of cohort", limits=c(0,100)) + scale_fill_brewer("", type = "qual", palette=6) + ggtitle(paste("Outcomes of TB treatment by HIV status, ", thisyear-2, sep=""))
 
-figsave(hmj, hmg, "B4_6_hiv_ts_d")
+figsave(hiv_ts_d, hmg, "B4_6_hiv_ts_d")
 
 # Garbage at the end ---------------------------------------------------
 
@@ -901,7 +972,7 @@ if(flg_show_estimates){
     
     scale_y_continuous( name = "Millions of people" ) + theme_glb.rpt() +
     scale_x_continuous(name="") +  
-    opts(title=paste("Global incidence and mortality, 1990", thisyear-1, sep="–"),
+    opts(title=paste("Global incidence and mortality, 1990", thisyear-1, sep="\u2013"),
          plot.title=theme_text(size=22), axis.title.y=theme_text(size=15, angle=90),
          axis.text.y=theme_text(size=15), axis.text.x=theme_text(size=15)) 
   
@@ -925,7 +996,7 @@ if(flg_show_estimates){
     expand_limits(y=c(0,9.9)) +
     theme_glb.rpt(base_size=16) +
     opts(legend.position='none', title=
-           paste("Global incidence and \nnotifications, 1990", thisyear-1, sep="–"), 
+           paste("Global incidence and \nnotifications, 1990", thisyear-1, sep="\u2013"), 
          plot.title = theme_text(hjust=0.3, size=20))
   
   # windows(11, 7); sga1; dev.off()
