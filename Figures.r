@@ -363,7 +363,7 @@ inc_notif_hbc <- qplot(year, e_inc_100k, data=egb, geom='line', colour=I('green'
 
 gaa <- subset(tbhiv, year>=2004, select=c('g_whoregion', 'year', 'hivtest_pct_denominator', 'hivtest_pct_numerator'))
 
-gaa$regional <- ifelse(gaa$g_whoregion=='AFR', 'African region', 'Regions outside \n  Africa')
+gaa$regional <- ifelse(gaa$g_whoregion=='AFR', 'African \nregion', 'Regions \noutside \nAfrica')
 
 gabr <- aggregate(gaa[c('hivtest_pct_denominator', 'hivtest_pct_numerator')], by=list(area=gaa$regional, year=gaa$year), FUN=sum, na.rm=TRUE)
 gabg <- aggregate(gaa[c('hivtest_pct_denominator', 'hivtest_pct_numerator')], by=list(year=gaa$year), FUN=sum, na.rm=TRUE)
@@ -886,7 +886,7 @@ fg$newrel_100k <- fg$newrel / fg$e_pop * 1e5
 fg <- .shortnames(fg, col="Region")
 fg$age <- factor(fg$age, levels=c("014", "1524", "2534", "3544", "4554", "5564", "65"), labels=c("0\u201314", "15\u201324", "25\u201334", "35\u201344", "45\u201354", "55\u201364", "\u226565"))
 
-agesex_reg <- ggplot(fg, aes(age, newrel_100k, colour=Region, group=Region)) + geom_line(size=1) + scale_y_continuous(name = "Rate per 100 000 population per year") + scale_x_discrete("", labels=levels(fg$age)) + scale_color_brewer(name="WHO region", palette="Dark2") + ggtitle(paste("Regional TB notification rates by age,", thisyear-1)) + theme_glb.rpt() 
+agesex_reg <- ggplot(fg, aes(age, newrel_100k, colour=Region, group=Region)) + geom_line(size=1) + scale_y_continuous(name = "Rate per 100 000 population per year") + scale_x_discrete("", labels=levels(fg$age)) + scale_color_brewer(name="", palette="Dark2") + ggtitle(paste("Regional TB notification rates by age,", thisyear-1)) + theme_glb.rpt() 
 
 
 # windows(11, 7); gad; dev.off()

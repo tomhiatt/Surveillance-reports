@@ -1,0 +1,98 @@
+---
+title: "Global TB Report Tables and Figures Preview"
+author: ""
+date: ""
+output: word_document
+---
+
+```{r, echo=FALSE, include=FALSE}
+
+source("D:/Users/hiattt/Dropbox/Code/Surveillance reports/Setup.r", )
+
+```
+
+
+# Chapter 4 
+
+## Figures
+
+### Figure 4.1
+
+```{r, echo=FALSE, fig.width=7, fig.height=4}
+agesex_reg
+```
+
+### Figure 4.2
+
+```{r, echo=FALSE, fig.width=7, fig.height=4}
+inc_notif_glo
+```
+
+### Figure 4.3
+
+```{r, echo=FALSE, fig.width=7, fig.height=4}
+inc_notif_reg
+```
+
+### Figure 4.4
+
+```{r, echo=FALSE, fig.width=7, fig.height=6}
+inc_notif_hbc
+```
+
+### Figure 4.5
+
+```{r, echo=FALSE, fig.width=7, fig.height=8, warning=FALSE}
+txsucc
+```
+
+### Box 4.6
+
+```{r, echo=FALSE, fig.width=7, fig.height=4}
+hiv_ts_d
+```
+
+
+# Chapter 7
+
+## Figures
+
+### Figure 7.1
+
+```{r, echo=FALSE, fig.width=7, fig.height=4}
+hivtest_graph
+```
+
+### Figure 7.2
+
+```{r, echo=FALSE, fig.width=7, fig.height=4}
+hivtest_map
+```
+
+### Figure 7.3
+
+```{r, echo=FALSE, fig.width=7, fig.height=4}
+hivprog_graph_all
+```
+
+### Figure 7.4 ART enrolment among HIV-positive TB patients compared with the reported number of HIV-positive TB patients and the estimated number of HIV-positive people who developed TB, 2004-2013
+
+
+```{r, echo=FALSE, fig.width=7, fig.height=4}
+hiv_art_etbhiv
+```
+
+### Figure 7.5
+
+```{r, echo=FALSE, fig.width=7, fig.height=4}
+
+
+```
+
+### Figure 7.6
+
+```{r, echo=FALSE, fig.width=7, fig.height=4}
+hiv_ipt_graph
+```
+
+
