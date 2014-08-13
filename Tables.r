@@ -456,7 +456,12 @@ tdr <- subset(a.t, group_type %in% c('g_whoregion', 'global') & year %in% c(1995
 # Merge and reshape 
 tdb <- merge(tda, tdhb2, all=TRUE)
 tdb <- merge(tdb, tdr, all=TRUE)
-tdc <- melt(tdb, measure.vars=c('c_cdr', 'c_cdr_lo', 'c_cdr_hi'), id=c('group_name', 'year')) 
+
+# combine bounds into one column and format missings
+tdb$c_cdr_bnd <- ifelse(is.na(tdb$c_cdr_lo), "\u2013", paste0("(", frmt(tdb$c_cdr_lo), "\u2013", frmt(tdb$c_cdr_hi), ")"))
+tdb$c_cdr <- ifelse(is.na(tdb$c_cdr_lo), "\u2013", frmt(tdb$c_cdr))
+
+tdc <- melt(tdb, measure.vars=c('c_cdr', 'c_cdr_bnd'), id=c('group_name', 'year')) 
 
 tdd <- cast(tdc, group_name~...)
 
@@ -464,32 +469,20 @@ tdd <- cast(tdc, group_name~...)
 ordrd <- c(sort(unique(tda$group_name)), 'High-burden countries', sort.int(unique(tdr[tdr$group_name != 'global', 'group_name'])), 'global')
 tdd <- tdd[match(ordrd, tdd$group_name),]
 
-tde <- .shortnames(tdd, col='group_name') 
-
-
-# 
-# tde[1:22,] <- tde[order(tde[1:22,'rowname']),]
-# 
-# tde[1:22,] <- tde[1:22, c("rowname", "cdr.1995", "cdr.hi.1995", "cdr.lo.1995", "cdr.2000", "cdr.hi.2000", "cdr.lo.2000", "cdr.2005", "cdr.hi.2005", "cdr.lo.2005", "cdr.2010", "cdr.hi.2010", "cdr.lo.2010", "cdr.2011", "cdr.hi.2011", "cdr.lo.2011")]
+tde <- .shortnames(tdd, col='group_name', ord = "hbc") 
 
 # format missings
-for(var in 2:ncol(tde)){
-  tde[var] <- ifelse(is.na(tde[[var]]), "\u2013", frmt(tde[[var]]))
-}
+# for(var in 2:ncol(tde)){
+#   tde[var] <- ifelse(is.na(tde[[var]]), "\u2013", frmt(tde[[var]]))
+# }
 
-cat(paste("<font size=5><b>Estimates of the case detection rate for new and relapse cases (%), 1995-", thisyear-1, "</b><sup>a</sup></font>", sep=""), file=glue("Tables/4_5_cdr", Sys.Date(), ".htm"))
+cat(paste("<font size=5><b>Estimates of the case detection rate for new and relapse cases (%), 1995\u2013", thisyear-1, "</b><sup>a</sup></font>", sep=""), file=glue("Tables/4_5_cdr", Sys.Date(), ".htm"))
 
 tdf <- xtable(tde)
-digits(tdf) <- 1
+# digits(tdf) <- 1
 print(tdf, type="html", file=glue("Tables/4_5_cdr", Sys.Date(), ".htm"),include.rownames=F, include.colnames=F, append=T,
       html.table.attributes="border=0 rules=rows width=900", add.to.row=list(pos=list(0,30), 
-                                                                             command=c(paste("<TR> <TH></TH> <TH colspan=3>1995</TH> <TH colspan=3>2000</TH> <TH colspan=3>2005</TH> <TH colspan=3>2010</TH> <TH colspan=3>", thisyear-1, "</TH> </TR>
-                                                                                             <TR> <TH></TH> <TH>BEST<sup>b</sup></TH> <TH>LOW</TH> <TH>HIGH</TH> 
-                                                                                             <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH> 
-                                                                                             <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH> 
-                                                                                             <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH> 
-                                                                                             <TH>BEST</TH> <TH>LOW</TH> <TH>HIGH</TH>
-                                                                                             </TR>", sep=""), "<TR> <TD colspan=16>\u2013 indicates values that cannot be calculated.<br><sup>a</sup> Estimates for all years are recalculated as new information becomes available and techniques are refined, so they may differ from those published previously. <br><sup>b</sup> Best, low and high indicate best estimates followed by lower and upper bounds. The lower and upper bounds are defined as the 2.5th and 97.5th centiles of outcome distributions produced in simulations.</TD></TR>")))
+                                                                             command=c(paste0("<TR> <TH></TH> <TH colspan=2>1995</TH> <TH colspan=2>2000</TH> <TH colspan=2>2005</TH> <TH colspan=2>2010</TH> <TH colspan=2>", thisyear-1, "</TH> </TR>"), "<TR> <TD colspan=11>\u2013 indicates values that cannot be calculated.<br><sup>a</sup> Estimates for all years are recalculated as new information becomes available and techniques are refined, so they may differ from those published previously. Best estimates are followed by lower and upper bounds. The lower and upper bounds are defined as the 2.5th and 97.5th centiles of outcome distributions produced in simulations.</TD></TR>")))
 
 tablecopy('4_5_cdr')
 

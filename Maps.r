@@ -54,7 +54,7 @@ hivtest_map <- WHOmap.print(mc, paste("Percentage of notified TB patients with k
 figsave(hivtest_map, mc, "7_2_hivtest_map")
 
 
-# 7_6_HIVart_map -------------------------------------------------
+# 7_5_HIVart_map -------------------------------------------------
 
 # Changed denominator in 2014 report from hiv_art_pct_denominator to e_inc_tbhiv_num
 
@@ -68,9 +68,9 @@ mca$cat <- cut(mca$hivart_prct, c(0, 25, 50, 75, Inf), c('0-24', '25-49', '50-74
 
 # map
 
-mca1 <- WHOmap.print(mca, paste("Percentage of estimated incident HIV-positive TB cases enrolled on antiretroviral therapy (ART),", thisyear-1), "Percentage of \nestimated \nHIV-positive \nTB cases", copyright=FALSE, colors=c('yellow', 'lightgreen', 'green', 'darkgreen'), show=FALSE)
+HIVart_map <- WHOmap.print(mca, paste("Percentage of estimated incident HIV-positive TB cases enrolled on antiretroviral therapy (ART),", thisyear-1), "Percentage of \nestimated \nHIV-positive \nTB cases", copyright=FALSE, colors=c('yellow', 'lightgreen', 'green', 'darkgreen'), show=FALSE)
 
-figsave(mca1, mca, "7_6_HIVart_map")
+figsave(HIVart_map, mca, "7_5_HIVart_map")
 
 
 # HIVipt_map -------------------------------------------------

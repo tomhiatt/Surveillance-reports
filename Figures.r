@@ -639,17 +639,19 @@ gfc <- melt(gfb2, id=1:2)
 
 gfc$value <- gfc$value/1000
 
-gfc$area <- factor(gfc$area, levels=c("Global", "Rest of world", "Rest of AFR", "South Africa"))
+gfc$area <- factor(gfc$area, levels=c( "Rest of world", "Rest of AFR", "South Africa", "Global"))
 
-hiv_ipt_graph <- ggplot(gfc, aes(year, value, fill=area, order=area)) + geom_bar(width=0.7, stat='identity') + scale_y_continuous("Number of HIV-positive people (thousands)") + theme_glb.rpt() + scale_x_continuous(name="", breaks=c(min(gfc$year):max(gfc$year))) +  scale_fill_brewer(name="", palette="Dark2") + guides(fill = guide_legend(reverse = TRUE)) + ggtitle(paste("Provision of isoniazid preventive therapy (IPT) to people living with HIV, 2005", thisyear-1, sep="\u2013")) 
-
-# windows (10,7); gfd; dev.off()
-figsave(hiv_ipt_graph, gfb, "7_6_hiv_ipt_graph")
-
-# Note: ggplot bar chart gots some annoying bugs. Make sure you have order in there and control that with factor.
+# hiv_ipt_graph <- ggplot(gfc, aes(year, value, fill=area, order=area)) + geom_bar(width=0.7, stat='identity') + scale_y_continuous("Number of HIV-positive people (thousands)") + theme_glb.rpt() + scale_x_continuous(name="", breaks=c(min(gfc$year):max(gfc$year))) +  scale_fill_brewer(name="", palette="Dark2") + guides(fill = guide_legend(reverse = TRUE)) + ggtitle(paste("Provision of isoniazid preventive therapy (IPT) to people living with HIV, 2005", thisyear-1, sep="\u2013")) 
 
 # line option
 hiv_ipt_graph <- ggplot(gfc, aes(year, value, color=area)) + geom_line(size=1) + scale_y_continuous("Number of HIV-positive people (thousands)") + theme_glb.rpt() + scale_x_continuous(name="", breaks=c(min(gfc$year):max(gfc$year))) +  scale_color_brewer(name="", palette="Dark2") + guides(color = guide_legend(reverse = TRUE)) + ggtitle(paste("Provision of isoniazid preventive therapy (IPT) to people living with HIV, 2005", thisyear-1, sep="\u2013")) 
+
+# windows (10,7); gfd; dev.off()
+figsave(hiv_ipt_graph, gfc, "7_6_hiv_ipt_graph")
+
+# Note: ggplot bar chart gots some annoying bugs. Make sure you have order in there and control that with factor.
+
+
 
 
 
