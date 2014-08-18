@@ -3,13 +3,13 @@ title: "Drug resistant tuberculosis in the WHO Western Pacific Region"
 author: "Tauhid Islam,<sup>&dagger;</sup> Tom Hiatt<sup>&dagger;</sup> and Nobuyuki
   Nishikiori<sup>&dagger;</sup>"
 output:
-  word_document: default
-
   html_document:
     fig_caption: yes
     number_sections: no
     theme: united
     toc: yes
+  word_document:
+    fig_height: 7
 ---
 
 
@@ -39,6 +39,7 @@ require("xtable")
 require("stringr")
 require("timeSeries")
 require("ggthemes")
+require("Gmisc")
 
 
 # Reproducible research process inspired by: http://gforge.se/2014/01/fast-track-publishing-using-knitr-part-ii/ and http://gforge.se/2014/07/fast-track-publishing-using-rmarkdown/
@@ -244,6 +245,14 @@ Methods
 ### Data
 Every year, 36 countries and areas in the Region are requested to report TB surveillance data to WHO using a standardized data collection form. Since 2009, a web-based online system has been used for data submission and validation. Collected data covers the following areas: TB case notifications and treatment outcomes, diagnostic and treatment services, drug management, surveillance and surveys of drug-resistance, information on TB/HIV co-infection, infection control, engagement of all care providers and budgets and expenditures for TB control. The full description of methods is available in the Global Tuberculosis Report 2013 and the data sets are available from the WHO global TB database (www.who.int/tb/data). Case definitions for TB can be found in the 4th edition of the TB treatment guidelines.^4 In 2013, 30 countries and areas of the Western Pacific Region reported data representing more than 99.9% of the total population. This report described the epidemiological situation and progress in programmatic response with a focus on seven countries with a high burden of TB: Cambodia, China, the Lao People's Democratic Republic, Mongolia, Papua New Guinea, the Philippines and Viet Nam. (Globally, WHO designates 22 countries with a high burden of TB that include Cambodia, China, the Philippines and Viet Nam. The other three countries: the Lao People's Democratic Republic, Mongolia and Papua New Guinea are considered priority countries with a high burden of TB in the Western Pacific Region).
 
+```{r Versions}
+info <- sessionInfo()
+r_ver <- paste(info$R.version$major, info$R.version$minor, sep=".")
+```
+ 
+All analyses were performed using R (ver. `r r_ver`)[R Core Team, 2013] and packages rms (ver. `r info$otherPkgs$rms$Version`) [F. Harrell, 2014] for analysis, Gmisc for plot and table output (ver. `r info$otherPkgs$Gmisc$Version`), and knitr (ver `r info$otherPkgs$knitr$Version`) [Xie, 2013] for reproducible research.
+ 
+
 ### Analysis and reproducibility
 Analysis was conducted by the statistical package R (R Core Team, 2013, Vienna, Austria, www.R-project.org). Due to calls for transparent and reproducible research,^5,6 we have published programme code to generate the entire contents of this article including all figures and tables by using R with the knitr package (Yihui Xie, 2013). Readers can download the code (see supplement material) and reproduce all figures and tables under an appropriate personal computing environment. For non-commercial purposes, readers may modify the code to produce figures and tables that are not presented in this article. For instance, readers may wish to produce tables and figures for countries or regions other than the WHO Western Pacific Region.
 
@@ -302,12 +311,105 @@ write.csv(tbm, file=paste0(pasteLabel("./figure_data/table", tableCount, "m-cove
 #### coverage of drug resistance surveillance: 
 <a id="t-notif"></a> 
 ##### `r I(pasteLabel("Table", tableCount, "t-notif", insLink=FALSE))`.			Table or map (survey/ surveillance, single/several data point, 				national/ sub national)
-		
-#### MDR-TB rate:
-<a id="t-notif"></a> 
-##### `r I(pasteLabel("Table", tableCount, "t-notif", insLink=FALSE))`.			Table: rate among new and reTx, CI, year, number of country year 				data point
 
-			(R resistance data need to be included as separate column)
+```{r t-drnotif-data, warning=FALSE}
+tableCount <- incCount(tableCount, "t-drnotif")
+
+# Notification table
+
+nb <- subset(tb, year==yr & g_whoregion=="WPR", 
+              select=c(iso3, g_whoregion, country, 
+                       cullpa_new, cullpa_ret, cullpa_unk, 
+                       dst_rlt_new, dst_rlt_ret, dst_rlt_unk, 
+                       dr_h_nr_new,  dr_h_nr_ret,  dr_h_nr_unk, 
+                       dr_r_nh_new,  dr_r_nh_ret,  dr_r_nh_unk, 
+                       mdr_new,  mdr_ret,  mdr_unk,
+                       xpert_new, xpert_ret, xpert_unk, 
+                       xpert_dr_r_new, xpert_dr_r_ret, xpert_dr_r_unk))
+
+nb <- nb[order(nb$country),]
+names(nb)[names(nb)=='country'] <- 'area'
+
+# make aggregate rows
+nbc <- nb[nb$iso3 %in% whbc, ]
+nbch <- aggregate(nbc[4:ncol(nbc)], by=list(area=nbc$g_whoregion), FUN=sum, na.rm=TRUE)
+nbch$area <- "Total"
+
+nbcw <- aggregate(nb[4:ncol(nb)], by=list(area=nb$g_whoregion), FUN=sum, na.rm=TRUE)
+
+# combine together
+nbd <- rbind(nbc[3:ncol(nbc)], nbch, nbcw) # , tbbh, tbbga
+
+# calculate and format vars
+nbd$cullpa <- .rowsums(nbd[c('cullpa_new', 'cullpa_ret', 'cullpa_unk')])
+nbd$dst_rlt_new_pct <- nbd$dst_rlt_new / nbd$cullpa_new * 100
+nbd$dst_rlt_ret_pct <- nbd$dst_rlt_ret / nbd$cullpa_ret * 100
+nbd$dst_rlt <- .rowsums(nbd[c('dst_rlt_new', 'dst_rlt_ret', 'dst_rlt_unk')])
+nbd$dst_rlt_pct <- nbd$dst_rlt /  nbd$cullpa * 100
+
+nbd$dr_h_nr_new_pct <- nbd$dr_h_nr_new / nbd$dst_rlt_new * 100
+nbd$dr_h_nr_ret_pct <- nbd$dr_h_nr_ret / nbd$dst_rlt_ret * 100
+nbd$dr_h_nr_pct <- .rowsums(nbd[c('dr_h_nr_new', 'dr_h_nr_ret', 'dr_h_nr_unk')]) /  nbd$dst_rlt * 100
+
+nbd$dr_r_nh_new_pct <- nbd$dr_r_nh_new / nbd$dst_rlt_new * 100
+nbd$dr_r_nh_ret_pct <- nbd$dr_r_nh_ret / nbd$dst_rlt_ret * 100
+nbd$dr_r_nh_pct <- .rowsums(nbd[c('dr_r_nh_new', 'dr_r_nh_ret', 'dr_r_nh_unk')]) /  nbd$dst_rlt * 100
+
+nbd$mdr_new_pct <- nbd$mdr_new / nbd$dst_rlt_new * 100
+nbd$mdr_ret_pct <- nbd$mdr_ret / nbd$dst_rlt_ret * 100
+nbd$mdr_pct <- .rowsums(nbd[c('mdr_new', 'mdr_ret', 'mdr_unk')]) /  nbd$dst_rlt * 100
+
+nbd$xpert <- .rowsums(nbd[c('xpert_new', 'xpert_ret', 'xpert_unk')])
+
+nbd$xpert_dr_r_new_pct <- nbd$xpert_dr_r_new / nbd$xpert_new * 100
+nbd$xpert_dr_r_ret_pct <- nbd$xpert_dr_r_ret / nbd$xpert_ret * 100
+nbd$xpert_dr_r_pct <- .rowsums(nbd[c('xpert_dr_r_new', 'xpert_dr_r_ret', 'xpert_dr_r_unk')]) /  nbd$xpert * 100
+
+# Format
+for(var in 2:ncol(nbd)){
+  nbd[var] <- ifelse(is.na(nbd[[var]]), "-", rounder(nbd[[var]]))
+}
+
+
+# Rename countries
+nbe <- .WPSARnames(nbd, col="area")
+
+# Consider adding a column for put on treatment and/or including those from the other MDR table.
+
+rownames(nbe) <- nbe$area
+
+nbf <- subset(nbe, select=c("cullpa_new", "cullpa_ret", "cullpa", "dst_rlt_new_pct", "dst_rlt_ret_pct", "dst_rlt_pct", "dr_h_nr_new_pct", "dr_h_nr_ret_pct", "dr_h_nr_pct", "dr_r_nh_new_pct", "dr_r_nh_ret_pct", "dr_r_nh_pct", "mdr_new_pct", "mdr_ret_pct", "mdr_pct", "xpert_new", "xpert_ret", "xpert", "xpert_dr_r_new_pct", "xpert_dr_r_ret_pct", "xpert_dr_r_pct"))
+
+names(nbf) <- c("New", "Ret.", "Total", "New", "Ret.", "Total", "New", "Ret.", "Total", "New", "Ret.", "Total", "New", "Ret.", "Total", "New", "Ret.", "Total", "New", "Ret.", "Total")
+
+
+
+write.csv(nbf, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-drnotif", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
+
+```
+
+
+#### MDR-TB rate:
+
+<a id="t-notif"></a> 
+
+##### `r I(pasteLabel("Table", tableCount, "t-notif", insLink=FALSE))`. Table: rate among new and reTx, CI, year, number of country year data point
+
+(R resistance data need to be included as separate column)
+
+<a id="t-drnotif"></a> 
+
+##### `r I(pasteLabel("Table", tableCount, "t-drnotif", insLink=FALSE))`. Drug resistance in select countries, `r yr`
+
+
+```{r t-drnotif, results='asis'}
+
+# Make that table
+htmlTable(nbf, caption = "", rowlabel = "", cgroup = c("Cases with culture or LPA results", "% with DST results", "% with resistance to H only", "% with resistance to R only", "% MDR-TB<sup>*</sup>", "Additional cases confirmed by Xpert", "% Xpert cases MDR-TB<sup>*</sup>"), n.cgroup = c(3,3,3,3,3,3,3), ctable = TRUE, tfoot = "<sup>*</sup> Resistant to H and R.")
+```
+
+
+			
 
 #### XDR-TB:
 <a id="t-notif"></a> 
@@ -400,6 +502,7 @@ write.csv(trc, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-mtxou
 ```
 
 <a id="f-mtxout-bar"></a> 
+
 ##### `r I(pasteLabel("Figure", figCount, "f-mtxout-bar", insLink=FALSE))`.	Trend of treatment outcome expressed as a proportion among MDR-TB cases in the Western Pacific Region, 2006--`r yr-2`
 ``` {r f-mtxout-bar, fig.width=9}
 

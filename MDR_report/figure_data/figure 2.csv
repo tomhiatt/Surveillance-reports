@@ -1,0 +1,331 @@
+"area","year","variable","value"
+"WPR",2006,"Success",61.2403100775194
+"WPR",2007,"Success",64.0176600441501
+"WPR",2008,"Success",57.5197889182058
+"WPR",2009,"Success",57.0593962999026
+"WPR",2010,"Success",46.1099796334012
+"WPR",2011,"Success",0
+"Cambodia",2006,"Success",NA
+"Cambodia",2007,"Success",69.2307692307692
+"Cambodia",2008,"Success",68.2926829268293
+"Cambodia",2009,"Success",78.2608695652174
+"Cambodia",2010,"Success",67.741935483871
+"Cambodia",2011,"Success",0
+"China",2006,"Success",NA
+"China",2007,"Success",NA
+"China",2008,"Success",46.1538461538462
+"China",2009,"Success",46.1538461538462
+"China",2010,"Success",41.8166939443535
+"China",2011,"Success",0
+"Japan",2006,"Success",NA
+"Japan",2007,"Success",NA
+"Japan",2008,"Success",NA
+"Japan",2009,"Success",NA
+"Japan",2010,"Success",NA
+"Japan",2011,"Success",NA
+"Malaysia",2006,"Success",NA
+"Malaysia",2007,"Success",47.5
+"Malaysia",2008,"Success",58.9285714285714
+"Malaysia",2009,"Success",47.2727272727273
+"Malaysia",2010,"Success",31.25
+"Malaysia",2011,"Success",0
+"Mongolia",2006,"Success",66
+"Mongolia",2007,"Success",78.125
+"Mongolia",2008,"Success",76.9230769230769
+"Mongolia",2009,"Success",73.8636363636364
+"Mongolia",2010,"Success",74.3589743589744
+"Mongolia",2011,"Success",0
+"Papua New Guinea",2006,"Success",10
+"Papua New Guinea",2007,"Success",NA
+"Papua New Guinea",2008,"Success",NA
+"Papua New Guinea",2009,"Success",NA
+"Papua New Guinea",2010,"Success",38.8888888888889
+"Papua New Guinea",2011,"Success",0
+"Philippines",2006,"Success",NA
+"Philippines",2007,"Success",63.1756756756757
+"Philippines",2008,"Success",53.4615384615385
+"Philippines",2009,"Success",53.8071065989848
+"Philippines",2010,"Success",41.6347381864623
+"Philippines",2011,"Success",0
+"Republic of Korea",2006,"Success",NA
+"Republic of Korea",2007,"Success",NA
+"Republic of Korea",2008,"Success",NA
+"Republic of Korea",2009,"Success",NA
+"Republic of Korea",2010,"Success",NA
+"Republic of Korea",2011,"Success",0
+"Viet Nam",2006,"Success",NA
+"Viet Nam",2007,"Success",NA
+"Viet Nam",2008,"Success",NA
+"Viet Nam",2009,"Success",73.2673267326733
+"Viet Nam",2010,"Success",78.3505154639175
+"Viet Nam",2011,"Success",0
+"Other countries",2006,"Success",65.2173913043478
+"Other countries",2007,"Success",62.5
+"Other countries",2008,"Success",65.0793650793651
+"Other countries",2009,"Success",63.855421686747
+"Other countries",2010,"Success",65.4761904761905
+"Other countries",2011,"Success",0
+"WPR",2006,"Died",13.953488372093
+"WPR",2007,"Died",10.8167770419426
+"WPR",2008,"Died",11.7414248021108
+"WPR",2009,"Died",9.73709834469328
+"WPR",2010,"Died",10.142566191446
+"WPR",2011,"Died",9.74516281264748
+"Cambodia",2006,"Died",NA
+"Cambodia",2007,"Died",15.3846153846154
+"Cambodia",2008,"Died",14.6341463414634
+"Cambodia",2009,"Died",17.3913043478261
+"Cambodia",2010,"Died",29.0322580645161
+"Cambodia",2011,"Died",7.14285714285714
+"China",2006,"Died",NA
+"China",2007,"Died",NA
+"China",2008,"Died",0
+"China",2009,"Died",8.46153846153846
+"China",2010,"Died",7.28314238952537
+"China",2011,"Died",8.41121495327103
+"Japan",2006,"Died",NA
+"Japan",2007,"Died",NA
+"Japan",2008,"Died",NA
+"Japan",2009,"Died",NA
+"Japan",2010,"Died",NA
+"Japan",2011,"Died",NA
+"Malaysia",2006,"Died",NA
+"Malaysia",2007,"Died",15
+"Malaysia",2008,"Died",14.2857142857143
+"Malaysia",2009,"Died",18.1818181818182
+"Malaysia",2010,"Died",12.5
+"Malaysia",2011,"Died",12.0567375886525
+"Mongolia",2006,"Died",14
+"Mongolia",2007,"Died",7.8125
+"Mongolia",2008,"Died",9.23076923076923
+"Mongolia",2009,"Died",9.09090909090909
+"Mongolia",2010,"Died",8.33333333333333
+"Mongolia",2011,"Died",11.1111111111111
+"Papua New Guinea",2006,"Died",20
+"Papua New Guinea",2007,"Died",NA
+"Papua New Guinea",2008,"Died",NA
+"Papua New Guinea",2009,"Died",NA
+"Papua New Guinea",2010,"Died",50
+"Papua New Guinea",2011,"Died",22.4137931034483
+"Philippines",2006,"Died",NA
+"Philippines",2007,"Died",10.8108108108108
+"Philippines",2008,"Died",11.9230769230769
+"Philippines",2009,"Died",9.39086294416244
+"Philippines",2010,"Died",13.7931034482759
+"Philippines",2011,"Died",11.6615853658537
+"Republic of Korea",2006,"Died",NA
+"Republic of Korea",2007,"Died",NA
+"Republic of Korea",2008,"Died",NA
+"Republic of Korea",2009,"Died",NA
+"Republic of Korea",2010,"Died",NA
+"Republic of Korea",2011,"Died",8.91330891330891
+"Viet Nam",2006,"Died",NA
+"Viet Nam",2007,"Died",NA
+"Viet Nam",2008,"Died",NA
+"Viet Nam",2009,"Died",7.92079207920792
+"Viet Nam",2010,"Died",8.24742268041237
+"Viet Nam",2011,"Died",6.90846286701209
+"Other countries",2006,"Died",13.0434782608696
+"Other countries",2007,"Died",10
+"Other countries",2008,"Died",11.1111111111111
+"Other countries",2009,"Died",8.43373493975904
+"Other countries",2010,"Died",5.95238095238095
+"Other countries",2011,"Died",11.6883116883117
+"WPR",2006,"Failed",3.10077519379845
+"WPR",2007,"Failed",3.09050772626932
+"WPR",2008,"Failed",1.84696569920844
+"WPR",2009,"Failed",8.37390457643622
+"WPR",2010,"Failed",9.36863543788187
+"WPR",2011,"Failed",7.17319490325625
+"Cambodia",2006,"Failed",NA
+"Cambodia",2007,"Failed",0
+"Cambodia",2008,"Failed",2.4390243902439
+"Cambodia",2009,"Failed",0
+"Cambodia",2010,"Failed",3.2258064516129
+"Cambodia",2011,"Failed",3.57142857142857
+"China",2006,"Failed",NA
+"China",2007,"Failed",NA
+"China",2008,"Failed",38.4615384615385
+"China",2009,"Failed",24.6153846153846
+"China",2010,"Failed",16.4484451718494
+"China",2011,"Failed",20.4672897196262
+"Japan",2006,"Failed",NA
+"Japan",2007,"Failed",NA
+"Japan",2008,"Failed",NA
+"Japan",2009,"Failed",NA
+"Japan",2010,"Failed",NA
+"Japan",2011,"Failed",NA
+"Malaysia",2006,"Failed",NA
+"Malaysia",2007,"Failed",0
+"Malaysia",2008,"Failed",0
+"Malaysia",2009,"Failed",0
+"Malaysia",2010,"Failed",0
+"Malaysia",2011,"Failed",0
+"Mongolia",2006,"Failed",4
+"Mongolia",2007,"Failed",4.6875
+"Mongolia",2008,"Failed",4.61538461538462
+"Mongolia",2009,"Failed",10.2272727272727
+"Mongolia",2010,"Failed",5.12820512820513
+"Mongolia",2011,"Failed",7.93650793650794
+"Papua New Guinea",2006,"Failed",10
+"Papua New Guinea",2007,"Failed",NA
+"Papua New Guinea",2008,"Failed",NA
+"Papua New Guinea",2009,"Failed",NA
+"Papua New Guinea",2010,"Failed",5.55555555555556
+"Papua New Guinea",2011,"Failed",0
+"Philippines",2006,"Failed",NA
+"Philippines",2007,"Failed",3.71621621621622
+"Philippines",2008,"Failed",0.769230769230769
+"Philippines",2009,"Failed",1.52284263959391
+"Philippines",2010,"Failed",1.53256704980843
+"Philippines",2011,"Failed",2.13414634146341
+"Republic of Korea",2006,"Failed",NA
+"Republic of Korea",2007,"Failed",NA
+"Republic of Korea",2008,"Failed",NA
+"Republic of Korea",2009,"Failed",NA
+"Republic of Korea",2010,"Failed",NA
+"Republic of Korea",2011,"Failed",0.244200244200244
+"Viet Nam",2006,"Failed",NA
+"Viet Nam",2007,"Failed",NA
+"Viet Nam",2008,"Failed",NA
+"Viet Nam",2009,"Failed",6.93069306930693
+"Viet Nam",2010,"Failed",7.21649484536082
+"Viet Nam",2011,"Failed",7.426597582038
+"Other countries",2006,"Failed",1.44927536231884
+"Other countries",2007,"Failed",0
+"Other countries",2008,"Failed",1.58730158730159
+"Other countries",2009,"Failed",0
+"Other countries",2010,"Failed",0
+"Other countries",2011,"Failed",0
+"WPR",2006,"Defaulted",8.52713178294574
+"WPR",2007,"Defaulted",16.1147902869757
+"WPR",2008,"Defaulted",19.1292875989446
+"WPR",2009,"Defaulted",17.332035053554
+"WPR",2010,"Defaulted",16.7820773930754
+"WPR",2011,"Defaulted",21.3780084945729
+"Cambodia",2006,"Defaulted",NA
+"Cambodia",2007,"Defaulted",15.3846153846154
+"Cambodia",2008,"Defaulted",14.6341463414634
+"Cambodia",2009,"Defaulted",4.34782608695652
+"Cambodia",2010,"Defaulted",0
+"Cambodia",2011,"Defaulted",1.78571428571429
+"China",2006,"Defaulted",NA
+"China",2007,"Defaulted",NA
+"China",2008,"Defaulted",7.69230769230769
+"China",2009,"Defaulted",7.69230769230769
+"China",2010,"Defaulted",8.34697217675941
+"China",2011,"Defaulted",8.22429906542056
+"Japan",2006,"Defaulted",NA
+"Japan",2007,"Defaulted",NA
+"Japan",2008,"Defaulted",NA
+"Japan",2009,"Defaulted",NA
+"Japan",2010,"Defaulted",NA
+"Japan",2011,"Defaulted",NA
+"Malaysia",2006,"Defaulted",NA
+"Malaysia",2007,"Defaulted",2.5
+"Malaysia",2008,"Defaulted",3.57142857142857
+"Malaysia",2009,"Defaulted",7.27272727272727
+"Malaysia",2010,"Defaulted",3.125
+"Malaysia",2011,"Defaulted",5.67375886524823
+"Mongolia",2006,"Defaulted",12
+"Mongolia",2007,"Defaulted",9.375
+"Mongolia",2008,"Defaulted",9.23076923076923
+"Mongolia",2009,"Defaulted",6.81818181818182
+"Mongolia",2010,"Defaulted",8.97435897435897
+"Mongolia",2011,"Defaulted",11.9047619047619
+"Papua New Guinea",2006,"Defaulted",20
+"Papua New Guinea",2007,"Defaulted",NA
+"Papua New Guinea",2008,"Defaulted",NA
+"Papua New Guinea",2009,"Defaulted",NA
+"Papua New Guinea",2010,"Defaulted",5.55555555555556
+"Papua New Guinea",2011,"Defaulted",3.44827586206897
+"Philippines",2006,"Defaulted",NA
+"Philippines",2007,"Defaulted",20.9459459459459
+"Philippines",2008,"Defaulted",23.6538461538462
+"Philippines",2009,"Defaulted",32.48730964467
+"Philippines",2010,"Defaulted",35.8876117496807
+"Philippines",2011,"Defaulted",39.4817073170732
+"Republic of Korea",2006,"Defaulted",NA
+"Republic of Korea",2007,"Defaulted",NA
+"Republic of Korea",2008,"Defaulted",NA
+"Republic of Korea",2009,"Defaulted",NA
+"Republic of Korea",2010,"Defaulted",NA
+"Republic of Korea",2011,"Defaulted",23.5653235653236
+"Viet Nam",2006,"Defaulted",NA
+"Viet Nam",2007,"Defaulted",NA
+"Viet Nam",2008,"Defaulted",NA
+"Viet Nam",2009,"Defaulted",8.91089108910891
+"Viet Nam",2010,"Defaulted",6.18556701030928
+"Viet Nam",2011,"Defaulted",12.7806563039724
+"Other countries",2006,"Defaulted",4.34782608695652
+"Other countries",2007,"Defaulted",5
+"Other countries",2008,"Defaulted",11.1111111111111
+"Other countries",2009,"Defaulted",10.8433734939759
+"Other countries",2010,"Defaulted",7.14285714285714
+"Other countries",2011,"Defaulted",9.09090909090909
+"WPR",2006,"Not evaluated",13.1782945736434
+"WPR",2007,"Not evaluated",5.96026490066225
+"WPR",2008,"Not evaluated",9.76253298153034
+"WPR",2009,"Not evaluated",7.49756572541383
+"WPR",2010,"Not evaluated",17.5967413441955
+"WPR",2011,"Not evaluated",61.7036337895234
+"Cambodia",2006,"Not evaluated",NA
+"Cambodia",2007,"Not evaluated",0
+"Cambodia",2008,"Not evaluated",0
+"Cambodia",2009,"Not evaluated",0
+"Cambodia",2010,"Not evaluated",0
+"Cambodia",2011,"Not evaluated",87.5
+"China",2006,"Not evaluated",NA
+"China",2007,"Not evaluated",NA
+"China",2008,"Not evaluated",7.69230769230769
+"China",2009,"Not evaluated",13.0769230769231
+"China",2010,"Not evaluated",26.1047463175123
+"China",2011,"Not evaluated",62.8971962616822
+"Japan",2006,"Not evaluated",NA
+"Japan",2007,"Not evaluated",NA
+"Japan",2008,"Not evaluated",NA
+"Japan",2009,"Not evaluated",NA
+"Japan",2010,"Not evaluated",NA
+"Japan",2011,"Not evaluated",NA
+"Malaysia",2006,"Not evaluated",NA
+"Malaysia",2007,"Not evaluated",35
+"Malaysia",2008,"Not evaluated",23.2142857142857
+"Malaysia",2009,"Not evaluated",27.2727272727273
+"Malaysia",2010,"Not evaluated",53.125
+"Malaysia",2011,"Not evaluated",82.2695035460993
+"Mongolia",2006,"Not evaluated",4
+"Mongolia",2007,"Not evaluated",0
+"Mongolia",2008,"Not evaluated",0
+"Mongolia",2009,"Not evaluated",0
+"Mongolia",2010,"Not evaluated",3.2051282051282
+"Mongolia",2011,"Not evaluated",69.0476190476191
+"Papua New Guinea",2006,"Not evaluated",40
+"Papua New Guinea",2007,"Not evaluated",NA
+"Papua New Guinea",2008,"Not evaluated",NA
+"Papua New Guinea",2009,"Not evaluated",NA
+"Papua New Guinea",2010,"Not evaluated",0
+"Papua New Guinea",2011,"Not evaluated",74.1379310344828
+"Philippines",2006,"Not evaluated",NA
+"Philippines",2007,"Not evaluated",1.35135135135135
+"Philippines",2008,"Not evaluated",10.1923076923077
+"Philippines",2009,"Not evaluated",2.79187817258883
+"Philippines",2010,"Not evaluated",7.15197956577267
+"Philippines",2011,"Not evaluated",46.7225609756098
+"Republic of Korea",2006,"Not evaluated",NA
+"Republic of Korea",2007,"Not evaluated",NA
+"Republic of Korea",2008,"Not evaluated",NA
+"Republic of Korea",2009,"Not evaluated",NA
+"Republic of Korea",2010,"Not evaluated",NA
+"Republic of Korea",2011,"Not evaluated",67.2771672771673
+"Viet Nam",2006,"Not evaluated",NA
+"Viet Nam",2007,"Not evaluated",NA
+"Viet Nam",2008,"Not evaluated",NA
+"Viet Nam",2009,"Not evaluated",2.97029702970297
+"Viet Nam",2010,"Not evaluated",0
+"Viet Nam",2011,"Not evaluated",72.8842832469775
+"Other countries",2006,"Not evaluated",15.9420289855072
+"Other countries",2007,"Not evaluated",22.5
+"Other countries",2008,"Not evaluated",11.1111111111111
+"Other countries",2009,"Not evaluated",16.8674698795181
+"Other countries",2010,"Not evaluated",21.4285714285714
+"Other countries",2011,"Not evaluated",79.2207792207792
