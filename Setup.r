@@ -36,7 +36,7 @@ thisyear <- as.numeric(format(Sys.time(),"%Y")) - ifelse(as.numeric(format(Sys.t
 
 # Set-up
 
-libraries(c('reshape', 'ggplot2', 'grid', 'scales', 'xtable', 'stringr', 'timeSeries', 'ggthemes', 'plyr'))
+libraries(c('reshape', 'ggplot2', 'grid', 'scales', 'xtable', 'stringr', 'timeSeries', 'ggthemes', 'plyr', "gridExtra"))
 
 # Create a folder structure for saving files if doesn't exist yet 
 if(file.path(basefolder, 'FigData') %nin% list.dirs(basefolder, recursive=FALSE)){

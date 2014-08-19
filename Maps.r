@@ -165,7 +165,7 @@ mia <- subset(e.t, year==thisyear-1, select=c('country', 'iso3', 'e_mort_exc_tbh
 mia$cat <- cut(mia$e_mort_exc_tbhiv_100k, c(0,1,4,10,20,40,Inf), c('0-0.9', '1-3.9', '4-9.9', '10-19', '20-39', '>=40'), right=FALSE)
 
 # map
-mic <- WHOmap.print(mia, paste("Estimated TB mortality rates,", thisyear-1), "Estimated TB \ndeaths per \n100 000 population", na.label="No estimate", copyright=FALSE, colors=c('red', 'blue', 'orange', 'green', 'purple', 'brown'), show=FALSE)
+mic <- WHOmap.print(mia, paste("Estimated TB mortality rates excluding TB deaths among HIV-positive people,", thisyear-1), "Estimated TB \ndeaths per \n100 000 population", na.label="No estimate", copyright=FALSE, colors=c('red', 'blue', 'orange', 'green', 'purple', 'brown'), show=FALSE)
 # dev.off()
 
 figsave(mic, mia, "mort_map")
