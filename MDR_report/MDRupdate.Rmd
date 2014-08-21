@@ -309,8 +309,92 @@ write.csv(tbm, file=paste0(pasteLabel("./figure_data/table", tableCount, "m-cove
 
 ### Surveillance
 #### coverage of drug resistance surveillance: 
+
 <a id="t-notif"></a> 
+
 ##### `r I(pasteLabel("Table", tableCount, "t-notif", insLink=FALSE))`.			Table or map (survey/ surveillance, single/several data point, 				national/ sub national)
+
+```{r t-drestnotif-data, warning=FALSE}
+tableCount <- incCount(tableCount, "t-drestnotif")
+
+# Notification table
+
+oa <- subset(tb, year==yr & g_whoregion=="WPR", 
+              select=c(iso3, g_whoregion, country, 
+                       e_new_mdr_prop, e_new_mdr_prop_lo, e_new_mdr_prop_hi,
+                       e_ret_mdr_prop, e_ret_mdr_prop_lo, e_ret_mdr_prop_hi,
+                       e_mdr_num, e_mdr_num_lo, e_mdr_num_hi,
+                       c_newunk, c_ret, 
+                       dst_rlt_new, dst_rlt_ret, dst_rlt_unk, 
+                       mdr_new,  mdr_ret,  mdr, rapid_dx_dr_r, 
+                       conf_mdr_tx, unconf_mdr_tx))
+
+oa <- oa[order(oa$country),]
+names(oa)[names(oa)=='country'] <- 'area'
+estvars <- c("e_new_mdr_prop", "e_new_mdr_prop_lo", "e_new_mdr_prop_hi", "e_ret_mdr_prop", "e_ret_mdr_prop_lo", "e_ret_mdr_prop_hi", "e_mdr_num", "e_mdr_num_lo", "e_mdr_num_hi")
+
+# make aggregate rows
+ob <- oa[oa$iso3 %in% whbc, ]
+obh <- aggregate(ob[4:ncol(ob)], by=list(area=ob$g_whoregion), FUN=sum, na.rm=TRUE)
+obh$area <- "Total"
+obh[estvars] <- NA # Not the proper way to sum bounds. Maybe to replace this later.
+
+obw <- aggregate(oa[4:ncol(oa)], by=list(area=oa$g_whoregion), FUN=sum, na.rm=TRUE)
+obw[estvars] <- subset(emdra, year==yr & group_name=="WPR", estvars) # Proper sums for aggregates.
+
+# combine together
+oc <- rbind(ob[3:ncol(ob)], obh, obw) 
+
+# calculate and format vars
+
+for(stima in c("new", "ret")){ # change proportional estimates to percent
+  for(bound in c("", "_lo", "_hi")){
+    oc[paste0("e_", stima, "_mdr_pct", bound)] <- oc[paste0("e_", stima, "_mdr_prop", bound)] * 100
+  }
+}
+
+oc$e_new_mdr_pct_range <- paste0("(", rounder(oc$e_new_mdr_pct_lo), "&#8211;", rounder(oc$e_new_mdr_pct_hi), ")")
+oc$e_ret_mdr_pct_range <- paste0("(", rounder(oc$e_ret_mdr_pct_lo), "&#8211;", rounder(oc$e_ret_mdr_pct_hi), ")")
+oc$e_mdr_num_range <- paste0("(", rounder(oc$e_mdr_num_lo), "&#8211;", rounder(oc$e_mdr_num_hi), ")")
+
+oc$dst_rlt_new_pct <- rounder(oc$dst_rlt_new / oc$c_newunk * 100)
+oc$dst_rlt_ret_pct <- rounder(oc$dst_rlt_ret / oc$c_ret * 100)
+
+oc$mdr_new_pct <- rounder(oc$mdr_new / oc$c_newunk * 100)
+oc$mdr_ret_pct <- rounder(oc$mdr_ret / oc$c_ret * 100)
+
+oc$mdr_tx <- .rowsums(oc[c('conf_mdr_tx', 'unconf_mdr_tx')])
+
+# Format
+for(var in c("e_new_mdr_pct", "e_ret_mdr_pct", "e_mdr_num", "mdr", "rapid_dx_dr_r", "conf_mdr_tx", "mdr_tx")){
+  oc[var] <- ifelse(is.na(oc[[var]]), "&#8211;", rounder(oc[[var]]))
+}
+for(var in c("mdr_new_pct", "mdr_ret_pct")){
+  oc[var] <- ifelse(is.na(oc[[var]]), "&#8211;", oc[[var]])
+}
+
+# Rename countries
+od <- .WPSARnames(oc, col="area")
+
+rownames(od) <- od$area
+
+oe <- subset(od, select=c("e_new_mdr_pct", "e_new_mdr_pct_range", "e_ret_mdr_pct", "e_ret_mdr_pct_range", "e_mdr_num", "e_mdr_num_range", "mdr_new_pct", "mdr_ret_pct", "mdr", "rapid_dx_dr_r", "conf_mdr_tx", "mdr_tx"))
+
+
+write.csv(oe, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-drestnotif", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
+
+```
+
+<a id="t-drestnotif"></a> 
+
+##### `r I(pasteLabel("Table", tableCount, "t-drestnotif", insLink=FALSE))`.  		Table or map (survey/ surveillance, single/several data point, 				national/ sub national)
+```{r t-drestnotif, results='asis'}
+             
+# Make that table
+htmlTable(oe, caption = "", rowlabel = "", cgroup = rbind(c("Estimates", "Reported data", rep(NA,7)), c("% MDR-TB among new", "% MDR-TB among ret", "MDR-TB cases ___________________", "% MDR-TB among new", "% MDR-TB among ret", "MDR-TB cases", "RR cases<sup>*</sup>", "Confirmed MDR-TB on treatment", "Total MDR-TB on treatment")), n.cgroup = rbind(c(6,6, rep(NA,7)), c(2,2,2,1,1,1,1,1,1)), align=c(rep(c('r','l'),3), rep("c",6) ), ctable = TRUE, tfoot = "<sup>*</sup> Additional Rifampicine resistant cases detected by Xpert.", headings = NA )
+
+```
+
 
 ```{r t-drnotif-data, warning=FALSE}
 tableCount <- incCount(tableCount, "t-drnotif")
@@ -367,7 +451,7 @@ nbd$xpert_dr_r_pct <- .rowsums(nbd[c('xpert_dr_r_new', 'xpert_dr_r_ret', 'xpert_
 
 # Format
 for(var in 2:ncol(nbd)){
-  nbd[var] <- ifelse(is.na(nbd[[var]]), "-", rounder(nbd[[var]]))
+  nbd[var] <- ifelse(is.na(nbd[[var]]), "&#8211;", rounder(nbd[[var]]))
 }
 
 
