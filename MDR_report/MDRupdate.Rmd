@@ -207,7 +207,10 @@ tb$c_tot_newrel_100k <- tb$tot_newrel / tb$e_pop_num * 1e5
 
 # Common data munging 
 
-whbc <- c("KHM", "CHN", "JPN", "MYS", "MNG", "PNG", "PHL", "KOR", "VNM")
+whbc <- subset(tb, g_whoregion=="WPR" & year==yr & mdr>=1, c(iso3))
+whbc <- whbc$iso3
+               
+#                c("KHM", "CHN", "JPN", "MYS", "MNG", "PNG", "PHL", "KOR", "VNM")
 
 tb$country2 <- ifelse(tb$iso3 %in% whbc, as.character(tb$iso3), "Other") 
 tb$country2 <- factor(tb$country2, c("KHM", "CHN", "JPN", "MYS", "MNG", "PNG", "PHL", "KOR", "VNM", "Other"), c("Cambodia", "China", "Japan", "Malaysia", "Mongolia", "Papua New Guinea", "Philippines", "Republic of Korea", "Viet Nam", "Other countries"))
@@ -314,24 +317,20 @@ write.csv(tbm, file=paste0(pasteLabel("./figure_data/table", tableCount, "m-cove
 
 ##### `r I(pasteLabel("Table", tableCount, "t-notif", insLink=FALSE))`.			Table or map (survey/ surveillance, single/several data point, 				national/ sub national)
 
-```{r t-drestnotif-data, warning=FALSE}
-tableCount <- incCount(tableCount, "t-drestnotif")
+```{r t-est-enroll-data, warning=FALSE}
+tableCount <- incCount(tableCount, "t-est-enroll")
 
 # Notification table
 
 oa <- subset(tb, year==yr & g_whoregion=="WPR", 
               select=c(iso3, g_whoregion, country, 
-                       e_new_mdr_prop, e_new_mdr_prop_lo, e_new_mdr_prop_hi,
-                       e_ret_mdr_prop, e_ret_mdr_prop_lo, e_ret_mdr_prop_hi,
                        e_mdr_num, e_mdr_num_lo, e_mdr_num_hi,
-                       c_newunk, c_ret, 
-                       dst_rlt_new, dst_rlt_ret, dst_rlt_unk, 
-                       mdr_new,  mdr_ret,  mdr, rapid_dx_dr_r, 
+                       mdr, rapid_dx_dr_r, 
                        conf_mdr_tx, unconf_mdr_tx))
 
 oa <- oa[order(oa$country),]
 names(oa)[names(oa)=='country'] <- 'area'
-estvars <- c("e_new_mdr_prop", "e_new_mdr_prop_lo", "e_new_mdr_prop_hi", "e_ret_mdr_prop", "e_ret_mdr_prop_lo", "e_ret_mdr_prop_hi", "e_mdr_num", "e_mdr_num_lo", "e_mdr_num_hi")
+estvars <- c("e_mdr_num", "e_mdr_num_lo", "e_mdr_num_hi")
 
 # make aggregate rows
 ob <- oa[oa$iso3 %in% whbc, ]
@@ -347,51 +346,43 @@ oc <- rbind(ob[3:ncol(ob)], obh, obw)
 
 # calculate and format vars
 
-for(stima in c("new", "ret")){ # change proportional estimates to percent
-  for(bound in c("", "_lo", "_hi")){
-    oc[paste0("e_", stima, "_mdr_pct", bound)] <- oc[paste0("e_", stima, "_mdr_prop", bound)] * 100
-  }
-}
-
-oc$e_new_mdr_pct_range <- paste0("(", rounder(oc$e_new_mdr_pct_lo), "&#8211;", rounder(oc$e_new_mdr_pct_hi), ")")
-oc$e_ret_mdr_pct_range <- paste0("(", rounder(oc$e_ret_mdr_pct_lo), "&#8211;", rounder(oc$e_ret_mdr_pct_hi), ")")
 oc$e_mdr_num_range <- paste0("(", rounder(oc$e_mdr_num_lo), "&#8211;", rounder(oc$e_mdr_num_hi), ")")
 
-oc$dst_rlt_new_pct <- rounder(oc$dst_rlt_new / oc$c_newunk * 100)
-oc$dst_rlt_ret_pct <- rounder(oc$dst_rlt_ret / oc$c_ret * 100)
-
-oc$mdr_new_pct <- rounder(oc$mdr_new / oc$c_newunk * 100)
-oc$mdr_ret_pct <- rounder(oc$mdr_ret / oc$c_ret * 100)
-
+oc$pmdr <- .rowsums(oc[c('mdr', 'rapid_dx_dr_r')])
 oc$mdr_tx <- .rowsums(oc[c('conf_mdr_tx', 'unconf_mdr_tx')])
 
+oc$pmdr_pct <- rounder(oc$pmdr / oc$e_mdr_num * 100)
+oc$pmdr_pct_range <- paste0("(", rounder(oc$pmdr / oc$e_mdr_num_hi * 100), "&#8211;", rounder(oc$pmdr / oc$e_mdr_num_lo * 100), ")")
+
+oc$mdr_tx_pct <- rounder(oc$mdr_tx / oc$pmdr * 100)
+
 # Format
-for(var in c("e_new_mdr_pct", "e_ret_mdr_pct", "e_mdr_num", "mdr", "rapid_dx_dr_r", "conf_mdr_tx", "mdr_tx")){
-  oc[var] <- ifelse(is.na(oc[[var]]), "&#8211;", rounder(oc[[var]]))
-}
-for(var in c("mdr_new_pct", "mdr_ret_pct")){
+oc$e_mdr_num <- rounder(oc$e_mdr_num)
+
+for(var in 2:ncol(oc)){
   oc[var] <- ifelse(is.na(oc[[var]]), "&#8211;", oc[[var]])
 }
+
 
 # Rename countries
 od <- .WPSARnames(oc, col="area")
 
 rownames(od) <- od$area
 
-oe <- subset(od, select=c("e_new_mdr_pct", "e_new_mdr_pct_range", "e_ret_mdr_pct", "e_ret_mdr_pct_range", "e_mdr_num", "e_mdr_num_range", "mdr_new_pct", "mdr_ret_pct", "mdr", "rapid_dx_dr_r", "conf_mdr_tx", "mdr_tx"))
+oe <- subset(od, select=c("e_mdr_num", "e_mdr_num_range", "pmdr", "pmdr_pct", "pmdr_pct_range", "mdr_tx", "mdr_tx_pct"))
 
 
-write.csv(oe, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-drestnotif", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
+write.csv(oe, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-est-enroll", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
 
 ```
 
-<a id="t-drestnotif"></a> 
+<a id="t-est-enroll"></a> 
 
-##### `r I(pasteLabel("Table", tableCount, "t-drestnotif", insLink=FALSE))`.  		Table or map (survey/ surveillance, single/several data point, 				national/ sub national)
-```{r t-drestnotif, results='asis'}
+##### `r I(pasteLabel("Table", tableCount, "t-est-enroll", insLink=FALSE))`. Estimated drug resistant cases compared with notified cases and cases put on treatment, `r yr`
+```{r t-est-enroll, results='asis'}
              
 # Make that table
-htmlTable(oe, caption = "", rowlabel = "", cgroup = rbind(c("Estimates", "Reported data", rep(NA,7)), c("% MDR-TB among new", "% MDR-TB among ret", "MDR-TB cases ___________________", "% MDR-TB among new", "% MDR-TB among ret", "MDR-TB cases", "RR cases<sup>*</sup>", "Confirmed MDR-TB on treatment", "Total MDR-TB on treatment")), n.cgroup = rbind(c(6,6, rep(NA,7)), c(2,2,2,1,1,1,1,1,1)), align=c(rep(c('r','l'),3), rep("c",6) ), ctable = TRUE, tfoot = "<sup>*</sup> Additional Rifampicine resistant cases detected by Xpert.", headings = NA )
+htmlTable(oe, caption = "", rowlabel = "", cgroup = rbind(c("MDR-TB cases<sup>*</sup>", "Enrolled on treatment", rep(NA,3)), c("Estimated", "Detected", "%", "Number", "%")), n.cgroup = rbind(c(3,2, rep(NA,3)), c(2,1,2,1,1)), align=c(rep(c('r','l','r'),2), 'r'), ctable = TRUE, tfoot = "<sup>*</sup> All columns except estimates include Rif-resistant cases confirmed by Xpert only.", headings = NA )
 
 ```
 
@@ -489,7 +480,7 @@ write.csv(nbf, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-drno
 ```{r t-drnotif, results='asis'}
 
 # Make that table
-htmlTable(nbf, caption = "", rowlabel = "", cgroup = c("Cases with culture or LPA results", "% with DST results", "% with resistance to H only", "% with resistance to R only", "% MDR-TB<sup>*</sup>", "Additional cases confirmed by Xpert", "% Xpert cases MDR-TB<sup>*</sup>"), n.cgroup = c(3,3,3,3,3,3,3), ctable = TRUE, tfoot = "<sup>*</sup> Resistant to H and R.")
+htmlTable(nbf, caption = "", rowlabel = "", cgroup = c("Cases with culture or LPA results", "% with DST results", "% with resistance to H only", "% with resistance to R only", "% MDR-TB<sup>*</sup>", "Additional cases confirmed by Xpert", "% Xpert cases MDR-TB<sup>*</sup>"), n.cgroup = c(3,3,3,3,3,3,3), ctable = TRUE, tfoot = "<sup>*</sup> Resistant to H and R. Totals also include History Unknown.")
 ```
 
 
@@ -525,18 +516,27 @@ htmlTable(nbf, caption = "", rowlabel = "", cgroup = c("Cases with culture or LP
 
 figCount <- incCount(figCount, "f-align-bar")
 
-tea <- subset(tb, year %in% 2006:yr & g_whoregion=="WPR", select=c(country2, year, e_mdr_num, e_mdr_num_lo, e_mdr_num_hi, mdr, conf_mdr_tx, unconf_mdr_tx))
+tea <- subset(tb, year %in% 2007:yr & g_whoregion=="WPR", select=c(iso3, country, year, e_mdr_num, e_mdr_num_lo, e_mdr_num_hi, mdr, rapid_dx_dr_r, conf_mdr_tx, unconf_mdr_tx))
 
-teb1 <- aggregate(tea[3:ncol(tea)], by=list(year=tea$year), FUN=sum, na.rm=TRUE)
-teb1$area <- "WPR"
+teb1 <- aggregate(tea[4:ncol(tea)], by=list(year=tea$year), FUN=sum, na.rm=TRUE)
+teb1$country <- teb1$iso3 <- "WPR"
 
 # Separate hbcs
-teb2 <- aggregate(tea[3:ncol(tea)], by=list(year=tea$year, area=tea$country2), FUN=sum, na.rm=TRUE)
+teb3 <- tea[tea$iso3 %in% whbc,] 
+# teb2 <- aggregate(teb3[4:ncol(tea)], by=list(year=teb3$year, area=teb3$country), FUN=sum, na.rm=TRUE)
+
 
 #combine
-teb <- rbind(teb1, teb2)
+teb <- rbind(teb1, teb3)
 
-tec <- melt(teb[c("area", "year", "e_mdr_num", "e_mdr_num_lo", "e_mdr_num_hi", "mdr", "conf_mdr_tx", "unconf_mdr_tx")], id=1:2)
+# Calculate new vars
+teb$`Cases confirmed` <- .rowsums(teb[c('mdr', 'rapid_dx_dr_r')])
+teb$`Patients enrolled on treatment` <- .rowsums(teb[c('conf_mdr_tx', 'unconf_mdr_tx')])
+
+
+tec <- melt(teb[c("country", "year", "Cases confirmed", "Patients enrolled on treatment")], id=1:2)
+
+ted <- ggplot(tec, aes(year, value, color=variable)) + geom_point(alpha=.5) + geom_line(size=1, alpha=.5) + facet_wrap(~country, scales="free_y", ncol=4) + theme_report() + scale_color_brewer("", type="qual", palette=6) + scale_x_continuous("") + scale_y_continuous("MDR-TB cases")  + guides(fill = guide_legend(reverse = TRUE)) + theme(legend.position = "bottom")
 
 write.csv(tec, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-align-bar", insLink=FALSE), ".csv"), row.names=FALSE)
 ```
@@ -546,15 +546,13 @@ write.csv(tec, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-align
 
 ##### `r I(pasteLabel("Figure", figCount, "f-align-bar", insLink=FALSE))`. Trend of notification and enrolment of MDR-TB cases in the Western Pacific Region, 2006`r paste0("\u2013", yr-2)`
 Graph showing notification and enrolment
-``` {r f-align-bar, fig.width=9}
+``` {r f-align-bar, fig.width=9, fig.height=9}
 
-ggplot(subset(tec, !variable %in% c("e_mdr_num", "e_mdr_num_lo", "e_mdr_num_hi")), aes(year, value, color=variable)) + geom_line() + facet_wrap(~area, scales="free_y") + theme_report() + scale_fill_brewer('Outcome', type="qual", palette=6) + scale_x_continuous("", breaks=min(tec$year):max(tec$year)) + scale_y_continuous("MDR-TB cases")  + guides(fill = guide_legend(reverse = TRUE))
-
-ggplot(tec, aes(year, value, color=variable)) + geom_line() + facet_wrap(~area, scales="free_y") + theme_report() + scale_fill_brewer('Outcome', type="qual", palette=6) + scale_x_continuous("", breaks=min(tec$year):max(tec$year)) + scale_y_continuous("MDR-TB cases")  + guides(fill = guide_legend(reverse = TRUE))
+ted
 
 ```
 
-<
+
 
 #### Treatment outcomes
 
@@ -601,6 +599,89 @@ ggplot(trc, aes(year, value, fill=variable)) + geom_bar(stat="identity", positio
 
 Discussion
 ---------------------------------------------------
+
+
+```{r t-drestnotif-data, warning=FALSE}
+tableCount <- incCount(tableCount, "t-drestnotif")
+
+# Notification table
+
+oa <- subset(tb, year==yr & g_whoregion=="WPR", 
+              select=c(iso3, g_whoregion, country, 
+                       e_new_mdr_prop, e_new_mdr_prop_lo, e_new_mdr_prop_hi,
+                       e_ret_mdr_prop, e_ret_mdr_prop_lo, e_ret_mdr_prop_hi,
+                       e_mdr_num, e_mdr_num_lo, e_mdr_num_hi,
+                       c_newunk, c_ret, 
+                       dst_rlt_new, dst_rlt_ret, dst_rlt_unk, 
+                       mdr_new,  mdr_ret,  mdr, rapid_dx_dr_r, 
+                       conf_mdr_tx, unconf_mdr_tx))
+
+oa <- oa[order(oa$country),]
+names(oa)[names(oa)=='country'] <- 'area'
+estvars <- c("e_new_mdr_prop", "e_new_mdr_prop_lo", "e_new_mdr_prop_hi", "e_ret_mdr_prop", "e_ret_mdr_prop_lo", "e_ret_mdr_prop_hi", "e_mdr_num", "e_mdr_num_lo", "e_mdr_num_hi")
+
+# make aggregate rows
+ob <- oa[oa$iso3 %in% whbc, ]
+obh <- aggregate(ob[4:ncol(ob)], by=list(area=ob$g_whoregion), FUN=sum, na.rm=TRUE)
+obh$area <- "Total"
+obh[estvars] <- NA # Not the proper way to sum bounds. Maybe to replace this later.
+
+obw <- aggregate(oa[4:ncol(oa)], by=list(area=oa$g_whoregion), FUN=sum, na.rm=TRUE)
+obw[estvars] <- subset(emdra, year==yr & group_name=="WPR", estvars) # Proper sums for aggregates.
+
+# combine together
+oc <- rbind(ob[3:ncol(ob)], obh, obw) 
+
+# calculate and format vars
+
+for(stima in c("new", "ret")){ # change proportional estimates to percent
+  for(bound in c("", "_lo", "_hi")){
+    oc[paste0("e_", stima, "_mdr_pct", bound)] <- oc[paste0("e_", stima, "_mdr_prop", bound)] * 100
+  }
+}
+
+oc$e_new_mdr_pct_range <- paste0("(", rounder(oc$e_new_mdr_pct_lo), "&#8211;", rounder(oc$e_new_mdr_pct_hi), ")")
+oc$e_ret_mdr_pct_range <- paste0("(", rounder(oc$e_ret_mdr_pct_lo), "&#8211;", rounder(oc$e_ret_mdr_pct_hi), ")")
+oc$e_mdr_num_range <- paste0("(", rounder(oc$e_mdr_num_lo), "&#8211;", rounder(oc$e_mdr_num_hi), ")")
+
+oc$dst_rlt_new_pct <- rounder(oc$dst_rlt_new / oc$c_newunk * 100)
+oc$dst_rlt_ret_pct <- rounder(oc$dst_rlt_ret / oc$c_ret * 100)
+
+oc$mdr_new_pct <- rounder(oc$mdr_new / oc$c_newunk * 100)
+oc$mdr_ret_pct <- rounder(oc$mdr_ret / oc$c_ret * 100)
+
+oc$mdr_tx <- .rowsums(oc[c('conf_mdr_tx', 'unconf_mdr_tx')])
+
+# Format
+for(var in c("e_new_mdr_pct", "e_ret_mdr_pct", "e_mdr_num", "mdr", "rapid_dx_dr_r", "conf_mdr_tx", "mdr_tx")){
+  oc[var] <- ifelse(is.na(oc[[var]]), "&#8211;", rounder(oc[[var]]))
+}
+for(var in c("mdr_new_pct", "mdr_ret_pct")){
+  oc[var] <- ifelse(is.na(oc[[var]]), "&#8211;", oc[[var]])
+}
+
+# Rename countries
+od <- .WPSARnames(oc, col="area")
+
+rownames(od) <- od$area
+
+oe <- subset(od, select=c("mdr_new_pct", "e_new_mdr_pct", "e_new_mdr_pct_range", "mdr_ret_pct", "e_ret_mdr_pct", "e_ret_mdr_pct_range", "mdr", "e_mdr_num", "e_mdr_num_range", "rapid_dx_dr_r", "conf_mdr_tx", "mdr_tx"))
+
+
+write.csv(oe, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-drestnotif", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
+
+```
+
+<a id="t-drestnotif"></a> 
+
+##### `r I(pasteLabel("Table", tableCount, "t-drestnotif", insLink=FALSE))`. Estimated drug resistant cases compared with notified cases and cases put on treatment, `r yr`
+```{r t-drestnotif, results='asis'}
+             
+# Make that table
+htmlTable(oe, caption = "", rowlabel = "", cgroup = rbind(c("% MDR-TB among new", "% MDR-TB among ret.", "MDR-TB cases", "", rep(NA,5)), c(rep(c("Detected", "Estimated"),2), "Detected", "Estimated <br>___________________", "RR cases<sup>*</sup>", "Confirmed MDR-TB on treatment", "Total MDR-TB on treatment")), n.cgroup = rbind(c(3,3,3,3, rep(NA,5)), c(1,2,1,2,1,2,1,1,1)), align=c(rep(c('c','r', 'l'),3), rep("c",3) ), ctable = TRUE, tfoot = "<sup>*</sup> Additional Rifampicine resistant cases detected by Xpert.", headings = NA )
+
+```
+
 
 ### WPRO response
 		
