@@ -214,5 +214,35 @@ mhc <- WHOmap.print(mhb, paste("Availability of national electronic case-based d
 
 figsave(mhc, mhb, "2_16_err_map")
 
+# 2_10_bdq_map -------------------------------------------------
+# Countries using bedaquiline
+
+mia <- subset(tb, year %in% (thisyear-1):(thisyear-2), select=c('country', 'year', 'iso3', 'mdrxdr_bdq_used'))
+
+# Take last year's answer if unreported
+for(cnty in unique(mia$country)) {
+  if(is.na(mia[mia$country==cnty & mia$year==thisyear-1, 'mdrxdr_bdq_used'])) mia[mia$country==cnty & mia$year==thisyear-1, 'mdrxdr_bdq_used'] <- mia[mia$country==cnty & mia$year==thisyear-2, 'mdrxdr_bdq_used']
+}
+
+mib <- subset(mia, year==thisyear-1)
+
+#  fixes
+if(thisyear==2014){
+  mib[mib$iso3 %in% c('BEL', "ITA"), 'mdrxdr_bdq_used'] <- 1
+  mib[mib$iso3 %in% c('ARG'), 'mdrxdr_bdq_used'] <- 0
+  warning("some hard coding going on with the BDQ map.")
+} 
+
+# Leave off unknown category
+mib$cat1 <- ifelse(mib$mdrxdr_bdq_used==3, NA, mib$mdrxdr_bdq_used)
+
+mib$cat <- factor(mib$cat1, levels=c(1, 0, 3), labels=c('Yes', 'No', 'Unknown' ))
+
+# map
+bdq_map <- WHOmap.print(mib, paste("Countries that had used bedaquiline for the treatment of M/XDR−TB as part of expanded access, \ncompassionate use or under normal programmatic conditions by the end of", thisyear-1), '', colors=c('dark orange', 'green', 'blue'), copyright=FALSE, show=FALSE)
+# dev.off()
+
+figsave(bdq_map, mib, "2_10_bdq_map")
+
 
 # ======================

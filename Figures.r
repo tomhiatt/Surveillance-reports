@@ -941,6 +941,55 @@ hiv_ts_d <- ggplot(hmg, aes(variable, value, fill=type)) + geom_bar(stat="identi
 
 figsave(hiv_ts_d, hmg, "B4_6_hiv_ts_d")
 
+# 2_3_topten ---------------------------------------------------------
+# The 'top 10 countries' figure (previously a table), in 2014 only 1 and 2 are used. Only countries with over a thousand total cases are considered.
+
+tma <- subset(e.t,e_inc_num > 1e3 & year==thisyear-1)
+
+tma$e_mort_num <- tma$e_mort_100k / 1e5 * tma$e_pop_num
+tma$e_mort_num_lo <- tma$e_mort_100k_lo / 1e5 * tma$e_pop_num
+tma$e_mort_num_hi <- tma$e_mort_100k_hi / 1e5 * tma$e_pop_num
+
+.maxplus <- function(df, vect, num.rows){
+  df1 <- df[order(df[vect], decreasing=TRUE),]
+  df1 <- .shortnames(df1[1:num.rows, c('country', vect, glue(vect, '_lo'), glue(vect, '_hi'))])
+  df1$var <- vect
+  names(df1) <- c("country", 'best', 'lo', 'hi', 'var')
+  (df1)
+}
+
+tm1 <- .maxplus(tma, 'e_inc_num', 10)
+tm2 <- .maxplus(tma, 'e_inc_100k', 10)
+tm3 <- .maxplus(tma, 'e_inc_tbhiv_num', 10)
+tm4 <- .maxplus(tma, 'e_mort_exc_tbhiv_num', 10)
+tm5 <- .maxplus(tma, 'e_mort_exc_tbhiv_100k', 10)
+tm6 <- .maxplus(tma, 'e_mort_num', 10)
+tm7 <- .maxplus(tma, 'e_mort_100k', 10)
+
+tm.nhiv <- rbind(tm1, tm2, tm3, tm4, tm5, tm6, tm7)
+tm.nhiv$var <- factor(tm.nhiv$var, levels=c("e_inc_num", "e_inc_100k",  "e_inc_tbhiv_num", "e_mort_exc_tbhiv_num", "e_mort_exc_tbhiv_100k", 'e_mort_num', 'e_mort_100k'), labels=c("Incidence: absolute numbers", "Incidence: rate per 100 000 population",  "TB/HIV incidence", "Mortality (excluding TB/HIV)", "Mortality per 100 000 (excluding TB/HIV)", "Mortality (including TB/HIV)", "Mortality per 100 000 (including TB/HIV)"))
+
+# ggplot(tm.nhiv, aes(best, country)) + geom_point()  + facet_wrap(~var, scales='free') 
+# + geom_errorbar(aes(ymin='lo', ymax='hi'))+ coord_flip()
+
+for(pn in c(1,4,6)){
+  vr <- levels(tm.nhiv$var)[pn]
+  tn <- subset(tm.nhiv, var==vr)
+  tn$country <- factor(tn$country, levels=rev(tn$country))
+  tn1 <- ggplot(tn, aes(best/1e6, country, xmin=lo/1e6, xmax=hi/1e6)) + geom_point()  + geom_errorbarh(height=.25) +  theme_glb.rpt() + labs(y="", x='Millions', title=vr) + theme(plot.title = element_text(hjust = 0)) 
+  
+  figsave(tn1, tn, glue('topten_', pn, '_'), width=5, height=4) 
+}
+
+for(pn in c(2,5,7)){
+  vr <- levels(tm.nhiv$var)[pn]
+  tn <- subset(tm.nhiv, var==vr)
+  tn$country <- factor(tn$country, levels=rev(tn$country))
+  tn1 <- ggplot(tn, aes(best, country, xmin=lo, xmax=hi)) + geom_point()  + geom_errorbarh(height=.25) +  theme_glb.rpt() + labs(y="", x='Rate per 100 000 population per year', title=vr) + theme(plot.title = element_text(hjust = 0)) 
+  
+  figsave(tn1, tn, glue('topten_', pn, '_'), width=5, height=4) 
+}
+
 # Garbage at the end ---------------------------------------------------
 
 
@@ -1319,54 +1368,7 @@ gie2 <- ggplot(gid2, aes(area, value, fill = variable) ) + geom_bar(stat='identi
 
 figsave(gie2, gid2, 'txout_reg2')
 
-#==========================
-# Pieces of the 'top 10 countries' figure (previously a table)
 
-tma <- subset(e.t,e_inc_num > 1e3 & year==thisyear-1)
-
-tma$e_mort_num <- tma$e_mort_100k / 1e5 * tma$e_pop_num
-tma$e_mort_num_lo <- tma$e_mort_100k_lo / 1e5 * tma$e_pop_num
-tma$e_mort_num_hi <- tma$e_mort_100k_hi / 1e5 * tma$e_pop_num
-
-.maxplus <- function(df, vect, num.rows){
-  df1 <- df[order(df[vect], decreasing=TRUE),]
-  df1 <- .shortnames(df1[1:num.rows, c('country', vect, glue(vect, '_lo'), glue(vect, '_hi'))])
-  df1$var <- vect
-  names(df1) <- c("country", 'best', 'lo', 'hi', 'var')
-  (df1)
-}
-
-tm1 <- .maxplus(tma, 'e_inc_num', 10)
-tm2 <- .maxplus(tma, 'e_inc_100k', 10)
-tm3 <- .maxplus(tma, 'e_inc_tbhiv_num', 10)
-tm4 <- .maxplus(tma, 'e_mort_exc_tbhiv_num', 10)
-tm5 <- .maxplus(tma, 'e_mort_exc_tbhiv_100k', 10)
-tm6 <- .maxplus(tma, 'e_mort_num', 10)
-tm7 <- .maxplus(tma, 'e_mort_100k', 10)
-
-tm.nhiv <- rbind(tm1, tm2, tm3, tm4, tm5, tm6, tm7)
-tm.nhiv$var <- factor(tm.nhiv$var, levels=c("e_inc_num", "e_inc_100k",  "e_inc_tbhiv_num", "e_mort_exc_tbhiv_num", "e_mort_exc_tbhiv_100k", 'e_mort_num', 'e_mort_100k'), labels=c("Incidence: absolute numbers", "Incidence: rate per 100 000 population",  "TB/HIV incidence", "Mortality (excluding TB/HIV)", "Mortality per 100 000 (excluding TB/HIV)", "Mortality (including TB/HIV)", "Mortality per 100 000 (including TB/HIV)"))
-
-# ggplot(tm.nhiv, aes(best, country)) + geom_point()  + facet_wrap(~var, scales='free') 
-# + geom_errorbar(aes(ymin='lo', ymax='hi'))+ coord_flip()
-
-for(pn in c(1,4,6)){
-  vr <- levels(tm.nhiv$var)[pn]
-  tn <- subset(tm.nhiv, var==vr)
-  tn$country <- factor(tn$country, levels=rev(tn$country))
-  tn1 <- ggplot(tn, aes(best/1e6, country, xmin=lo/1e6, xmax=hi/1e6)) + geom_point()  + geom_errorbarh(height=.25) +  theme_glb.rpt() + labs(y="", x='Cases per year (millions)', title=vr) + theme(plot.title = element_text(hjust = 0)) 
-  
-  figsave(tn1, tn, glue('topten_', pn), width=5, height=4) 
-}
-
-for(pn in c(2,5,7)){
-  vr <- levels(tm.nhiv$var)[pn]
-  tn <- subset(tm.nhiv, var==vr)
-  tn$country <- factor(tn$country, levels=rev(tn$country))
-  tn1 <- ggplot(tn, aes(best, country, xmin=lo, xmax=hi)) + geom_point()  + geom_errorbarh(height=.25) +  theme_glb.rpt() + labs(y="", x='Rate per 100 000 per year', title=vr) + theme(plot.title = element_text(hjust = 0)) 
-  
-  figsave(tn1, tn, glue('topten_', pn), width=5, height=4) 
-}
 
 
 
