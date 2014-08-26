@@ -2,13 +2,15 @@
 title: "Drug resistant tuberculosis in the WHO Western Pacific Region"
 author: "Tauhid Islam,<sup>&dagger;</sup> Tom Hiatt<sup>&dagger;</sup> and Nobuyuki
   Nishikiori<sup>&dagger;</sup>"
+bibliography: MDRupdate.bib
+csl: springer-vancouver.csl
 output:
   html_document:
     fig_caption: yes
+    keep_md: yes
     number_sections: no
     theme: united
     toc: yes
-    keep_md: true
   word_document:
     fig_height: 7
 ---
@@ -44,6 +46,8 @@ require("Gmisc")
 
 
 # Reproducible research process inspired by: http://gforge.se/2014/01/fast-track-publishing-using-knitr-part-ii/ and http://gforge.se/2014/07/fast-track-publishing-using-rmarkdown/
+
+# Citation directions here: http://rmarkdown.rstudio.com/authoring_pandoc_markdown.html#citations and here: http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html
 
 ##################
 # Knitr settings #
@@ -232,7 +236,19 @@ Key words:
 Abstract 
 --------------------------------------------------------
 
+Test citation @Angermeyer2004
 
+Blah blah [see @Angermeyer2004, pp. 33-35; also @Kirkwood2003, ch. 1].
+
+Blah blah [@Angermeyer2004, pp. 33-35, 38-39 and *passim*].
+
+Blah blah [@Kirkwood2003; @Angermeyer2004].
+
+Smith says blah [-@Kirkwood2003].
+
+@Kirkwood2003 says blah.
+
+@Kirkwood2003 [p. 33] says blah.
 
 
 Introduction
@@ -399,7 +415,9 @@ tableCount <- incCount(tableCount, "t-drnotif")
 # Notification table
 
 nb <- subset(tb, year==yr & g_whoregion=="WPR", 
-              select=c(iso3, g_whoregion, country, 
+              select=c(iso3, g_whoregion, country,
+                       new_labconf, new_clindx, 
+                       ret_rel_labconf, ret_rel_clindx, ret_nrel, 
                        cullpa_new, cullpa_ret, cullpa_unk, 
                        dst_rlt_new, dst_rlt_ret, dst_rlt_unk, 
                        dr_h_nr_new,  dr_h_nr_ret,  dr_h_nr_unk, 
@@ -422,11 +440,14 @@ nbcw <- aggregate(nb[4:ncol(nb)], by=list(area=nb$g_whoregion), FUN=sum, na.rm=T
 nbd <- rbind(nbc[3:ncol(nbc)], nbch, nbcw) # , tbbh, tbbga
 
 # calculate and format vars
-nbd$cullpa <- .rowsums(nbd[c('cullpa_new', 'cullpa_ret', 'cullpa_unk')])
-nbd$dst_rlt_new_pct <- nbd$dst_rlt_new / nbd$cullpa_new * 100
-nbd$dst_rlt_ret_pct <- nbd$dst_rlt_ret / nbd$cullpa_ret * 100
+nbd$pulm_new <- .rowsums(nbd[c('new_labconf', 'new_clindx')])
+nbd$pulm_ret <- .rowsums(nbd[c('ret_rel_labconf', 'ret_rel_clindx', 'ret_nrel')])
+nbd$pulm_all <- .rowsums(nbd[c('pulm_new', 'pulm_ret')])
+
+nbd$dst_rlt_new_pct <- nbd$dst_rlt_new / nbd$pulm_new * 100
+nbd$dst_rlt_ret_pct <- nbd$dst_rlt_ret / nbd$pulm_ret * 100
 nbd$dst_rlt <- .rowsums(nbd[c('dst_rlt_new', 'dst_rlt_ret', 'dst_rlt_unk')])
-nbd$dst_rlt_pct <- nbd$dst_rlt /  nbd$cullpa * 100
+nbd$dst_rlt_pct <- nbd$dst_rlt /  nbd$pulm_all * 100
 
 nbd$dr_h_nr_new_pct <- nbd$dr_h_nr_new / nbd$dst_rlt_new * 100
 nbd$dr_h_nr_ret_pct <- nbd$dr_h_nr_ret / nbd$dst_rlt_ret * 100
@@ -459,7 +480,7 @@ nbe <- .WPSARnames(nbd, col="area")
 
 rownames(nbe) <- nbe$area
 
-nbf <- subset(nbe, select=c("cullpa_new", "cullpa_ret", "cullpa", "dst_rlt_new_pct", "dst_rlt_ret_pct", "dst_rlt_pct", "dr_h_nr_new_pct", "dr_h_nr_ret_pct", "dr_h_nr_pct", "dr_r_nh_new_pct", "dr_r_nh_ret_pct", "dr_r_nh_pct", "mdr_new_pct", "mdr_ret_pct", "mdr_pct", "xpert_new", "xpert_ret", "xpert", "xpert_dr_r_new_pct", "xpert_dr_r_ret_pct", "xpert_dr_r_pct"))
+nbf <- subset(nbe, select=c("dst_rlt_new", "dst_rlt_ret", "dst_rlt", "dst_rlt_new_pct", "dst_rlt_ret_pct", "dst_rlt_pct", "dr_h_nr_new_pct", "dr_h_nr_ret_pct", "dr_h_nr_pct", "dr_r_nh_new_pct", "dr_r_nh_ret_pct", "dr_r_nh_pct", "mdr_new_pct", "mdr_ret_pct", "mdr_pct", "xpert_new", "xpert_ret", "xpert", "xpert_dr_r_new_pct", "xpert_dr_r_ret_pct", "xpert_dr_r_pct"))
 
 names(nbf) <- c("New", "Ret.", "Total", "New", "Ret.", "Total", "New", "Ret.", "Total", "New", "Ret.", "Total", "New", "Ret.", "Total", "New", "Ret.", "Total", "New", "Ret.", "Total")
 
@@ -486,7 +507,7 @@ write.csv(nbf, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-drno
 ```{r t-drnotif, results='asis'}
 
 # Make that table
-htmlTable(nbf, caption = "", rowlabel = "", cgroup = c("Cases with culture or LPA results", "% with DST results", "% with resistance to H only", "% with resistance to R only", "% MDR-TB<sup>*</sup>", "Additional cases confirmed by Xpert", "% Xpert cases MDR-TB<sup>*</sup>"), n.cgroup = c(3,3,3,3,3,3,3), ctable = TRUE, tfoot = "<sup>*</sup> Resistant to H and R. Totals also include History Unknown.")
+htmlTable(nbf, caption = "", rowlabel = "", cgroup = c("Cases with DST results", "% with DST results", "% with resistance to H only", "% with resistance to R only", "% MDR-TB<sup>*</sup>", "Additional cases confirmed by Xpert", "% Xpert cases MDR-TB<sup>*</sup>"), n.cgroup = c(3,3,3,3,3,3,3), ctable = TRUE, tfoot = "<sup>*</sup> Resistant to H and R. Totals also include History Unknown.")
 ```
 
 
@@ -753,6 +774,68 @@ htmlTable(oe, caption = "", rowlabel = "", cgroup = rbind(c("% MDR-TB among new"
 ```
 
 
+
+```{r exploration, warning=FALSE}
+tableCount <- incCount(tableCount, "t-drestnotif")
+
+# Explore the association between MDR adn other things
+
+oa <- subset(tb, year==yr & g_whoregion=="WPR", 
+              select=c(iso3, g_whoregion, country, 
+                       mdr_hivpos, mdr_hivneg, mdr_hivunk, 
+                       nmdr_hivpos, nmdr_hivneg, nmdr_hivunk, 
+                       mdr_f, mdr_m, mdr_sexunk, 
+                       nmdr_f, nmdr_m, nmdr_sexunk, 
+                       mdr_014, mdr_15plus, mdr_ageunk, 
+                       nmdr_014, nmdr_15plus, nmdr_ageunk))
+
+oa <- oa[order(oa$country),]
+names(oa)[names(oa)=='country'] <- 'area'
+
+
+# make aggregate rows
+ob <- oa[oa$iso3 %in% whbc, ]
+obh <- aggregate(ob[4:ncol(ob)], by=list(area=ob$g_whoregion), FUN=sum, na.rm=TRUE)
+obh$area <- "Total"
+
+
+obw <- aggregate(oa[4:ncol(oa)], by=list(area=oa$g_whoregion), FUN=sum, na.rm=TRUE)
+
+
+# combine together
+oc <- rbind(ob[3:ncol(ob)], obh, obw) 
+
+# calculate and format vars
+
+vars <- data.frame(left=c("hivpos", "f", "014"), middle=c("hivneg", "m", "15plus"), right=c("hiv", "sex", "age"))
+
+for(type in 1:3){
+  oc[paste0(vars[type,3], "_rr")] <- (oc[paste0("mdr_", vars[type,1])] /
+                                            .rowsums(oc[c(paste0("mdr_", vars[type,1]), paste0("mdr_", vars[type,2]), paste0("mdr_", vars[type,3], "unk"))])) / 
+                                             (oc[paste0("nmdr_", vars[type,1])] /
+                                            .rowsums(oc[c(paste0("nmdr_", vars[type,1]), paste0("nmdr_", vars[type,2]), paste0("nmdr_", vars[type,3], "unk"))]))
+}
+
+
+# Format
+for(var in c("hiv_rr", "sex_rr", "age_rr")){
+  oc[var] <- ifelse(is.na(oc[[var]]), "&#8211;", signif(oc[[var]], 3))
+}
+
+
+# Rename countries
+od <- .WPSARnames(oc, col="area")
+
+rownames(od) <- od$area
+
+oe <- subset(od, select=c("hiv_rr", "sex_rr", "age_rr"))
+
+
+
+write.csv(oe, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-drestnotif", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
+
+```
+
 ### WPRO response
 		
 #### rGLC and  activities
@@ -772,7 +855,7 @@ None.
 References
 --------------------------------------------------------
 
-1. Global Tuberculosis Report 2013. Geneva, World Health Organization, 2013 (http://www.who.int/tb/publications/global_report/en/, accessed 15 March 2014). 
+
 
 
 
