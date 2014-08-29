@@ -34,16 +34,14 @@ if(flg_show_estimates){
   
   # 2_1_burden_num ----------------------------------------------
   
-  tag3 <- read.csv("D:/Users/hiattt/Google Drive/Work files/Global TB report/Tables and Figures/From others/Glaziou/tables/tab2_1.csv")
+#   tag3 <- read.csv("D:/Users/hiattt/Google Drive/Work files/Global TB report/Tables and Figures/From others/Glaziou/tables/tab2_1.csv")
   tagvars <- c("e_pop_num", "e_mort_exc_tbhiv_num", "e_mort_exc_tbhiv_num_lo", "e_mort_exc_tbhiv_num_hi", "e_mort_tbhiv_num", "e_mort_tbhiv_num_lo", "e_mort_tbhiv_num_hi", "e_prev_num", "e_prev_num_lo", "e_prev_num_hi", "e_inc_num", "e_inc_num_lo", "e_inc_num_hi", "e_inc_tbhiv_num", "e_inc_tbhiv_num_lo", "e_inc_tbhiv_num_hi")
   tag1 <- subset(e.t, g_hbc22=='high' & year==thisyear-1, c('country', tagvars))
   
   names(tag1)[1] <- 'group_name'
+    
   
-  
-  
-  
-  tag <- rbind(tag1, subset(araw.t, group_type %in% c('global', 'g_whoregion') & year==thisyear-1, c('group_name', tagvars)))
+  tag <- rbind(tag1, subset(araw.t, group_type %in% c('global', 'g_whoregion', "g_hbc22") & year==thisyear-1, c('group_name', tagvars)))
   
   names(tag)[1] <- 'rowname'
   
@@ -66,14 +64,14 @@ if(flg_show_estimates){
   
   # Concoct HBC row (Take from PG's csv until this gets in the database)
   
-  tha <- subset(tag3, group_name="High-burden countries")
-  names(tha)[2:11] <- names(tah)[3:12]
-  tha$e_pop_num <- rounder(sum(tag1$e_pop_num)/1000)
-  
-  taj <- rbind(tah, tha)
+#   tha <- subset(tag3, group_name="High-burden countries")
+#   names(tha)[2:11] <- names(tah)[3:12]
+#   tha$e_pop_num <- rounder(sum(tag1$e_pop_num)/1000)
+#   
+#   taj <- rbind(tah, tha)
   
   # Fix names
-  tak <- .shortnames(taj, col = "rowname", ord = "hbc")
+  tak <- .shortnames(tah, col = "rowname", ord = "hbc")
 
   # Add in India footnote
   tak[tak$rowname=="India", "rowname"] <- "India(c)"
@@ -116,21 +114,21 @@ if(flg_show_estimates){
 #   }
   
   names(tai)[1] <- 'group_name'
-  tah <- rbind(tai, subset(araw, group_type %in% c('global', 'g_whoregion') & year==thisyear-1, c('group_name', tahvars)))
-  tah[nrow(tah)+1,'group_name'] <- 'High-burden countries'
+  tah <- rbind(tai, subset(araw, group_type %in% c('global', 'g_whoregion', "g_hbc22") & year==thisyear-1, c('group_name', tahvars)))
+#   tah[nrow(tah)+1,'group_name'] <- 'High-burden countries'
   
-  for(est in c("e_mort_exc_tbhiv_100k", "e_mort_tbhiv_100k", "e_prev_100k", "e_inc_100k", "e_tbhiv_prct")){
-    
-    tah[tah$group_name=='High-burden countries', c(est, glue(est, '_lo'), glue(est, '_hi'))] <- subset(add.rv(tai[est]/1e5, tai[glue(est, '_lo')]/1e5, tai[glue(est, '_hi')]/1e5, weights=tai$e_pop_num), select=c(r, r.lo, r.hi)) * 1e5
-  }
-  
-  tah[tah$group_name=='High-burden countries','e_pop_num'] <- sum(tai$e_pop_num)
+#   for(est in c("e_mort_exc_tbhiv_100k", "e_mort_tbhiv_100k", "e_prev_100k", "e_inc_100k", "e_tbhiv_prct")){
+#     
+#     tah[tah$group_name=='High-burden countries', c(est, glue(est, '_lo'), glue(est, '_hi'))] <- subset(add.rv(tai[est]/1e5, tai[glue(est, '_lo')]/1e5, tai[glue(est, '_hi')]/1e5, weights=tai$e_pop_num), select=c(r, r.lo, r.hi)) * 1e5
+#   }
+#   
+#   tah[tah$group_name=='High-burden countries','e_pop_num'] <- sum(tai$e_pop_num)
 
 # BANAL NA BAKA! - Those all worked except for the TB/HIV percent!
-if(thisyear==2014){
-  tah[tah$group_name=='High-burden countries',c("e_tbhiv_prct", "e_tbhiv_prct_lo", "e_tbhiv_prct_hi")] <- c(0.124183053, 0.113, 0.136)
-  warning("e_tbhiv_prct does not calculate correctly for HBC row. Best move is to add an HBC aggregate to the database.")
-}
+# if(thisyear==2014){
+#   tah[tah$group_name=='High-burden countries',c("e_tbhiv_prct", "e_tbhiv_prct_lo", "e_tbhiv_prct_hi")] <- c(0.124183053, 0.113, 0.136)
+#   warning("e_tbhiv_prct does not calculate correctly for HBC row. Best move is to add an HBC aggregate to the database.")
+# }
 
   
   # for(est in c("e_tbhiv_prct")){ # Currently dropping Afghanistan

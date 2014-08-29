@@ -14,7 +14,7 @@ if(whoami=="Tom"){
 }
 
 if(whoami=="Hazim"){
-  Rprofile <- "d:/TMEData/TomsCode/MyEnvironment/.Rprofile"
+  Rprofile <- "d:/TMEData/TomsCode/MyEnvironment/.Rprofile" # Note for Hazim: I've added a part into my .Rprofile that adds in the HBC groupings and forecast estimates. You may want to similarly include in your .Rprofile
   basefolder <- "D:/Extracted Data/Extracted Data2014/GTBR2014_internal/tables_figures"
   scriptsfolder <- "D:/TMEData/TomsCode/Global TB control Reports/Tables and figures"
 }
@@ -150,10 +150,13 @@ rounder <- function(x, decimals=FALSE) {
 # Shorten and correct names (and order them properly!)
 .shortnames <- function(d, col='country', ord='somethingelse'){
   d[col] <- as.character(d[[col]])
-  d[col] <- ifelse(d[[col]]=='Democratic Republic of the Congo', 'DR Congo', 
+  d[col] <- ifelse(d[[col]]=='Democratic Republic of the Congo', 'DR Congo',
+                   ifelse(d[[col]]=='Democratic People\'s Republic of Korea', 'DPR Korea',
                    ifelse(d[[col]]=='United Republic of Tanzania', 'UR Tanzania', 
-                          ifelse(d[[col]]=='SEA', 'SEAR', 
-                                 ifelse(d[[col]]=='global', 'Global', d[[col]]))))
+                          ifelse(d[[col]]=='hbc22', 'High-burden countries', 
+                                 ifelse(d[[col]]=='global', 'Global', 
+                                        ifelse(d[[col]]=='SEA', 'SEAR', 
+                                               d[[col]]))))))
   if(ord %nin% c('hbc')) warning('Not ordering.')
   if(ord=='hbc')  d <- d[match(c("Afghanistan", "Bangladesh", "Brazil", "Cambodia", "China", "DR Congo", "Ethiopia", "India", "Indonesia", "Kenya", "Mozambique",  "Myanmar", "Nigeria", "Pakistan", "Philippines", "Russian Federation", "South Africa", "Thailand", "Uganda", "UR Tanzania", "Viet Nam", "Zimbabwe", "High-burden countries", "AFR", "AMR", "EMR", "EUR", "SEAR", "WPR", "Global"), d[[col]]),]
   

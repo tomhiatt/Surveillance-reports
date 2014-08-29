@@ -142,21 +142,20 @@ figsave(mec, meb, "mort_src_map")
 
 } # End of FALSE chunk (to avoid commenting the whole thing out)
 
-# -------------------------------------------------
+# 2_5_inc_map -------------------------------------------------
 # Incidence rates
-# -------------------------------------------------
 
 mfa <- subset(e.t, year==thisyear-1, select=c('country', 'iso3', 'e_inc_100k'))
 
 mfa$cat <- cut(round(mfa$e_inc_100k), c(0,10,20,50,125,300,500,Inf), c('0-9.9', '10-19', '20-49', '50-124', '125-299', '300-499', '>=300'), right=FALSE)
 
 # map
-mfc <- WHOmap.print(mfa, paste("Estimated TB incidence rates,", thisyear-1), "Estimated new TB \ncases (all forms) per \n100 000 population per year", na.label="No estimate", copyright=FALSE, colors=c('red', 'blue', 'orange', 'green', 'purple', 'violet', 'sienna'), show=FALSE)
+inc_map <- WHOmap.print(mfa, paste("Estimated TB incidence rates,", thisyear-1), "Estimated new TB \ncases (all forms) per \n100 000 population per year", na.label="No estimate", copyright=FALSE, colors=c('red', 'blue', 'orange', 'green', 'purple', 'violet', 'sienna'), show=FALSE)
 # dev.off()
 
-figsave(mfc, mfa, "inc_map")
+figsave(inc_map, mfa, "2_5_inc_map")
 
-# -------------------------------------------------
+# 2_12_mort_map -------------------------------------------------
 # Mortality rates
 # -------------------------------------------------
 
@@ -165,14 +164,13 @@ mia <- subset(e.t, year==thisyear-1, select=c('country', 'iso3', 'e_mort_exc_tbh
 mia$cat <- cut(mia$e_mort_exc_tbhiv_100k, c(0,1,4,10,20,40,Inf), c('0-0.9', '1-3.9', '4-9.9', '10-19', '20-39', '>=40'), right=FALSE)
 
 # map
-mic <- WHOmap.print(mia, paste("Estimated TB mortality rates excluding TB deaths among HIV-positive people,", thisyear-1), "Estimated TB \ndeaths per \n100 000 population", na.label="No estimate", copyright=FALSE, colors=c('red', 'blue', 'orange', 'green', 'purple', 'brown'), show=FALSE)
+mort_map <- WHOmap.print(mia, paste("Estimated TB mortality rates excluding TB deaths among HIV-positive people,", thisyear-1), "Estimated TB \ndeaths per \n100 000 population", na.label="No estimate", copyright=FALSE, colors=c('red', 'blue', 'orange', 'green', 'purple', 'brown'), show=FALSE)
 # dev.off()
 
-figsave(mic, mia, "mort_map")
+figsave(mort_map, mia, "2_12_mort_map")
 
-# -------------------------------------------------
+# 2_4_hivprev_map -------------------------------------------------
 # HIV prevalence in new cases
-# -------------------------------------------------
 
 mga <- subset(e.t, year==thisyear-1, select=c('country', 'iso3', 'e_tbhiv_prct'))
 
@@ -180,10 +178,10 @@ mga <- subset(e.t, year==thisyear-1, select=c('country', 'iso3', 'e_tbhiv_prct')
 mga$cat <- cut(mga$e_tbhiv_prct, c(0,5,20,50,Inf), c('0-4', '5-19', '20-49', '>=50'), right=FALSE)
 
 # map
-mgc <- WHOmap.print(mga, paste("Estimated HIV prevalence in new TB cases,", thisyear-1), 'HIV prevalence \nin new TB cases, \nall ages (%)', na.label="No estimate", copyright=FALSE, colors=c('red', 'blue', 'orange', 'green'), show=FALSE)
+hivprev_map <- WHOmap.print(mga, paste("Estimated HIV prevalence in new TB cases,", thisyear-1), 'HIV prevalence \nin new TB cases, \nall ages (%)', na.label="No estimate", copyright=FALSE, colors=c('red', 'blue', 'orange', 'green'), show=FALSE)
 # dev.off()
 
-figsave(mgc, mga, "hivprev_map")
+figsave(hivprev_map, mga, "2_4_hivprev_map")
 
 
 # 2_16_err_map -------------------------------------------------
@@ -214,7 +212,7 @@ mhc <- WHOmap.print(mhb, paste("Availability of national electronic case-based d
 
 figsave(mhc, mhb, "2_16_err_map")
 
-# 2_10_bdq_map -------------------------------------------------
+# 5_10_bdq_map -------------------------------------------------
 # Countries using bedaquiline
 
 mia <- subset(tb, year %in% (thisyear-1):(thisyear-2), select=c('country', 'year', 'iso3', 'mdrxdr_bdq_used'))
@@ -242,7 +240,7 @@ mib$cat <- factor(mib$cat1, levels=c(1, 0, 3), labels=c('Yes', 'No', 'Unknown' )
 bdq_map <- WHOmap.print(mib, paste("Countries that had used bedaquiline for the treatment of M/XDR−TB as part of expanded access, \ncompassionate use or under normal programmatic conditions by the end of", thisyear-1), '', colors=c('dark orange', 'green', 'blue'), copyright=FALSE, show=FALSE)
 # dev.off()
 
-figsave(bdq_map, mib, "2_10_bdq_map")
+figsave(bdq_map, mib, "5_10_bdq_map")
 
 
 # ======================
