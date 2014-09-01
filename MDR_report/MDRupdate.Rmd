@@ -20,6 +20,7 @@ bibliography: MDRupdate.bib
 
 ```{r setup, echo=FALSE, include=FALSE}
 # THE PARTS BETWEEN ``` ARE R CODE AND CAN BE IGNORED. SEARCH FOR THE SECTION YOU WANT TO EDIT (EG “ABSTRACT”)
+# Script found at: https://docs.google.com/document/d/1QGiWYD68Y6w1lo8d2or4889kSxHrzcNkMK3lhPQOvCQ/edit
 ###################################################
 # Tom Hiatt
 # Updated: 12 March 2014
@@ -246,19 +247,13 @@ Email: islamt@wpro.who.int
 Abstract 
 --------------------------------------------------------
 
-Test citation @Angermeyer2004
+Objective: To review the latest information about levels of anti TB drug resistant and various indicators of programmatic management of drug resistant TB in the Western Pacific Region of the World Health Organization (WHO).
 
-Blah blah [see @Angermeyer2004, pp. 33-35; also @Kirkwood2003, ch. 1].
+Methods: we analysed routine data collected by WHO annually……
 
-Blah blah [@Angermeyer2004, pp. 33-35, 38-39 and *passim*].
+Findings: 4% (95% confidence limit 3-6) of new and 22% (95% confidence limit 18-27)  of previously treated TB cases are estimated to have MDR-TB in the Region. DST coverage among new is 3% and among retreatment cases is 21%.XXX cases are notified in 2013 which is 15% of the estimated MDR-TB cases. Among the notified cases, XXX or 65% are put on treatment.  AMong all MDR-TB cases 38% had DST to second line drug sand 7% are resistant to either or both FQ and injectable agent. Treatment outcome of 2011 cohort showed 50% success rate, X failed and X% loss to follow up.Over last 5 years case notification and enrolment has increased but also gap between notification and enrolment incresaed.
 
-Blah blah [@Kirkwood2003; @Angermeyer2004].
-
-Smith says blah [-@Kirkwood2003].
-
-@Kirkwood2003 says blah.
-
-@Kirkwood2003 [p. 33] says blah.
+Discussion:  The increasing trend in detection and enrolment of MDR-TB cases demonstrates readiness for PMDT scale-up at the country level. However, challenges remain considerable. More complete data will be helpful to understand the situation and address the gaps. 
 
 
 Introduction
@@ -268,14 +263,12 @@ Even if less than 5% of the TB burden is MDR-TB, this poses a formidable challen
 
 Globally, a total of `r ta <- rounder(subset(emdra, group_name=="global" & year==yr, c(e_mdr_num, e_mdr_num_lo, e_mdr_num_hi))); paste0(ta[1], " (range ", ta[2], "\u2013", ta[3], ")") ` people are estimated to have developed multidrug-resistant TB (MDR-TB, resistant to at least rifampicin and isoniazid) in `r yr` [@WorldHealthOrganization2014]. Among them, approximately one quarter MDR-TB occurred in countries of the Western Pacific Region of the World Health Organization (WHO). Most (more than `r tc <- subset(tb, g_whoregion=="WPR" & year==yr, c(iso3, e_mdr_num)); round(sum(tc[tc$iso3 %in% c("CHN", "PHL", "VNM"), "e_mdr_num"])/sum(tc$e_mdr_num, na.rm=TRUE) * 100, 0)`%) of the MDR-TB patients are in three countries, namely China, the Philippines and Viet Nam.  
 
-The Region has made substantial progress and reached Millennium Development Goal (MDG) targets in advance of 2015.  TB prevalence and mortality are below half of 1990 levels, and case detection and treatment success remain high (Reference
+The Region has made substantial progress and reached Millennium Development Goal (MDG) targets for TB control in advance of 2015.  TB prevalence and mortality are below half of 1990 levels, and case detection and treatment success remain high (Reference
 …).  However, the challenges of TB remain monumental.  Annually, an estimated `r subset(a, group_name=="WPR" & year==yr, e_inc_num) / 1e6` million people develop TB, and `r subset(a, group_name=="WPR" & year==yr, e_mort_exc_tbhiv_num)/1000` thousand die from this curable illness.  TB concentrates in vulnerable populations, such as migrants, children, elderly and poor people.  Meanwhile, every year the Region's MDR-TB burden increases by an estimated `r td <- subset(emdra, group_name=="WPR" & year==yr, e_mdr_num); td/1000` thousand cases---only `r signif(sum(subset(tb, g_whoregion=="WPR" & year==yr, c(unconf_mdr_tx, conf_mdr_tx)), na.rm=TRUE) / td * 100, 2)`% of which are treated under quality-assured programmes.  
 
-To address the problem of drug resistance in the WHO Western Pacific Region, the Regional strategy to stop tuberculosis in the Western Pacific 2011--2015 identified scaling up the programmatic management of drug resistant TB as one of the five objectives.[@WorldHealthOrganization2011] Surveillance of resistance to anti-TB drugs and monitoring the progress of programmatic implementation are fundamental components of the strategy. 
+To address the problem of drug resistance in the WHO Western Pacific Region, the Regional strategy to stop tuberculosis in the Western Pacific 2011--2015 identified scaling up the programmatic management of drug resistant TB as one of the five objectives.[@WorldHealthOrganization2011] Surveillance of resistance to anti-TB drugs, well balanced capacity of diagnosing, treating, availability of quality assured drugs  and monitoring the progress of programmatic implementation are fundamental components of the strategy. In 2011, the Western Pacific Region Green Light Committee (WPR rGLC) was established to assist member countries with responsible PMDT scale-up. 
 
-In 2011, the Western Pacific Region Green Light Committee (WPR rGLC) was established to assist member countries with responsible PMDT scale-up. Member countries were at different stages of PMDT implementation with consequent diverse needs. The region included countries with high MDR-TB caseloads such as China, Vietnam and the Philippines and remote Pacific Island nations with very small, irregular caseloads.2 Local expertise varied from the oldest GLC-approved programme, in the Philippines,3 to settings without any PMDT experience. 
-
-This article is the second in a series of regional TB situation analysis.[@Hiatt2014] In this article, we review the latest available information about drug resistance in the WHO Western Pacific Region and its programmatic implementation. We provide a brief overview of WPR rGLC activities, reflect on achievements and challenges, and explore its potential future role.
+This article is the second in a series of regional TB situation analysis after ‘epidemiology and control of tuberculosis in the Western Pacific Region: analysis of 2012 case notification data’.[@Hiatt2014] In this article, we review the latest available information about drug resistance in the WHO Western Pacific Region and its programmatic implementation. We hope that a thorough analysis of case detection, notification, enrolment and outcome data provides valuable information on programmatic progress and future direction. We also provide a brief overview of WPR rGLC activities, reflect on achievements and challenges, and explore its potential future role.
 
 
 
@@ -283,9 +276,7 @@ This article is the second in a series of regional TB situation analysis.[@Hiatt
 Methods
 --------------------------------------------------------
 
-The WHO Western Pacific Region includes `r te <- subset(tb, g_whoregion=="WPR" & year==yr, e_pop_num); nrow(te)` countries and areas.  In `r yr`, `r tf <- subset(tb, g_whoregion=="WPR" & year==yr & !is.na(c_notified), e_pop_num); nrow(tf)` countries and areas of the Western Pacific Region reported data representing more than `r signif(sum(tf)/sum(te)*100, 4)`% of the total population. Since 2009, a web-based online system has been used for data submission and validation. Collected data covers the following areas: TB case notifications and treatment outcomes, diagnostic and treatment services, drug management, surveillance and surveys of drug-resistance, information on TB/HIV co-infection, infection control, engagement of all care providers and budgets and expenditures for TB control. The full description of methods is available in the Global Tuberculosis Report `r yr` and the data sets are available from the WHO global TB database (www.who.int/tb/data). 
-
-ALSO MENTION ABOUT SURVEY AND SURVEILLANCE DATA TO CALCULATE RATES AND TRENDS.
+The WHO Western Pacific Region includes `r te <- subset(tb, g_whoregion=="WPR" & year==yr, e_pop_num); nrow(te)` countries and areas.  In `r yr`, `r tf <- subset(tb, g_whoregion=="WPR" & year==yr & !is.na(c_notified), e_pop_num); nrow(tf)` countries and areas of the Western Pacific Region reported data representing more than `r signif(sum(tf)/sum(te)*100, 4)`% of the total population. Since 2009, a web-based online system has been used for data submission and validation. Collected data covers the following areas: TB case notifications and treatment outcomes, diagnostic and treatment services, drug management, surveillance and surveys of drug-resistance, information on TB/HIV co-infection, infection control, engagement of all care providers and budgets and expenditures for TB control. The full description of methods is available in the Global Tuberculosis Report `r yr` and the data sets are available from the WHO global TB database (www.who.int/tb/data). This report described the drug resistance situation and progress in programmatic response in all countries of the Region where at least 1 MDR-TB case was detected and a special focus was maintained on seven countries that are considered as priority countries with a high burden of TB in the Western Pacific Region: Cambodia, China, The Lao People’s Democratic Republic, Mongolia, Papua New Guinea, the Philippines and Viet Nam.
 
 ### Analysis and reproducibility
 ```{r Versions}
@@ -342,7 +333,7 @@ write.csv(coa, file=paste0(pasteLabel("./figure_data/table", tableCount, "m-cove
 
 ### Coverage of drug resistance surveillance 
 
-Drug resistance data were available from `r tg <- subset(tb, g_whoregion=="WPR" & year==yr & !is.na(mdr), e_pop_num); nrow(tg)` of the `r nrow(te)` countries and areas of the WHO Western Pacific Region and `r length(whbc)` countries reported at least one MDR-TB case. X countries have continuous surveillance system. X countries rely on special survey of representative samples of patients. Nationwide and population representative data were available from X countries. X countries have data from certain geographical area that are not considered representative of the country a whole. Some surveys are ongoing such as Papua New Guinea which is expected to produce subnational data in 2015.
+Estimate of MDR-TB is based on the availability of drug resistance data either from surveillance or from special survey. Drug resistance data were available from `r tg <- subset(tb, g_whoregion=="WPR" & year==yr & !is.na(mdr), e_pop_num); nrow(tg)` of the `r nrow(te)` countries and areas of the WHO Western Pacific Region and `r length(whbc)` countries reported at least one MDR-TB case. Among the countries where drug resistance data are available, 19 countries rely on surveillance data and 6 countries rely on special survey of representative samples of patients. Nationwide and population representative data were available from 5 countries (China, Cambodia, Mongolia, Philippines and Viet Nam). Malaysia has data from certain geographical area that are not considered representative of the country a whole and the data is from before 2000. Among high TB burden countries, Lao PDR and PNG do not have drug resistance data available yet and the estimate of MDR-TB is based on extrapolation of the Regional figure. Drug resistance surveys is ongoing in Papua New Guinea which is expected to produce sub national data in 2015. 
 
 <a id="m-coverage"></a> 
 
@@ -352,376 +343,6 @@ mc1
 ```
 
 <sup>a</sup> Coverage in Malaysia and Papua New Guinea is at the subnational level only.
-
-Of the X countries with surveillance data, X had data from only one single survey or one year of surveillance. X countries had data from more than 2 points. Time trend could be observed from X countries. 
-
-```{r t-est-enroll-data, warning=FALSE}
-tableCount <- incCount(tableCount, "t-est-enroll")
-
-# Notification table
-
-oa <- subset(tb, year==yr & g_whoregion=="WPR", 
-              select=c(iso3, g_whoregion, country, 
-                       e_mdr_num, e_mdr_num_lo, e_mdr_num_hi,
-                       mdr, rapid_dx_dr_r, 
-                       conf_mdr_tx, unconf_mdr_tx))
-
-oa <- oa[order(oa$country),]
-names(oa)[names(oa)=='country'] <- 'area'
-estvars <- c("e_mdr_num", "e_mdr_num_lo", "e_mdr_num_hi")
-
-# make aggregate rows
-ob <- oa[oa$iso3 %in% whbc, ]
-obh <- aggregate(ob[4:ncol(ob)], by=list(area=ob$g_whoregion), FUN=sum, na.rm=TRUE)
-obh$area <- "Total"
-obh[estvars] <- NA # Not the proper way to sum bounds. Maybe to replace this later.
-
-obw <- aggregate(oa[4:ncol(oa)], by=list(area=oa$g_whoregion), FUN=sum, na.rm=TRUE)
-obw[estvars] <- subset(emdra, year==yr & group_name=="WPR", estvars) # Proper sums for aggregates.
-
-# combine together
-oc <- rbind(ob[3:ncol(ob)], obh, obw) 
-
-# calculate and format vars
-
-oc$e_mdr_num_range <- paste0("(", rounder(oc$e_mdr_num_lo), "&#8211;", rounder(oc$e_mdr_num_hi), ")")
-
-oc$pmdr <- .rowsums(oc[c('mdr', 'rapid_dx_dr_r')])
-oc$mdr_tx <- .rowsums(oc[c('conf_mdr_tx', 'unconf_mdr_tx')])
-
-oc$pmdr_pct <- rounder(oc$pmdr / oc$e_mdr_num * 100)
-oc$pmdr_pct_range <- paste0("(", rounder(oc$pmdr / oc$e_mdr_num_hi * 100), "&#8211;", rounder(oc$pmdr / oc$e_mdr_num_lo * 100), ")")
-
-oc$mdr_tx_pct <- rounder(oc$mdr_tx / oc$pmdr * 100)
-
-# Format
-oc$e_mdr_num <- rounder(oc$e_mdr_num)
-
-for(var in 2:ncol(oc)){
-  oc[var] <- ifelse(is.na(oc[[var]]), "&#8211;", oc[[var]])
-}
-
-
-# Rename countries
-od <- .WPSARnames(oc, col="area")
-
-rownames(od) <- od$area
-
-oe <- subset(od, select=c("e_mdr_num", "e_mdr_num_range", "pmdr", "pmdr_pct", "pmdr_pct_range", "mdr_tx", "mdr_tx_pct"))
-
-
-write.csv(oe, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-est-enroll", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
-
-```
-
-<a id="t-est-enroll"></a> 
-
-##### `r I(pasteLabel("Table", tableCount, "t-est-enroll", insLink=FALSE))`. Estimated drug resistant cases compared with notified cases and cases put on treatment, `r yr`
-```{r t-est-enroll, results='asis'}
-             
-# Make that table
-htmlTable(oe, caption = "", rowlabel = "", cgroup = rbind(c("MDR-TB cases<sup>*</sup>", "Enrolled on treatment", rep(NA,3)), c("Estimated", "Detected", "%", "Number", "%")), n.cgroup = rbind(c(3,2, rep(NA,3)), c(2,1,2,1,1)), align=c(rep(c('r','l','r'),2), 'r'), ctable = TRUE, tfoot = "<sup>*</sup> All columns except estimates include Rif-resistant cases confirmed by Xpert only.", headings = NA )
-
-```
-
-### MDR-TB rate
-The proportion of previously treated TB cases with MDR-TB ranged from 3% to 34%. Country with the highest estimated proportion was Mongolia, 34% (95% CI: 29-38).
-The proportion of new TB cases with MDR-TB ranged from 1% to 6%.  China has the highest proportion of MDR-TB among new cases 6% (95% CI: 5-7).
-Combining data from all countries of the Region, 4% (95% confidence interval: 3-6) of new and 22% (95% CI: 18-26) of previously treated TB cases were estimated to have MDR-TB.  		
-Though highest % is observed among retreatment cases, absolute number of estimated MDR cases is lower among retreatment cases than the new cases. Among the total estimated MDR-TB, 24% are in retreatment cases and 76% are in new cases.
-
-```{r t-drnotif-data, warning=FALSE}
-tableCount <- incCount(tableCount, "t-drnotif")
-
-# Notification table
-
-nb <- subset(tb, year==yr & g_whoregion=="WPR", 
-              select=c(iso3, g_whoregion, country,
-                       new_labconf, new_clindx, 
-                       ret_rel_labconf, ret_rel_clindx, ret_nrel, 
-                       cullpa_new, cullpa_ret, cullpa_unk, 
-                       dst_rlt_new, dst_rlt_ret, dst_rlt_unk, 
-                       dr_h_nr_new,  dr_h_nr_ret,  dr_h_nr_unk, 
-                       dr_r_nh_new,  dr_r_nh_ret,  dr_r_nh_unk, 
-                       mdr_new,  mdr_ret,  mdr_unk,
-                       xpert_new, xpert_ret, xpert_unk, 
-                       xpert_dr_r_new, xpert_dr_r_ret, xpert_dr_r_unk))
-
-nb <- nb[order(nb$country),]
-names(nb)[names(nb)=='country'] <- 'area'
-
-# make aggregate rows
-nbc <- nb[nb$iso3 %in% whbc, ]
-nbch <- aggregate(nbc[4:ncol(nbc)], by=list(area=nbc$g_whoregion), FUN=sum, na.rm=TRUE)
-nbch$area <- "Total"
-
-nbcw <- aggregate(nb[4:ncol(nb)], by=list(area=nb$g_whoregion), FUN=sum, na.rm=TRUE)
-
-# combine together
-nbd <- rbind(nbc[3:ncol(nbc)], nbch, nbcw) # , tbbh, tbbga
-
-# calculate and format vars
-nbd$dstx_rlt_new <- .rowsums(nbd[c('dst_rlt_new', 'xpert_new')])
-nbd$dstx_rlt_ret <- .rowsums(nbd[c('dst_rlt_ret', 'xpert_ret')])
-nbd$dstx_rlt <- .rowsums(nbd[c('dstx_rlt_new', 'dstx_rlt_ret', 'dst_rlt_unk', 'xpert_unk')])
-
-nbd$pulm_new <- .rowsums(nbd[c('new_labconf', 'new_clindx')])
-nbd$pulm_ret <- .rowsums(nbd[c('ret_rel_labconf', 'ret_rel_clindx', 'ret_nrel')])
-nbd$pulm_all <- .rowsums(nbd[c('pulm_new', 'pulm_ret')])
-
-nbd$dstx_rlt_new_pct <- nbd$dstx_rlt_new / nbd$pulm_new * 100
-nbd$dstx_rlt_ret_pct <- nbd$dstx_rlt_ret / nbd$pulm_ret * 100
-# nbd$dst_rlt <- .rowsums(nbd[c('dst_rlt_new', 'dst_rlt_ret', 'dst_rlt_unk')])
-nbd$dstx_rlt_pct <- nbd$dstx_rlt /  nbd$pulm_all * 100
-
-nbd$dst_rlt <- .rowsums(nbd[c('dst_rlt_new', 'dst_rlt_ret', 'dst_rlt_unk')])
-nbd$dr_h_nr_new_pct <- nbd$dr_h_nr_new / nbd$dst_rlt_new * 100
-nbd$dr_h_nr_ret_pct <- nbd$dr_h_nr_ret / nbd$dst_rlt_ret * 100
-nbd$dr_h_nr_pct <- .rowsums(nbd[c('dr_h_nr_new', 'dr_h_nr_ret', 'dr_h_nr_unk')]) /  nbd$dst_rlt * 100 # Note: denominator doesn't include Xpert
-
-nbd$dr_r_nh_new_pct <- nbd$dr_r_nh_new / nbd$dst_rlt_new * 100
-nbd$dr_r_nh_ret_pct <- nbd$dr_r_nh_ret / nbd$dst_rlt_ret * 100
-nbd$dr_r_nh_pct <- .rowsums(nbd[c('dr_r_nh_new', 'dr_r_nh_ret', 'dr_r_nh_unk')]) /  nbd$dst_rlt * 100 # Note: denominator doesn't include Xpert
-
-nbd$mdrr_new <- .rowsums(nbd[c('mdr_new', 'dr_r_nh_new', 'xpert_dr_r_new')])
-nbd$mdrr_ret <- .rowsums(nbd[c('mdr_ret', 'dr_r_nh_ret', 'xpert_dr_r_ret')])
-nbd$mdrr <- .rowsums(nbd[c('mdrr_new', 'mdrr_ret', 'dr_r_nh_unk', 'xpert_dr_r_unk')])
-
-nbd$mdrr_new_pct <- nbd$mdrr_new / nbd$dstx_rlt_new * 100
-nbd$mdrr_ret_pct <- nbd$mdrr_ret / nbd$dstx_rlt_ret * 100
-nbd$mdrr_pct <- nbd$mdrr / nbd$dstx_rlt * 100
-
-
-nbd$xpert <- .rowsums(nbd[c('xpert_new', 'xpert_ret', 'xpert_unk')])
-
-nbd$xpert_dr_r_new_pct <- nbd$xpert_dr_r_new / nbd$mdrr_new * 100
-nbd$xpert_dr_r_ret_pct <- nbd$xpert_dr_r_ret / nbd$mdrr_ret * 100
-nbd$xpert_dr_r_pct <- .rowsums(nbd[c('xpert_dr_r_new', 'xpert_dr_r_ret', 'xpert_dr_r_unk')]) /  nbd$mdrr * 100
-
-# Format
-for(var in 2:ncol(nbd)){
-  nbd[var] <- ifelse(is.na(nbd[[var]]), "&#8211;", rounder(nbd[[var]]))
-}
-
-
-# Rename countries
-nbe <- .WPSARnames(nbd, col="area")
-
-# Consider adding a column for put on treatment and/or including those from the other MDR table.
-
-rownames(nbe) <- nbe$area
-
-nbf <- subset(nbe, select=c("dstx_rlt_new", "dstx_rlt_new_pct", "dstx_rlt_ret", "dstx_rlt_ret_pct", "dstx_rlt", "dstx_rlt_pct", "mdrr_new", "mdrr_new_pct", "mdrr_ret", "mdrr_ret_pct", "mdrr", "mdrr_pct", "xpert_new", "xpert_dr_r_new_pct", "xpert_ret", "xpert_dr_r_ret_pct", "xpert", "xpert_dr_r_pct"))
-
-names(nbf) <- rep(c("n", "%"), 9)
-
-write.csv(nbf, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-drnotif", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
-
-```
-
-
-### Management of drug resistant TB: 
-  	
-#### DST coverage
-			Table: % of DST result among new and reTx
-DST coverage data was reported from 17 countries (47%  of 36 Member Countries and Areas). Only 3% of new bacteriologically confirmed TB cases and 14% of those previously treated for TB were tested for MDR-TB (Rifampicin resistance status). In previously treated cases, the coverage of testing was lowest in Viet Nam (4%). Testing for MDR-TB among new cases, the coverage of testing was less than 1% in Lao PDR, Philippines and Viet Nam. TREND OF DST COVERAGE (2005-2014). The testing coverage among retreatment is increasing steadily over the years.
-
-Among cases with phenotypic DST result 8% has resistance to isoniazid (H) only, 2% has resistant to Rifampicin (R) only and 11% has resistant both to H and R (MDR-TB). Countries has started using Xpert MTB/Rif and R resistant cases are being put on MDR-Tb treatment. Among cases with at least R resistant status (both by phenotypic and genotypic) 33% are R resistant, among which 10% are from the new cases and 55% are from retreatment cases. 
-
-<a id="t-drnotif"></a> 
-
-##### `r I(pasteLabel("Table", tableCount, "t-drnotif", insLink=FALSE))`. Drug resistance in select countries, `r yr`
-
-
-```{r t-drnotif, results='asis'}
-
-# Make that table
-
-htmlTable(nbf, caption = "", rowlabel = "", cgroup = rbind(c("Notified cases with DST results", "MDR-TB and RR-TB<sup>*</sup> among cases with DST results", "Cases confirmed by Xpert among MDR-TB and RR-TB<sup>*</sup>", rep(NA,6)), rep(c("New", "Ret.", "Total"),3)), n.cgroup = rbind(c(rep(3,3), rep(NA,6)), rep(2,9)), ctable = TRUE, tfoot = "<sup>*</sup> Rif-resistant only cases are included whether confirmed by DST or Xpert.")
-```
-
-
-```{r f-align-bar-data}
-
-figCount <- incCount(figCount, "f-align-bar")
-
-tea <- subset(tb, year %in% 2007:yr & g_whoregion=="WPR", select=c(iso3, country, year, e_mdr_num, e_mdr_num_lo, e_mdr_num_hi, mdr, rapid_dx_dr_r, conf_mdr_tx, unconf_mdr_tx))
-
-teb1 <- aggregate(tea[4:ncol(tea)], by=list(year=tea$year), FUN=sum, na.rm=TRUE)
-teb1$country <- teb1$iso3 <- "WPR"
-
-# Separate hbcs
-teb3 <- tea[tea$iso3 %in% whbc,] 
-# teb2 <- aggregate(teb3[4:ncol(tea)], by=list(year=teb3$year, area=teb3$country), FUN=sum, na.rm=TRUE)
-
-
-#combine
-teb <- rbind(teb1, teb3)
-
-# Calculate new vars
-teb$`Cases confirmed` <- .rowsums(teb[c('mdr', 'rapid_dx_dr_r')])
-teb$`Patients enrolled on treatment` <- .rowsums(teb[c('conf_mdr_tx', 'unconf_mdr_tx')])
-
-
-tec <- melt(teb[c("country", "year", "Cases confirmed", "Patients enrolled on treatment")], id=1:2)
-
-ted <- ggplot(tec, aes(year, value, color=variable)) + geom_point(alpha=.5) + geom_line(size=1, alpha=.5) + facet_wrap(~country, scales="free_y", ncol=4) + theme_report() + scale_color_brewer("", type="qual", palette=6) + scale_x_continuous("") + scale_y_continuous("MDR-TB cases")  + guides(fill = guide_legend(reverse = TRUE)) + theme(legend.position = "bottom")
-
-write.csv(tec, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-align-bar", insLink=FALSE), ".csv"), row.names=FALSE)
-```
-
-#### Notification and enrolment
-			Year, number notified and enrolled, % of total burden
-			Age, sex?
-The 10578 reported cases of Rif resistant (considered as MDR-TB) cases represented 15% (11-23%) of the 71 000 (range 47000 – 94000) pulmonary TB patients estimated to have MDR-TB  in 2013 in this Region. X% of cases  are identified by phenotypic (both H and R resistance) and X% of cases are identified by genotypic (Rif resistance only).
-
-Among reported cases X% are from new and X% are from retreatment cases. The reported MDR-TB (R resistant) among retreatment cases represented x% of the 18000 (range 14000 – 21000) estimated MDR-TB among retreatment cases. (COUNTRIES THAT ARE DOING >60% OF THE ESTIMATE) The reported MDR-TB (R resistant) among new cases represented x% of the 57000 (range 40000 – 74000) estimated MDR-TB among new.
-
-X% of the cases are between age group of  X- X. Among notified cases X number is below 15 years of age. Male female ratio of reported cases is X: X.
-
-The absolute numbers of TB cases started on second-line treatment for MDR-TB was 6921 which is 65% of the notified cases. There was steady increase in case enrolment over the years which are prominent from 2011 to 2014. However the ratio of the numbers of patients starting treatment for MDR-Tb, to those notified was also increased. GIVE SPECIFIC COUNTRY SITUATION AND REFER TO THE GRAPH.
-
-<a id="f-align"></a> 
-
-##### `r I(pasteLabel("Figure", figCount, "f-align-bar", insLink=FALSE))`. Trend of notification and enrolment of MDR-TB cases in the Western Pacific Region, 2006`r paste0("\u2013", yr-2)`
-Graph showing notification and enrolment
-``` {r f-align-bar, fig.width=9, fig.height=9}
-ted
-```
-
-
-#### Treatment outcome
-
-
-```{r f-mtxout-bar-data}
-
-figCount <- incCount(figCount, "f-mtxout-bar")
-
-tra <- subset(tb, year %in% 2006:(yr-2) & g_whoregion=="WPR", select=c(iso3, country, year, mdr_coh, mdr_cur, mdr_cmplt, mdr_died, mdr_fail, mdr_def, mdr_succ))
-
-# Fill in 0s for NAs
-tra[is.na(tra)] <- 0
-
-trb1 <- aggregate(tra[4:ncol(tra)], by=list(year=tra$year), FUN=sum, na.rm=TRUE)
-trb1$area <- trb1$iso3 <- "WPR"
-
-# Separate hbcs
-trb2 <- subset(tra, iso3 %in% whbc & mdr_coh > 0) 
-trb2 <- rename(trb2, c(country="area"))
-# trb2 <- aggregate(tra[4:ncol(tra)], by=list(year=tra$year, area=tra$country), FUN=sum, na.rm=TRUE)
-
-#combine
-trb <- rbind(trb1, trb2)
-
-trb$mdr_succ <- ifelse(trb$year>=2011, trb$mdr_succ, trb$mdr_cur + trb$mdr_cmplt)
-trb$Success <- trb$mdr_succ / trb$mdr_coh * 100
-trb$Died <- trb$mdr_died / trb$mdr_coh * 100
-trb$Failed <- trb$mdr_fail / trb$mdr_coh * 100
-trb$Defaulted <- trb$mdr_def / trb$mdr_coh * 100
-trb$`Not evaluated` <- (trb$mdr_coh - (trb$mdr_succ + trb$mdr_died + trb$mdr_fail + trb$mdr_def)) / trb$mdr_coh * 100
-
-trc <- melt(trb[c("area", "year", "Success", "Died", "Failed", "Defaulted", "Not evaluated")], id=1:2)
-
-write.csv(trc, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-mtxout-bar", insLink=FALSE), ".csv"), row.names=FALSE)
-
-```
-
-
-
-X countries reported their treatment outcome of 2011 cohort. In the 2011 cohort, the proportion of   MDR-Tb patients who successfully completed treatment was X%, X% was of cases were reported as loss to follow up and X% died. Treatment success was highest in …….and lowest in ……… 
-
-DO WE KNOW OUTCOME OF XDR_TB COHORT IN ANY COUNTRY?
-
-<a id="f-mtxout-bar"></a> 
-
-##### `r I(pasteLabel("Figure", figCount, "f-mtxout-bar", insLink=FALSE))`.  Trend of treatment outcome expressed as a proportion among MDR-TB cases in the Western Pacific Region, 2006--`r yr-2`
-``` {r f-mtxout-bar, fig.width=9, fig.height=7}
-
-ggplot(trc[trc$area=="WPR",], aes(year, value, fill=variable)) + geom_bar(stat="identity", position="stack") + theme_report() + scale_fill_brewer('Outcome', type="qual", palette=6) + scale_x_continuous("", breaks=min(trc$year):max(trc$year)) + scale_y_continuous("Percent of cohort") + coord_cartesian(ylim=c(0,100)) + guides(fill = guide_legend(reverse = TRUE))
-
-ggplot(trc, aes(year, value, fill=variable)) + geom_bar(stat="identity", position="stack") + facet_wrap(~area) + theme_report() + scale_fill_brewer('Outcome', type="qual", palette=6) + scale_x_continuous("") + scale_y_continuous("Percent of cohort") + coord_cartesian(ylim=c(0,100)) + guides(fill = guide_legend(reverse = TRUE))
-
-
-```
-
-			
-
-### XDR-TB
-
-```{r t-xdr-data, warning=FALSE}
-tableCount <- incCount(tableCount, "t-xdr")
-
-# Notification table
-
-xa <- subset(tb, year==yr & g_whoregion=="WPR", 
-              select=c(iso3, g_whoregion, country, 
-                       mdr, mdr_dst_rlt, mdr_ds_fq2li,
-                       mdr_dr_fq, mdr_dr_2li, xdr))
-
-xa <- xa[order(xa$country),]
-names(xa)[names(xa)=='country'] <- 'area'
-
-# make aggregate rows
-xb <- xa[xa$iso3 %in% whbc, ]
-xc <- aggregate(xb[4:ncol(xb)], by=list(area=xb$g_whoregion), FUN=sum, na.rm=TRUE)
-xc$area <- "Total"
-
-xd <- aggregate(xa[4:ncol(xa)], by=list(area=xa$g_whoregion), FUN=sum, na.rm=TRUE)
-
-# combine together
-xe <- rbind(xb[3:ncol(xb)], xc, xd) # , tbbh, tbbga
-
-# calculate and format vars
-xe$xdst_pct <- xe$mdr_dst_rlt / xe$mdr * 100
-xe$fq_pct <- xe$mdr_dr_fq / xe$mdr * 100
-xe$xli_pct <- xe$mdr_dr_2li / xe$mdr * 100
-xe$xdr_pct <- xe$xdr / xe$mdr * 100
-
-# Format
-for(var in 2:ncol(xe)){
-  xe[var] <- ifelse(is.na(xe[[var]]), "&#8211;", rounder(xe[[var]]))
-}
-
-
-# Rename countries
-xf <- .WPSARnames(xe, col="area")
-
-rownames(xf) <- xf$area
-
-xg <- subset(xf, select=c("mdr", "xdst_pct", "mdr_dr_fq", "fq_pct", "mdr_dr_2li", "xli_pct", "xdr", "xdr_pct"))
-
-names(xg) <- c("MDR-TB", "% 2<sup>nd</sup>-line DST", rep(c("Number", "%"),3))
-
-write.csv(xf, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-drnotif", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
-
-```
-
-XDR-TB had been reported by 6 countries in the Region (17% of all countries and areas in the Region) in 2013. Total reported XDR-TB cases are 106 (2% of MDR-TB cases). The highest rate is shown in Republic of Korea which is 9% of all MDR-TB cases. Data on resistance to FQ and injectable agents among cases with MDR-TB were reported from 12 countries. Combining data from all countries, the proportion of MDR-TB cases with resistance to FQ is 4% and with resistance to second line injectable agents is 3%.  2% of MDR-TB cases are XDR-TB. A total of 7% of patients with MDR-TB had resistance to either a FQ or a second line injectable agent or both.
-
-<a id="t-xdr"></a> 
-
-##### `r I(pasteLabel("Table", tableCount, "t-xdr", insLink=FALSE))`.			Rate (FQ and injectable)
-```{r t-xdr, results='asis'}
-
-# Make that table
-htmlTable(xg, caption = "", rowlabel = "", cgroup = c("", "Resistance to FQ", "Resistance to 2<sup>nd</sup>-line injectible", "XDR-TB"), n.cgroup = c(2,2,2,2), ctable = TRUE, tfoot = "")
-```
-
-
-
-### Funding situation; drug cost
-
-X million USD was spent for MDR-TB management which was X% of the total budget of NTP in 2013. Among the total spent X% is from domestic source (Government allocation), X% from loan and X% from grant. Second line drugs are X% of the total cost for MDR-TB management. Expenditure for SLD has been significantly increased over years.
-
-### WPRO response
-In 2011 the Western Pacific Region Green Light Committee (WPR rGLC) was established to assist member countries with responsible scale-up of programmatic management of drug resistant TB. The rGLC initiative shifted the focus from “regulation and control” to “support and assistance”.  The WPR rGLC is composed of a secretariat based at the regional WHO office in Manila, and an expert committee with complimentary skill sets. Key activities included PMDT evaluation, critical review of mission reports, contributions to regional capacity building and strategic and technical guidance.  The expert committee had regular teleconferences and bi-annual face-to-face meetings.  The Secretariat coordinated monitoring missions and arranged critical review of all country reports within strict timelines.  Priority recommendations were clearly communicated and progress reviewed during subsequent visits. Regional training of trainers, consultant courses on PMDT and drug management were organized, as well as in-country training on clinical aspects of MDR-TB management. A rotating stockpile of second-line drugs for Pacific Island Countries and Areas was maintained.  Recognizing the important role of the private sector within the region, rGLC assisted selected countries to assess the scope of private sector involvement in PMDT.  rGLC also worked with countries regarding the introduction and protection of novel TB drugs.  	
-
-	Table: mission and TA listed 
-
-
-
-Discussion
----------------------------------------------------
 
 ```{r t-drestnotif-data, warning=FALSE}
 tableCount <- incCount(tableCount, "t-drestnotif")
@@ -804,12 +425,398 @@ htmlTable(oe, caption = "", rowlabel = "", cgroup = rbind(c("% MDR-TB among new"
 
 ```
 
+
+### MDR-TB rate
+The Region includes Member States with a wide range of MDR-TB rate and case load. Table 1 shows the rate of MDR-TB of countries and areas reported at least 1 MDR-Tb case in 2013. The proportion of previously treated TB cases with MDR-TB ranged from 0% to 34%. Mongolia has the highest estimated proportion 34% (95% CI: 29-38) of MDR-TB among retreatment cases. Countries with more than 20% MDR-TB among retreatment cases are China (26%), Mongolia (34%), New Zealand(20%), Philippines (21%) and Viet Nam (23%).The proportion of new TB cases with MDR-TB ranged from 0% to 6%.  China has the highest proportion 6% (95% CI: 5-7) of MDR-TB among new cases.Combining data from all countries of the Region, 4% (95% confidence interval: 3-6) of new and 22% (95% CI: 18-26) of previously treated TB cases were estimated to have MDR-TB.  Though highest % of MDR-TB is observed among retreatment cases, absolute number of estimated MDR cases is lower among retreatment cases than the new cases. Among the total estimated MDR-TB, 24% are from retreatment cases and 76% are from new cases.
+
+```{r t-drnotif-data, warning=FALSE}
+tableCount <- incCount(tableCount, "t-drnotif")
+
+# Notification table
+
+nb <- subset(tb, year==yr & g_whoregion=="WPR", 
+              select=c(iso3, g_whoregion, country,
+                       new_labconf, new_clindx, 
+                       ret_rel_labconf, ret_rel_clindx, ret_nrel, 
+                       cullpa_new, cullpa_ret, cullpa_unk, 
+                       dst_rlt_new, dst_rlt_ret, dst_rlt_unk, 
+                       dr_h_nr_new,  dr_h_nr_ret,  dr_h_nr_unk, 
+                       dr_r_nh_new,  dr_r_nh_ret,  dr_r_nh_unk, 
+                       mdr_new,  mdr_ret,  mdr_unk,
+                       xpert_new, xpert_ret, xpert_unk, 
+                       xpert_dr_r_new, xpert_dr_r_ret, xpert_dr_r_unk))
+
+nb <- nb[order(nb$country),]
+names(nb)[names(nb)=='country'] <- 'area'
+
+# make aggregate rows
+nbc <- nb[nb$iso3 %in% whbc, ]
+nbch <- aggregate(nbc[4:ncol(nbc)], by=list(area=nbc$g_whoregion), FUN=sum, na.rm=TRUE)
+nbch$area <- "Total"
+
+nbcw <- aggregate(nb[4:ncol(nb)], by=list(area=nb$g_whoregion), FUN=sum, na.rm=TRUE)
+
+# combine together
+nbd <- rbind(nbc[3:ncol(nbc)], nbch, nbcw) # , tbbh, tbbga
+
+# calculate and format vars
+nbd$dstx_rlt_new <- .rowsums(nbd[c('dst_rlt_new', 'xpert_new')])
+nbd$dstx_rlt_ret <- .rowsums(nbd[c('dst_rlt_ret', 'xpert_ret')])
+nbd$dstx_rlt <- .rowsums(nbd[c('dstx_rlt_new', 'dstx_rlt_ret', 'dst_rlt_unk', 'xpert_unk')])
+
+nbd$pulm_new <- .rowsums(nbd[c('new_labconf', 'new_clindx')])
+nbd$pulm_ret <- .rowsums(nbd[c('ret_rel_labconf', 'ret_rel_clindx', 'ret_nrel')])
+nbd$pulm_all <- .rowsums(nbd[c('pulm_new', 'pulm_ret')])
+
+nbd$dstx_rlt_new_pct <- nbd$dstx_rlt_new / nbd$pulm_new * 100
+nbd$dstx_rlt_ret_pct <- nbd$dstx_rlt_ret / nbd$pulm_ret * 100
+# nbd$dst_rlt <- .rowsums(nbd[c('dst_rlt_new', 'dst_rlt_ret', 'dst_rlt_unk')])
+nbd$dstx_rlt_pct <- nbd$dstx_rlt /  nbd$pulm_all * 100
+
+nbd$dst_rlt <- .rowsums(nbd[c('dst_rlt_new', 'dst_rlt_ret', 'dst_rlt_unk')])
+nbd$dr_h_nr_new_pct <- nbd$dr_h_nr_new / nbd$dst_rlt_new * 100
+nbd$dr_h_nr_ret_pct <- nbd$dr_h_nr_ret / nbd$dst_rlt_ret * 100
+nbd$dr_h_nr_pct <- .rowsums(nbd[c('dr_h_nr_new', 'dr_h_nr_ret', 'dr_h_nr_unk')]) /  nbd$dst_rlt * 100 # Note: denominator doesn't include Xpert
+
+nbd$dr_r_nh_new_pct <- nbd$dr_r_nh_new / nbd$dst_rlt_new * 100
+nbd$dr_r_nh_ret_pct <- nbd$dr_r_nh_ret / nbd$dst_rlt_ret * 100
+nbd$dr_r_nh_pct <- .rowsums(nbd[c('dr_r_nh_new', 'dr_r_nh_ret', 'dr_r_nh_unk')]) /  nbd$dst_rlt * 100 # Note: denominator doesn't include Xpert
+
+nbd$mdrr_new <- .rowsums(nbd[c('mdr_new', 'dr_r_nh_new', 'xpert_dr_r_new')])
+nbd$mdrr_ret <- .rowsums(nbd[c('mdr_ret', 'dr_r_nh_ret', 'xpert_dr_r_ret')])
+nbd$mdrr <- .rowsums(nbd[c('mdrr_new', 'mdrr_ret', 'dr_r_nh_unk', 'xpert_dr_r_unk')])
+
+nbd$mdrr_new_pct <- nbd$mdrr_new / nbd$dstx_rlt_new * 100
+nbd$mdrr_ret_pct <- nbd$mdrr_ret / nbd$dstx_rlt_ret * 100
+nbd$mdrr_pct <- nbd$mdrr / nbd$dstx_rlt * 100
+
+
+nbd$xpert_dr_r <- .rowsums(nbd[c('xpert_dr_r_new', 'xpert_dr_r_ret', 'xpert_dr_r_unk')])
+
+nbd$xpert_dr_r_new_pct <- nbd$xpert_dr_r_new / nbd$mdrr_new * 100
+nbd$xpert_dr_r_ret_pct <- nbd$xpert_dr_r_ret / nbd$mdrr_ret * 100
+nbd$xpert_dr_r_pct <- nbd$xpert_dr_r /  nbd$mdrr * 100
+
+# Format
+for(var in 2:ncol(nbd)){
+  nbd[var] <- ifelse(is.na(nbd[[var]]), "&#8211;", rounder(nbd[[var]]))
+}
+
+
+# Rename countries
+nbe <- .WPSARnames(nbd, col="area")
+
+# Consider adding a column for put on treatment and/or including those from the other MDR table.
+
+rownames(nbe) <- nbe$area
+
+nbf <- subset(nbe, select=c("dstx_rlt_new", "dstx_rlt_new_pct", "dstx_rlt_ret", "dstx_rlt_ret_pct", "dstx_rlt", "dstx_rlt_pct", "mdrr_new", "mdrr_new_pct", "mdrr_ret", "mdrr_ret_pct", "mdrr", "mdrr_pct", "xpert_dr_r_new", "xpert_dr_r_new_pct", "xpert_dr_r_ret", "xpert_dr_r_ret_pct", "xpert_dr_r", "xpert_dr_r_pct"))
+
+names(nbf) <- rep(c("n", "%"), 9)
+
+write.csv(nbf, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-drnotif", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
+
+```
+
+
+
+
+
+### Management of drug resistant TB: 
+  	
+#### DST coverage
+
+``` DST coverage trend
+
+```
+Drug sensitivity testing data was reported from 19 countries (53%  of 36 Member Countries and Areas). Only 3% of new bacteriologically confirmed TB cases and 21% of those previously treated for TB were tested for MDR-TB or Rifampicin resistance status. Among  previously treated cases, the coverage of testing remain below 50% in China (20%), japan (43%), Lao PDR (26%), Malaysia (9%), Marshall Island (43%), Philippines (14%) and Republic of Korea (9%). Testing for MDR-TB among new cases, the coverage was less than 10% in China (3%), Lao PDR (<1%), Philippines (<1%), Republic of Korea (4%) and Viet Nam (3%). The testing coverage among retreatment is increasing steadily over the years while MDR-TB positivity rate also remained high.
+
+``` DST coverage trend
+
+```
+
+Among cases with phenotypic DST result 8% has resistance to isoniazid (H) only, 2% has resistant to Rifampicin (R) only and 11% has resistant both to H and R (MDR-TB).
+
+Countries started using the rapid diagnostic technology,Xpert MTB/Rif which was endorsed by WHO in 2010 (Reference) and R resistant cases are being put on MDR-Tb treatment. In 2013, additional 17% cases has been identified by Xpert MTB/Rif test. In Viet Nam 81%, in Papua New guinea and 72% MDR-TB cases are identified by Xpert MTB/Rif. 
+
+<a id="t-drnotif"></a> 
+
+##### `r I(pasteLabel("Table", tableCount, "t-drnotif", insLink=FALSE))`. Drug resistance in select countries, `r yr`
+
+
+```{r t-drnotif, results='asis'}
+
+# Make that table
+
+htmlTable(nbf, caption = "", rowlabel = "", cgroup = rbind(c("Notified cases with DST results", "MDR-TB and RR-TB<sup>*</sup> among cases with DST results", "Cases confirmed by Xpert among MDR-TB and RR-TB<sup>*</sup>", rep(NA,6)), rep(c("New", "Ret.", "Total"),3)), n.cgroup = rbind(c(rep(3,3), rep(NA,6)), rep(2,9)), ctable = TRUE, tfoot = "<sup>*</sup> Rif-resistant only cases are included whether confirmed by DST or Xpert.")
+```
+
+
+```{r f-align-bar-data}
+
+figCount <- incCount(figCount, "f-align-bar")
+
+tea <- subset(tb, year %in% 2007:yr & g_whoregion=="WPR", select=c(iso3, country, year, e_mdr_num, e_mdr_num_lo, e_mdr_num_hi, mdr, rapid_dx_dr_r, conf_mdr_tx, unconf_mdr_tx))
+
+teb1 <- aggregate(tea[4:ncol(tea)], by=list(year=tea$year), FUN=sum, na.rm=TRUE)
+teb1$country <- teb1$iso3 <- "WPR"
+
+# Separate hbcs
+teb3 <- tea[tea$iso3 %in% whbc,] 
+# teb2 <- aggregate(teb3[4:ncol(tea)], by=list(year=teb3$year, area=teb3$country), FUN=sum, na.rm=TRUE)
+
+
+#combine
+teb <- rbind(teb1, teb3)
+
+# Calculate new vars
+teb$`Cases confirmed` <- .rowsums(teb[c('mdr', 'rapid_dx_dr_r')])
+teb$`Patients enrolled on treatment` <- .rowsums(teb[c('conf_mdr_tx', 'unconf_mdr_tx')])
+
+
+tec <- melt(teb[c("country", "year", "Cases confirmed", "Patients enrolled on treatment")], id=1:2)
+
+ted <- ggplot(tec, aes(year, value, color=variable)) + geom_point(alpha=.5) + geom_line(size=1, alpha=.5) + facet_wrap(~country, scales="free_y", ncol=4) + theme_report() + scale_color_brewer("", type="qual", palette=6) + scale_x_continuous("") + scale_y_continuous("MDR-TB cases")  + guides(fill = guide_legend(reverse = TRUE)) + theme(legend.position = "bottom")
+
+write.csv(tec, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-align-bar", insLink=FALSE), ".csv"), row.names=FALSE)
+```
+
+#### Notification and enrolment
+```{r t-est-enroll-data, warning=FALSE}
+tableCount <- incCount(tableCount, "t-est-enroll")
+
+# Notification table
+
+oa <- subset(tb, year==yr & g_whoregion=="WPR", 
+              select=c(iso3, g_whoregion, country, 
+                       e_mdr_num, e_mdr_num_lo, e_mdr_num_hi,
+                       mdr, rapid_dx_dr_r, 
+                       conf_mdr_tx, unconf_mdr_tx))
+
+oa <- oa[order(oa$country),]
+names(oa)[names(oa)=='country'] <- 'area'
+estvars <- c("e_mdr_num", "e_mdr_num_lo", "e_mdr_num_hi")
+
+# make aggregate rows
+ob <- oa[oa$iso3 %in% whbc, ]
+obh <- aggregate(ob[4:ncol(ob)], by=list(area=ob$g_whoregion), FUN=sum, na.rm=TRUE)
+obh$area <- "Total"
+obh[estvars] <- NA # Not the proper way to sum bounds. Maybe to replace this later.
+
+obw <- aggregate(oa[4:ncol(oa)], by=list(area=oa$g_whoregion), FUN=sum, na.rm=TRUE)
+obw[estvars] <- subset(emdra, year==yr & group_name=="WPR", estvars) # Proper sums for aggregates.
+
+# combine together
+oc <- rbind(ob[3:ncol(ob)], obh, obw) 
+
+# calculate and format vars
+
+oc$e_mdr_num_range <- paste0("(", rounder(oc$e_mdr_num_lo), "&#8211;", rounder(oc$e_mdr_num_hi), ")")
+
+oc$pmdr <- .rowsums(oc[c('mdr', 'rapid_dx_dr_r')])
+oc$mdr_tx <- .rowsums(oc[c('conf_mdr_tx', 'unconf_mdr_tx')])
+
+oc$pmdr_pct <- rounder(oc$pmdr / oc$e_mdr_num * 100)
+oc$pmdr_pct_range <- paste0("(", rounder(oc$pmdr / oc$e_mdr_num_hi * 100), "&#8211;", rounder(oc$pmdr / oc$e_mdr_num_lo * 100), ")")
+
+oc$mdr_tx_pct <- rounder(oc$mdr_tx / oc$pmdr * 100)
+
+# Format
+oc$e_mdr_num <- rounder(oc$e_mdr_num)
+
+for(var in 2:ncol(oc)){
+  oc[var] <- ifelse(is.na(oc[[var]]), "&#8211;", oc[[var]])
+}
+
+
+# Rename countries
+od <- .WPSARnames(oc, col="area")
+
+rownames(od) <- od$area
+
+oe <- subset(od, select=c("e_mdr_num", "e_mdr_num_range", "pmdr", "pmdr_pct", "pmdr_pct_range", "mdr_tx", "mdr_tx_pct"))
+
+
+write.csv(oe, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-est-enroll", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
+
+```
+
+<a id="t-est-enroll"></a> 
+
+##### `r I(pasteLabel("Table", tableCount, "t-est-enroll", insLink=FALSE))`. Estimated drug resistant cases compared with notified cases and cases put on treatment, `r yr`
+```{r t-est-enroll, results='asis'}
+             
+# Make that table
+htmlTable(oe, caption = "", rowlabel = "", cgroup = rbind(c("MDR-TB cases<sup>*</sup>", "Enrolled on treatment", rep(NA,3)), c("Estimated", "Detected", "%", "Number", "%")), n.cgroup = rbind(c(3,2, rep(NA,3)), c(2,1,2,1,1)), align=c(rep(c('r','l','r'),2), 'r'), ctable = TRUE, tfoot = "<sup>*</sup> All columns except estimates include Rif-resistant cases confirmed by Xpert only.", headings = NA )
+
+```
+
+The 10578 reported cases of Rif resistant (considered as MDR-TB) cases represented 15% (11-23%) of the 71 000 (range 47000 – 94000) pulmonary TB patients estimated to have MDR-TB  in 2013 in this Region.  The reported cases  among retreatment cases represented x% of the 18000 (range 14000 – 21000) estimated MDR-TB among retreatment cases. Following countries detected 60% of the estimated cases among retreatment:  COUNTRIES and %.........  The reported MDR-TB (R resistant) among new cases represented x% of the 57000 (range 40000 – 74000) estimated MDR-TB among new.
+
+Among notified cases X number of cases are below 15 years of age. Male female ratio of reported cases is X: X.
+
+All the cases detected were not enrolled on treatment. MDR-TB cases started on second-line treatment for MDR-TB in 2013 was 6921 which is 65% of the notified cases. There was steady increase in case enrolment over the years which are prominent from 2011 to 2014. However the ratio of the numbers of patients starting treatment for MDR-Tb, to those notified was also increased. The gap pf notified and enrolled are growing in recent years in China, Philippines and Viet Nam.
+
+<a id="f-align"></a> 
+
+##### `r I(pasteLabel("Figure", figCount, "f-align-bar", insLink=FALSE))`. Trend of notification and enrolment of MDR-TB cases in the Western Pacific Region, 2006`r paste0("\u2013", yr-2)`
+Graph showing notification and enrolment
+``` {r f-align-bar, fig.width=9, fig.height=9}
+ted
+```
+
+
+#### Treatment outcome
+
+
+```{r f-mtxout-bar-data}
+
+figCount <- incCount(figCount, "f-mtxout-bar")
+
+tra <- subset(tb, year %in% 2006:(yr-2) & g_whoregion=="WPR", select=c(iso3, country, year, mdr_coh, mdr_cur, mdr_cmplt, mdr_died, mdr_fail, mdr_def, mdr_succ))
+
+# Fill in 0s for NAs
+tra[is.na(tra)] <- 0
+
+trb1 <- aggregate(tra[4:ncol(tra)], by=list(year=tra$year), FUN=sum, na.rm=TRUE)
+trb1$area <- trb1$iso3 <- "WPR"
+
+# Separate hbcs
+trb2 <- subset(tra, iso3 %in% whbc & mdr_coh > 0) 
+trb2 <- rename(trb2, c(country="area"))
+# trb2 <- aggregate(tra[4:ncol(tra)], by=list(year=tra$year, area=tra$country), FUN=sum, na.rm=TRUE)
+
+#combine
+trb <- rbind(trb1, trb2)
+
+trb$mdr_succ <- ifelse(trb$year>=2011, trb$mdr_succ, trb$mdr_cur + trb$mdr_cmplt)
+trb$Success <- trb$mdr_succ / trb$mdr_coh * 100
+trb$Died <- trb$mdr_died / trb$mdr_coh * 100
+trb$Failed <- trb$mdr_fail / trb$mdr_coh * 100
+trb$Defaulted <- trb$mdr_def / trb$mdr_coh * 100
+trb$`Not evaluated` <- (trb$mdr_coh - (trb$mdr_succ + trb$mdr_died + trb$mdr_fail + trb$mdr_def)) / trb$mdr_coh * 100
+
+trc <- melt(trb[c("area", "year", "Success", "Died", "Failed", "Defaulted", "Not evaluated")], id=1:2)
+
+write.csv(trc, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-mtxout-bar", insLink=FALSE), ".csv"), row.names=FALSE)
+
+```
+
+
+
+16 countries reported their treatment outcome of 2011 cohort. In the 2011 cohort, the proportion of   MDR-Tb patients who successfully completed treatment was X%, loss to follow up was X% and died X%. Treatment success was highest in …….and lowest in ……… . Treatment success rate of China is constantly low over years, death and failure rate remained high. Malaysia and Philippines showed continuous fall of success rate. Non evaluation of cases is the main cause in Malaysia while loss to follow up play major role in decreasing trend of success rate in the Philippines. Among high TB burden countries Cambodia and VietNam shows good outcome which remains over 70% over the years.
+
+DO WE KNOW OUTCOME OF XDR_TB COHORT IN ANY COUNTRY?
+
+<a id="f-mtxout-bar"></a> 
+
+##### `r I(pasteLabel("Figure", figCount, "f-mtxout-bar", insLink=FALSE))`.  Trend of treatment outcome expressed as a proportion among MDR-TB cases in the Western Pacific Region, 2006--`r yr-2`
+``` {r f-mtxout-bar, fig.width=9, fig.height=7}
+
+ggplot(trc[trc$area=="WPR",], aes(year, value, fill=variable)) + geom_bar(stat="identity", position="stack") + theme_report() + scale_fill_brewer('Outcome', type="qual", palette=6) + scale_x_continuous("", breaks=min(trc$year):max(trc$year)) + scale_y_continuous("Percent of cohort") + coord_cartesian(ylim=c(0,100)) + guides(fill = guide_legend(reverse = TRUE))
+
+ggplot(trc, aes(year, value, fill=variable)) + geom_bar(stat="identity", position="stack") + facet_wrap(~area) + theme_report() + scale_fill_brewer('Outcome', type="qual", palette=6) + scale_x_continuous("") + scale_y_continuous("Percent of cohort") + coord_cartesian(ylim=c(0,100)) + guides(fill = guide_legend(reverse = TRUE))
+
+
+```
+
+			
+
+### XDR-TB
+
+```{r t-xdr-data, warning=FALSE}
+tableCount <- incCount(tableCount, "t-xdr")
+
+# Notification table
+
+xa <- subset(tb, year==yr & g_whoregion=="WPR", 
+              select=c(iso3, g_whoregion, country, 
+                       mdr, mdr_dst_rlt, mdr_ds_fq2li,
+                       mdr_dr_fq, mdr_dr_2li, xdr))
+
+xa <- xa[order(xa$country),]
+names(xa)[names(xa)=='country'] <- 'area'
+
+# make aggregate rows
+xb <- xa[xa$iso3 %in% whbc, ]
+xc <- aggregate(xb[4:ncol(xb)], by=list(area=xb$g_whoregion), FUN=sum, na.rm=TRUE)
+xc$area <- "Total"
+
+xd <- aggregate(xa[4:ncol(xa)], by=list(area=xa$g_whoregion), FUN=sum, na.rm=TRUE)
+
+# combine together
+xe <- rbind(xb[3:ncol(xb)], xc, xd) # , tbbh, tbbga
+
+# calculate and format vars
+xe$xdst_pct <- xe$mdr_dst_rlt / xe$mdr * 100
+xe$fq_pct <- xe$mdr_dr_fq / xe$mdr * 100
+xe$xli_pct <- xe$mdr_dr_2li / xe$mdr * 100
+xe$xdr_pct <- xe$xdr / xe$mdr * 100
+
+# Format
+for(var in 2:ncol(xe)){
+  xe[var] <- ifelse(is.na(xe[[var]]), "&#8211;", rounder(xe[[var]]))
+}
+
+
+# Rename countries
+xf <- .WPSARnames(xe, col="area")
+
+rownames(xf) <- xf$area
+
+xg <- subset(xf, select=c("mdr", "xdst_pct", "mdr_dr_fq", "fq_pct", "mdr_dr_2li", "xli_pct", "xdr", "xdr_pct"))
+
+names(xg) <- c("MDR-TB", "% 2<sup>nd</sup>-line DST", rep(c("Number", "%"),3))
+
+write.csv(xf, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-drnotif", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
+
+```
+
+Data on resistance to FQ and injectable agents among cases with MDR-TB were reported from 12 countries. Among notified MDR-TB cases 38% cases had their DST on 2nd line Tb drugs. Combining data from all countries, a total of 7% of patients with MDR-TB had resistance to either a FQ or a second line injectable agent or both, the proportion of MDR-TB cases with resistance to FQ is 4% and with resistance to second line injectable agents is 3%.  2% of MDR-TB cases are XDR-TB. XDR-TB had been reported by 6 countries in the Region (17% of all countries and areas in the Region) in 2013. Total reported XDR-TB cases are 106 (2% of MDR-TB cases). The highest rate is shown in Republic of Korea which is 9% of all MDR-TB cases.
+
+<a id="t-xdr"></a> 
+
+##### `r I(pasteLabel("Table", tableCount, "t-xdr", insLink=FALSE))`.			Rate (FQ and injectable)
+```{r t-xdr, results='asis'}
+
+# Make that table
+htmlTable(xg, caption = "", rowlabel = "", cgroup = c("", "Resistance to FQ", "Resistance to 2<sup>nd</sup>-line injectible", "XDR-TB"), n.cgroup = c(2,2,2,2), ctable = TRUE, tfoot = "")
+```
+
+### Funding situation; drug cost
+
+X million USD was spent for MDR-TB management which was X% of the total budget of NTP in 2013. Among the total spent X% is from domestic source (Government allocation), X% from loan and X% from grant. Second line drugs are X% of the total cost for MDR-TB management. Expenditure for SLD has been significantly increased over years.
+
+##### GRAPH ON SLD EXPENDITURE
+
+### WPRO response
+In 2011 the Western Pacific Region Green Light Committee (WPR rGLC) was established to assist member countries with responsible scale-up of programmatic management of drug resistant TB. The rGLC initiative shifted the focus from “regulation and control” to “support and assistance”.  The WPR rGLC is composed of a secretariat based at the regional WHO office in Manila, and an expert committee with complimentary skill sets. Key activities included PMDT evaluation, critical review of mission reports, contributions to regional capacity building and strategic and technical guidance.  The expert committee had regular teleconferences and bi-annual face-to-face meetings.  The Secretariat organized monitoring missions to all high TB burden countries and arranged critical review of all country reports within strict timelines.  Priority recommendations were clearly communicated and progress reviewed during subsequent visits. Regional training of trainers, consultant courses on PMDT and drug management were organized, as well as in-country training on clinical aspects of MDR-TB management.  Recognizing the important role of the private sector within the region, rGLC assisted selected countries to assess the scope of private sector involvement in PMDT.  rGLC also worked with countries regarding the introduction and protection of novel TB drugs. A regional workshop focusing on strengthening  and harmonizing the regulation of TB medicines was organized where drug regulatory authority and national TB control programme of high TB burden countries discussed various topics including registration, quality assurance, rational use of drugs and pharmacovigilence and developed priority actions. 	
+
+	
+
+Discussion
+---------------------------------------------------
+
+
+
 The region included countries with high MDR-TB caseloads such as China, Viet Nam and the Philippines and Pacific Island nations with very small, irregular caseloads. Member States of the Western Pacific Region are also at different stages of PMDT implementation
-National representative drug resistance survey data is available from 5 out of 7 high TB burden countries of the Region (Cambodia, China, Mongolia, Philippines and Viet Nam). Among them Cambodia, Philippines and Viet Nam has two survey data point and China is conducting it's 2nd DRS.  Two remaining countries without representative data are PNG and Lao PDR. Subnational DRS in PNG is ongoing and results are expected to be available in 2015. 
+National representative drug resistance survey data is available from 5 out of 7 high TB burden countries of the Region (Cambodia, China, Mongolia, Philippines and Viet Nam). Among them Cambodia, Mongolia, Philippines and Viet Nam have two national representative survey data point and China is conducting it's 2nd national DRS. Two remaining countries without representative data are PNG and Lao PDR. Subnational DRS in PNG is ongoing and results are expected to be available in 2015. Surveillance data are available from 19 countries and areas of the Region. Countries need to strengthen their routine surveillance system at least for all previously treated cases. This is the 1st step of universal access of MDR-Tb diagnosis.
 
-Several countries such as Viet Nam and the Philippines showed commendable progress. These countries are quickly moving to nationwide expansion. The PMDT program in China has continued to evolve.
+A PARAGRAPH ON DATA INCOMPLETENESS >>>>>>>>
 
-Though there is a sign of increasing trend in notification and enrolment of MDR-TB cases, so far the scale-up of the programmatic management of MDR-TB (PMDT) is slow with only 6% of the estimated MDR-TB among notified cases being reported under PMDT. In addition, cure rates are low, below 50%. None of the countries are on track to meet the global targets of universal access as called for by the Resolution WHA62.15 in 2009. New tools, both diagnostics and drugs, have the potential to boost and facilitate the MDR-TB response, provided that bold investments will be made to introduce these while at the same time preventing catastrophic expenditures at both patient and health services level.
+Several countries such as Viet Nam and the Philippines showed commendable progress. These countries are quickly moving to nationwide expansion. The PMDT program in China has continued to evolve. To scale up PMDT, the first step is to establish diagnostic capacity. Introduction of rapid diagnostic (XPERT MTB/RIF) has paved the path. It is evident that countries has started using Xpert for diagnosis. In Viet Nam 81% of notified MDR-TB cases are from Xpert. However testing coverage remained low. In the Global plan to stop TB (REf…) 100% of retreatment cases and 20% of new cases were set as a target. Current coverage for retreatment cases is 21%. It should be noted that some countries did not report Xpert result and Rifampicin resistant cases. There is a sign of increasing trend in notification and enrolment of MDR-TB cases, so far the scale-up of the programmatic management of MDR-TB (PMDT) is slow with only 15% of the estimated MDR-TB among notified cases being reported under PMDT. As a logical step, most of the countries start PMDT targeting retreatment cases first. Data showed that countries have made tremendous progress to identify among retreatment cases (X% of estimated retreatment cases are notified). Countries still need to plan to increase the testing coverage among all retreatment cases.  Further scaling up to find MDR-TB cases among the new cases is a huge challenge. The strategy needs to be reviewed considering current financial and human resource capacity. Identifying high risk group groups among new Tb cases may be the reasonable way forward. To identify the high risk groups, surveillance data need to be strengthened.
+ 
+Detection of MDR-Tb cases is challenging and needs lots of effort. But if the notified cases are not put on treatment, all the efforts will be in vain. For prevention and control of MDR-TB this is paramount important that all patients with reported MDR-TB are put on treatment. It is alarming that 35% of the notified cases are not put on treatment in 2013. This is 27% in China, 43% in Philippines and 36% in Viet Nam. There may be two types of situation- some cases can be in the waiting list because of unavailability of treatment capacity including drugs and another reason could be loss to follow up of confirmed cases and failed to put them on treatment. In both situations, these patients are back in community and continue to spread MDR-TB strain. Proper planning needs to be done to ensure availability of drugs and treatment provision. Political commitment to scale up treatment capacity matching the diagnostic capacity will be essential. But for the later cause, initial loss to follow up, underlying cause need to be identified and addressed. Most of the time weak health system is responsible for losing the patient initially.  Accessibility of PMDT centers and substantial out of pocket expenditure play major role. The call for integrated patient centered TB care and prevention and bold policies and supportive system in the post 2015 TB strategy need to be operationalised to address this issue. Only PMDT or NTP may not be able to address this mis alignment. 
+  
+ 
+Treatment success rates are low, below 50%. The treatment success rate in Region is similar as the global average of the treatment success rate.With this kind of low success rate, it will be hard to keep faith on PMDT with current policy. The high number of loss to follow up and non evaluated acses (X% are loss to follow up and X% are not evaluated) are responsible for this low success rate and spreading TB strain with extensive drug resistance. High proportion of loss to follow up is seen in the Philippines and high proportion of non evaluated cases are seen in Malaysia. But there are some good country examples. Cambodia and Viet Nam showed treatment success above 70%.  
+
+WPR rGLC oversight ensured optimal value extraction from country missions.  All reports were critically reviewed with clear formulation of feasible recommendations.  Bottlenecks identified include the complexity of MDR-TB management and the need for a broader health systems approach with development of workforce, infra-structure, referral and financing mechanisms in the context of universal health care. A compelling finding was the diversity of needs at different stages of PMDT implementation in various countries, requiring different types of technical assistance. rGLC created a platform for sharing experiences, both the frustrations and successes, strengthening local ownership and encouraging innovative local solutions.  
+The local ownership at the TB program level has improved, however domestic resources allocated to PMDT remains inadequate, demonstrating the need for greatly increased advocacy and strong political commitment to contain the spread of MDR-TB. While the long-term sustainability of programs was threatened by donor dependence. Donor-driven targets may also have unintended consequences, such as fragmenting service delivery and encouraging inaccurate reporting to save face. The delicate balance between ambition, vision, reality, feasibility and measurability has to be considered at all times.
+
+The increasing trend in detection and enrolment of MDR-TB cases demonstrates readiness for PMDT scale-up at the country level. However, challenges remain considerable with serious concern regarding the long-term sustainability of donor-funded programs. MDR-TB is a man made phenomenon and unless we address the root cause it may be difficult to address MDR-TB. Prevention of MDR-TB including strengthening basic TB control needs to be at the center of the strategy to address MDR-TB. Ensuring scaling up of PMDT by increased DST coverage, ensuring all notified cases are on treatment, ensuring all enrolled patient complete their treatment need to be emphasized simultaneously.  TB control has entered the most dynamic phase since decades with many opportunities.  We have new diagnostic tools, new TB drugs and new strategies. It is therefore critical to invest both financial and technical resources to prevent MDR TB and scale up programmatic management of drug resistantTB. 
+ 
+
 
 
 ```{r exploration, warning=FALSE, include=FALSE}
@@ -875,9 +882,6 @@ htmlTable(oe, caption = "Risk ratios for MDR-TB")
 write.csv(oe, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-drestnotif", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
 
 
-# Bit to copy html file over
-# file.copy("D:/Users/hiattt/Dropbox/Code/Surveillance reports/MDR_report/MDRupdate.html", "D:/Users/hiattt/Dropbox/STB-WPRO/MDR article/MDRupdate.html", overwrite = TRUE)
-
 ```
 
 
@@ -887,10 +891,98 @@ None declared.
 ### Funding
 None.
 
+Dumping ground
+-------------------------------------------------------
+
+```{r t-drestnotif-data2, warning=FALSE}
+tableCount <- incCount(tableCount, "t-drestnotif")
+
+# Notification table
+
+oa <- subset(tb, year==yr & g_whoregion=="WPR", 
+              select=c(iso3, g_whoregion, country, 
+                       e_new_mdr_prop, e_new_mdr_prop_lo, e_new_mdr_prop_hi,
+                       e_ret_mdr_prop, e_ret_mdr_prop_lo, e_ret_mdr_prop_hi,
+                       e_mdr_num, e_mdr_num_lo, e_mdr_num_hi,
+                       c_newunk, c_ret, 
+                       dst_rlt_new, dst_rlt_ret, dst_rlt_unk, 
+                       mdr_new,  mdr_ret,  mdr, rapid_dx_dr_r, 
+                       conf_mdr_tx, unconf_mdr_tx))
+
+oa <- oa[order(oa$country),]
+names(oa)[names(oa)=='country'] <- 'area'
+estvars <- c("e_new_mdr_prop", "e_new_mdr_prop_lo", "e_new_mdr_prop_hi", "e_ret_mdr_prop", "e_ret_mdr_prop_lo", "e_ret_mdr_prop_hi", "e_mdr_num", "e_mdr_num_lo", "e_mdr_num_hi")
+
+# make aggregate rows
+ob <- oa[oa$iso3 %in% whbc, ]
+obh <- aggregate(ob[4:ncol(ob)], by=list(area=ob$g_whoregion), FUN=sum, na.rm=TRUE)
+obh$area <- "Total"
+obh[estvars] <- NA # Not the proper way to sum bounds. Maybe to replace this later.
+
+obw <- aggregate(oa[4:ncol(oa)], by=list(area=oa$g_whoregion), FUN=sum, na.rm=TRUE)
+obw[estvars] <- subset(emdra, year==yr & group_name=="WPR", estvars) # Proper sums for aggregates.
+
+# combine together
+oc <- rbind(ob[3:ncol(ob)], obh, obw) 
+
+# calculate and format vars
+
+for(stima in c("new", "ret")){ # change proportional estimates to percent
+  for(bound in c("", "_lo", "_hi")){
+    oc[paste0("e_", stima, "_mdr_pct", bound)] <- oc[paste0("e_", stima, "_mdr_prop", bound)] * 100
+  }
+}
+
+oc$e_new_mdr_pct_range <- paste0("(", rounder(oc$e_new_mdr_pct_lo), "&#8211;", rounder(oc$e_new_mdr_pct_hi), ")")
+oc$e_ret_mdr_pct_range <- paste0("(", rounder(oc$e_ret_mdr_pct_lo), "&#8211;", rounder(oc$e_ret_mdr_pct_hi), ")")
+oc$e_mdr_num_range <- paste0("(", rounder(oc$e_mdr_num_lo), "&#8211;", rounder(oc$e_mdr_num_hi), ")")
+
+oc$dst_rlt_new_pct <- rounder(oc$dst_rlt_new / oc$c_newunk * 100)
+oc$dst_rlt_ret_pct <- rounder(oc$dst_rlt_ret / oc$c_ret * 100)
+
+oc$mdr_new_pct <- rounder(oc$mdr_new / oc$c_newunk * 100)
+oc$mdr_ret_pct <- rounder(oc$mdr_ret / oc$c_ret * 100)
+
+oc$mdr_tx <- .rowsums(oc[c('conf_mdr_tx', 'unconf_mdr_tx')])
+
+# Format
+for(var in c("e_new_mdr_pct", "e_ret_mdr_pct", "e_mdr_num", "mdr", "rapid_dx_dr_r", "conf_mdr_tx", "mdr_tx")){
+  oc[var] <- ifelse(is.na(oc[[var]]), "&#8211;", rounder(oc[[var]]))
+}
+for(var in c("mdr_new_pct", "mdr_ret_pct")){
+  oc[var] <- ifelse(is.na(oc[[var]]), "&#8211;", oc[[var]])
+}
+
+# Rename countries
+od <- .WPSARnames(oc, col="area")
+
+rownames(od) <- od$area
+
+oe <- subset(od, select=c("mdr_new_pct", "e_new_mdr_pct", "e_new_mdr_pct_range", "mdr_ret_pct", "e_ret_mdr_pct", "e_ret_mdr_pct_range", "mdr", "e_mdr_num", "e_mdr_num_range", "rapid_dx_dr_r", "conf_mdr_tx", "mdr_tx"))
+
+
+write.csv(oe, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-drestnotif", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
+
+```
+
+<a id="t-drestnotif"></a> 
+
+##### `r I(pasteLabel("Table", tableCount, "t-drestnotif", insLink=FALSE))`. Estimated drug resistant cases compared with notified cases and cases put on treatment, `r yr`
+```{r t-drestnotif2, results='asis'}
+             
+# Make that table
+htmlTable(oe, caption = "", rowlabel = "", cgroup = rbind(c("% MDR-TB among new", "% MDR-TB among ret.", "MDR-TB cases", "", rep(NA,5)), c(rep(c("Detected", "Estimated"),2), "Detected", "Estimated <br>___________________", "RR cases<sup>*</sup>", "Confirmed MDR-TB on treatment", "Total MDR-TB on treatment")), n.cgroup = rbind(c(3,3,3,3, rep(NA,5)), c(1,2,1,2,1,2,1,1,1)), align=c(rep(c('c','r', 'l'),3), rep("c",3) ), ctable = TRUE, tfoot = "<sup>*</sup> Additional Rifampicine resistant cases detected by Xpert.", headings = NA )
+
+```
+
 References
 --------------------------------------------------------
 
+```{r copycode }
+# Bit to copy html file over
+# file.copy("D:/Users/hiattt/Dropbox/Code/Surveillance reports/MDR_report/MDRupdate.html", "D:/Users/hiattt/Dropbox/STB-WPRO/MDR article/MDRupdate.html", overwrite = TRUE)
 
+```
 
 
 
