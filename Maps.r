@@ -120,34 +120,32 @@ mdb$cat <- cut(mdb$carts, c(0, 1, 2000, 10000, 40000, 100000, Inf), c('0', '1-1 
 mdc <- WHOmap.print(mdb, paste("Progress in the roll-out of Xpert MTB/RIF, by July", thisyear), "Xpert MTB/RIF \ncartridges ordered", copyright=FALSE, na.label="Not eligible for \npreferential pricing", colors=c('red', 'blue', 'orange', 'green', 'brown', 'purple'), show=FALSE)
 
 figsave(mdc, mdb, "Xpert_map")
+} # End of FALSE chunk (to avoid commenting the whole thing out)
 
-
-# -------------------------------------------------
+# 2_11_mort_src_map -------------------------------------------------
 # Estimates sources maps
-# -------------------------------------------------
 
-mea <- merge(read.csv("https://dl.dropbox.com/u/454007/annex1_data_sources.csv"), subset(e, year==thisyear-1, select=c('country', 'iso3')))
+mea <- subset(e, year==thisyear-1, select=c("g_whoregion", 'country', 'iso3', 'source_mort'))
 
 # Mortality with VR data
 
-meb <- subset(mea, source.mort=='VR', select=c("g.whoregion", "country", "iso3", "source.mort"))
+meb <- subset(mea, source_mort %in% c('VR', 'VR imputed'), select=c("g_whoregion", "country", "iso3", "source_mort"))
 
 meb$cat <- factor("Estimated with \nVR data")
 
 # map
-mec <- WHOmap.print(meb, paste("Countries for which TB mortality is directly measured from vital registration systems \nand/or mortality surveys,", thisyear-1), "", low.color="dark red", copyright=FALSE)
-#, show=FALSE)
+mort_src_map <- WHOmap.print(meb, paste0("Countries (in orange) for which TB mortality is estimated using measurements from vital registration systems \nand/or mortality surveys (n=", nrow(meb),")"), "[remove legend]", low.color="dark orange", copyright=FALSE, show=FALSE)
 
-figsave(mec, meb, "mort_src_map")
+figsave(mort_src_map, meb, "2_11_mort_src_map")
 
-} # End of FALSE chunk (to avoid commenting the whole thing out)
+
 
 # 2_5_inc_map -------------------------------------------------
 # Incidence rates
 
 mfa <- subset(e.t, year==thisyear-1, select=c('country', 'iso3', 'e_inc_100k'))
 
-mfa$cat <- cut(round(mfa$e_inc_100k), c(0,10,20,50,125,300,500,Inf), c('0-9.9', '10-19', '20-49', '50-124', '125-299', '300-499', '>=300'), right=FALSE)
+mfa$cat <- cut(round(mfa$e_inc_100k), c(0,10,20,50,125,300,500,Inf), c('0–9.9', '10–19', '20–49', '50–124', '125–299', '300–499', '>=500'), right=FALSE)
 
 # map
 inc_map <- WHOmap.print(mfa, paste("Estimated TB incidence rates,", thisyear-1), "Estimated new TB \ncases (all forms) per \n100 000 population per year", na.label="No estimate", copyright=FALSE, colors=c('red', 'blue', 'orange', 'green', 'purple', 'violet', 'sienna'), show=FALSE)

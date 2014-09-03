@@ -300,6 +300,47 @@ glb.rpt.table <- function(df, column.nums, country.col=1, year.col=NA){
   return(com2)
 }
 
+# For adding an x-axis to orphaned plots -----------------------------
+facetAdjust <- function(x, pos = c("up", "down"))
+{
+  pos <- match.arg(pos)
+  p <- ggplot_build(x)
+  gtable <- ggplot_gtable(p); dev.off()
+  dims <- apply(p$panel$layout[2:3], 2, max)
+  nrow <- dims[1]
+  ncol <- dims[2]
+  panels <- sum(grepl("panel", names(gtable$grobs)))
+  space <- ncol * nrow
+  n <- space - panels
+  if(panels != space){
+    idx <- (space - ncol - n + 1):(space - ncol)
+    gtable$grobs[paste0("axis_b",idx)] <- list(gtable$grobs[[paste0("axis_b",panels)]])
+    if(pos == "down"){
+      rows <- grep(paste0("axis_b\\-[", idx[1], "-", idx[n], "]"), 
+                   gtable$layout$name)
+      lastAxis <- grep(paste0("axis_b\\-", panels), gtable$layout$name)
+      gtable$layout[rows, c("t","b")] <- gtable$layout[lastAxis, c("t")]
+    }
+  }
+  class(gtable) <- c("facetAdjust", "gtable", "ggplot"); gtable
+}
+# The function for printing which differs only by few lines from ggplot2:::print.ggplot:
+print.facetAdjust <- function(x, newpage = is.null(vp), vp = NULL) {
+  if(newpage)
+    grid.newpage()
+  if(is.null(vp)){
+    grid.draw(x)
+  } else {
+    if (is.character(vp)) 
+      seekViewport(vp)
+    else pushViewport(vp)
+    grid.draw(x)
+    upViewport()
+  }
+  invisible(x)
+}
+
+
 ########################################################
 # Functions to assist with tables and figure in markdown document (poached from here: http://rmflight.github.io/posts/2012/10/papersinRmd.html)
 ########################################################

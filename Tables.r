@@ -542,6 +542,19 @@ tedb$type <- 'agg'
 # Combine all together
 ted <- rbind(teda, tedb)
 
+# replace aggregate estimates with properly aggregated numbers
+ted1 <- e.t[e.t$year==thisyear-1 & !is.na(e.t$e_inc_tbhiv_100k) & e.t$g_hbhiv41=='high' , c('iso3', 'e_inc_tbhiv_100k', 'e_inc_tbhiv_100k_lo', 'e_inc_tbhiv_100k_hi', 'e_pop_num')] 
+ted1[2:4] <- ted1[2:4] / 100000
+ted1$e_pop_num <- as.numeric(ted1$e_pop_num)
+ted2 <- add.rv(ted1$e_inc_tbhiv_100k, ted1$e_inc_tbhiv_100k_lo, ted1$e_inc_tbhiv_100k_hi, weights=ted1$e_pop_num)
+
+ted[ted$country=="High TB/HIV burden countries", c('e_inc_tbhiv_num', 'e_inc_tbhiv_num_lo', 'e_inc_tbhiv_num_hi')] <- signif(ted2[c("r.num", "r.lo.num", "r.hi.num")], 2)
+
+ted3 <- a.t[a.t$year==thisyear-1 & a.t$group_type %in% c('g_whoregion', 'global'), c('group_name', 'group_type', 'e_inc_tbhiv_num', 'e_inc_tbhiv_num_lo', 'e_inc_tbhiv_num_hi')]
+ted3 <- ted3[order(ted3$group_type, ted3$group_name),]
+
+ted[43:nrow(ted), c('e_inc_tbhiv_num', 'e_inc_tbhiv_num_lo', 'e_inc_tbhiv_num_hi')] <- ted3[c('e_inc_tbhiv_num', 'e_inc_tbhiv_num_lo', 'e_inc_tbhiv_num_hi')]
+
 # Format table columns WHY AM I DOING IT DIFFERENT FOR COUNTRY?!! Need to come back to this and the ART map. And the HIV test map.
 ted <- within(ted, {
   hivtest1000 <- rounder(ifelse(type=='country', hivtest, hivtest_pct_numerator) / 1000, decimals=TRUE)
@@ -555,19 +568,6 @@ ted <- within(ted, {
   
   hiv_ipt2 <- rounder(hiv_ipt / 1000, decimals=TRUE)
 })
-
-# replace aggregate estimates with properly aggregated numbers
-ted1 <- e.t[e.t$year==thisyear-1 & !is.na(e.t$e_inc_tbhiv_100k) & e.t$g_hbhiv41=='high' , c('iso3', 'e_inc_tbhiv_100k', 'e_inc_tbhiv_100k_lo', 'e_inc_tbhiv_100k_hi', 'e_pop_num')] 
-ted1[2:4] <- ted1[2:4] / 100000
-ted1$e_pop_num <- as.numeric(ted1$e_pop_num)
-ted2 <- add.rv(ted1$e_inc_tbhiv_100k, ted1$e_inc_tbhiv_100k_lo, ted1$e_inc_tbhiv_100k_hi, weights=ted1$e_pop_num)
-
-ted[ted$country=="High TB/HIV burden countries", c('e_inc_tbhiv_num', 'e_inc_tbhiv_num_lo', 'e_inc_tbhiv_num_hi')] <- signif(ted2[c("r.num", "r.lo.num", "r.hi.num")], 2)
-
-ted3 <- a.t[a.t$year==thisyear-1 & a.t$group_type %in% c('g_whoregion', 'global'), c('group_name', 'group_type', 'e_inc_tbhiv_num', 'e_inc_tbhiv_num_lo', 'e_inc_tbhiv_num_hi')]
-ted3 <- ted3[order(ted3$group_type, ted3$group_name),]
-
-ted[43:nrow(ted), c('e_inc_tbhiv_num', 'e_inc_tbhiv_num_lo', 'e_inc_tbhiv_num_hi')] <- ted3[c('e_inc_tbhiv_num', 'e_inc_tbhiv_num_lo', 'e_inc_tbhiv_num_hi')]
 
 ted <- .shortnames(ted, ord='tbhiv')
 
@@ -607,16 +607,16 @@ print(tee, type="html", file=glue("Tables/7_1_tbhiv", Sys.Date(), ".htm"),includ
 <TH>% OF NOTIFIED TB PATIENTS WITH HIV-POSITIVE TEST</TH> 
 <TH>% OF NOTIFIED HIV-POSITIVE TB PATIENTS STARTED ON CPT</TH> 
 <TH>% OF NOTIFIED HIV-POSITIVE TB PATIENTS STARTED ON ART</TH> 
-<TH>% OF ESTIMATED HIV-POSITIVE INCIDENT TB CASES STARTED ON ART</TH> 
-<TH>NUMBER OF HIV- POSITIVE PEOPLE PROVIDED WITH IPT</TH>  </TR>",
+<TH>% OF ESTIMATED HIV-POSITIVE INCIDENT TB CASES STARTED ON ART<sup>b</sup></TH> 
+<TH>NUMBER OF HIV-POSITIVE PEOPLE PROVIDED WITH IPT</TH>  </TR>",
 "<TR> <TD colspan=11>Blank cells indicate data not reported. 
 <br>\u2013 indicates values that cannot be calculated.<br>
-<sup>a</sup> Data for the Russian Federation exclude retreatment cases and cases from prisons.<TD colspan=8></TD> </TR>")))
+<sup>a</sup> Data for the Russian Federation exclude retreatment cases and cases from prisons.<br><sup>b</sup> TB cases started on ART include non-relapse retreatment cases.<TD colspan=8></TD> </TR>")))
 
 tablecopy("7_1_tbhiv")
 
 
-# 6_1_2_lab_capac & lab_policy --------------------------------------------------------
+# 6_1_2_lab_capac & lab_policy ------------------------------------
 
 # 2013 fix
 # if(thisyear==2013) load('d:/users/hiattt/Dropbox/Tom_global_report/view_TME_master_strategy_2013-07-22.Rdata')
