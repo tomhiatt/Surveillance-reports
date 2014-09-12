@@ -28,7 +28,6 @@ start <- Sys.time()
 source(Rprofile)
 runprofile()
 
-
 # -------------------------------------------------
 
 # Find the report year
@@ -75,6 +74,15 @@ theme_glb.rpt <- function(base_size=10, base_family="") {
       #       plot.margin = unit(c(0,0))
     )
 }
+
+# Bits I'm going to implement:
+#   - Always show 0 (and not 0.0)
+#   - Always expand for a comfy fit
+#   - Labels be in the color of the lines where applicable [done]
+#   - Titles left justified [done]
+#   - label range always includes all data [giving up. maybe not a big deal.]
+#   - All use same color palette [done]
+
 
 # Burden colors
 
@@ -164,12 +172,13 @@ rounder <- function(x, decimals=FALSE) {
                                  ifelse(d[[col]]=='global', 'Global', 
                                         ifelse(d[[col]]=='SEA', 'SEAR', 
                                                d[[col]]))))))
-  if(ord %nin% c('hbc')) warning('Not ordering.')
+#   if(ord %nin% c('hbc')) warning('Not ordering.')
   if(ord=='hbc')  d <- d[match(c("Afghanistan", "Bangladesh", "Brazil", "Cambodia", "China", "DR Congo", "Ethiopia", "India", "Indonesia", "Kenya", "Mozambique",  "Myanmar", "Nigeria", "Pakistan", "Philippines", "Russian Federation", "South Africa", "Thailand", "Uganda", "UR Tanzania", "Viet Nam", "Zimbabwe", "High-burden countries", "AFR", "AMR", "EMR", "EUR", "SEAR", "WPR", "Global"), d[[col]]),]
   
   
   return(d)
 }
+
 # Nab Philippe's functions (for aggregating)
 add.rv <- function (r, r.lo, r.hi, r.sd, weights = 1, method = "beta") 
 {
@@ -301,9 +310,6 @@ glb.rpt.table <- function(df, column.nums, country.col=1, year.col=NA){
     com2 <- rbind(hbcs, agg1, agg2, agg3b)
     
   }
-  
-  
-  
   return(com2)
 }
 
@@ -389,5 +395,5 @@ tableCat <- function(inFrame) {
 # Run everything ------------------------------------------------
 
 source(file.path(scriptsfolder, "Figures.r"))
-source(file.path(scriptsfolder, "Tables.r")) # Need to run manually currently
+source(file.path(scriptsfolder, "Tables.r")) 
 source(file.path(scriptsfolder, "Maps.r"))
