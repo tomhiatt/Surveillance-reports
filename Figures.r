@@ -52,21 +52,21 @@ if(flg_show_estimates){
   p1 <- qplot(year, e_inc_100k, data=eza, geom='line', colour=I('#00FF33')) +
     geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I('#00FF33'), alpha=0.4) +
     #   geom_line(aes(year, newrel_100k)) + 
-    geom_line(aes(year, e_inc_tbhiv_100k), colour=I('red')) +      
-    geom_ribbon(aes(year, ymin=e_inc_tbhiv_100k_lo, ymax=e_inc_tbhiv_100k_hi), fill=I('red'), alpha=0.4) +
+    geom_line(aes(year, e_inc_tbhiv_100k), colour=I(inch.color)) +      
+    geom_ribbon(aes(year, ymin=e_inc_tbhiv_100k_lo, ymax=e_inc_tbhiv_100k_hi), fill=I(inch.color), alpha=0.4) +
     #   facet_wrap(~g_whoregion, scales='free_y') +
     scale_x_continuous('', limits=c(1990, yr)) + ylab('Rate per 100 000 population per year') +
     expand_limits(y=c(0, max(pretty(c(eza$e_inc_100k_hi, max(eza$e_inc_100k_hi) * (1.20)))))) + theme_glb.rpt() + theme(legend.position='none', plot.title = element_text(hjust = 0)) + ggtitle('Incidence')
   
-  p2 <- qplot(year, e_prev_100k, data=eza, geom='line', colour=I('blue'), linetype=forecast) +
-    geom_ribbon(aes(year, ymin=e_prev_100k_lo, ymax=e_prev_100k_hi), fill=I('blue'), alpha=0.4) +
+  p2 <- qplot(year, e_prev_100k, data=eza, geom='line', colour=I(prev.color), linetype=forecast) +
+    geom_ribbon(aes(year, ymin=e_prev_100k_lo, ymax=e_prev_100k_hi), fill=I(prev.color), alpha=0.4) +
     geom_hline(aes(yintercept=eza[eza$year==1990, "e_prev_100k"] / 2), linetype=2)  + ylab('Rate per 100 000 population') + xlab('') +
     expand_limits(y=0) +
     theme_glb.rpt() +
     theme(legend.position='none') + ggtitle('Prevalence')  
   
-  p3 <- qplot(year, e_mort_exc_tbhiv_100k, data=eza, geom='line', colour=I('orange'), linetype=forecast) +
-    geom_ribbon(aes(year, ymin=e_mort_exc_tbhiv_100k_lo, ymax=e_mort_exc_tbhiv_100k_hi), fill=I('orange'), alpha=0.4) +
+  p3 <- qplot(year, e_mort_exc_tbhiv_100k, data=eza, geom='line', colour=I(mort.color), linetype=forecast) +
+    geom_ribbon(aes(year, ymin=e_mort_exc_tbhiv_100k_lo, ymax=e_mort_exc_tbhiv_100k_hi), fill=I(mort.color), alpha=0.4) +
     geom_hline(aes(yintercept=eza[eza$year==1990, "e_mort_exc_tbhiv_100k"] / 2), linetype=2)  + ylab('Rate per 100 000 population per year') + xlab('') +
     expand_limits(y=0) +
     theme_glb.rpt() +
@@ -106,9 +106,9 @@ figsave(p1, eza, "2_6_fig_global")
   ehd <- qplot(year, e_inc_100k, data=ehb, geom='line', colour=I('#00FF33')) +
     geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I('#00FF33'), alpha=0.4) +
     #   geom_line(aes(year, newrel_100k)) + 
-    geom_line(aes(year, e_inc_tbhiv_100k), colour=I('red')) +
+    geom_line(aes(year, e_inc_tbhiv_100k), colour=I(inch.color)) +
     geom_ribbon(aes(year, ymin=e_inc_tbhiv_100k_lo, ymax=e_inc_tbhiv_100k_hi), 
-                fill=I('red'), alpha=0.4) +
+                fill=I(inch.color), alpha=0.4) +
     #   facet_wrap(~g_whoregion, scales='free_y') +
     scale_x_continuous('') + ylab('Rate per 100 000 population per year') +
     expand_limits(y=c(0, max(pretty(c(ehb$e_inc_100k_hi, max(ehb$e_inc_100k_hi) * (1.20)))))) + theme_glb.rpt() + 
@@ -143,12 +143,12 @@ inc_notif_reg <- qplot(year, e_inc_100k, data=efa, geom='line', colour=I('#00FF3
   # Incidence only
   # 2_7_inc_reg ------------------------------------------------------
   
-inc_reg <- qplot(year, e_inc_100k, data=efc, geom='line', colour=I('green')) +
-    geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I('green'), alpha=0.4) +
+inc_reg <- qplot(year, e_inc_100k, data=efc, geom='line', colour=I(inc.color)) +
+    geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I(inc.color), alpha=0.4) +
     #   geom_line(aes(year, newrel_100k)) + 
-    geom_line(aes(year, e_inc_tbhiv_100k), colour=I('red')) +
+    geom_line(aes(year, e_inc_tbhiv_100k), colour=I(inch.color)) +
     geom_ribbon(aes(year, ymin=e_inc_tbhiv_100k_lo, ymax=e_inc_tbhiv_100k_hi), 
-                fill=I('red'), alpha=0.4) +
+                fill=I(inch.color), alpha=0.4) +
     facet_wrap(~g_whoregion, scales='free_y') +
     scale_x_continuous('') + ylab('Rate per 100 000 population per year') +
     expand_limits(y=0) + geom_point(aes(year, top), alpha=0) +
@@ -168,19 +168,19 @@ inc_reg <- qplot(year, e_inc_100k, data=efc, geom='line', colour=I('green')) +
   
   egb$newrel_100k <- egb$c_newinc / egb$e_pop_num * 100000
   
-inc_notif_hbc <- qplot(year, e_inc_100k, data=egb, geom='line', colour=I('green')) + geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I('green'), alpha=0.4) + geom_line(aes(year, newrel_100k)) + facet_wrap(~country, scales='free_y') + scale_x_continuous('') + ylab('Rate per 100 000 population per year') + expand_limits(y=0) + theme_glb.rpt() + ggtitle(paste0('Case notification and estimated TB incidence rates, 22 high-burden countries, 1990-', thisyear-1, '. \nTrends in case notification rates (new and relapse cases, all forms) (black) and estimated TB incidence rates (green). \nShaded areas represent uncertainty bands.')) 
+inc_notif_hbc <- qplot(year, e_inc_100k, data=egb, geom='line', colour=I(inc.color)) + geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I(inc.color), alpha=0.4) + geom_line(aes(year, newrel_100k)) + facet_wrap(~country, scales='free_y') + scale_x_continuous('') + ylab('Rate per 100 000 population per year') + expand_limits(y=0) + theme_glb.rpt() + ggtitle(paste0('Case notification and estimated TB incidence rates, 22 high-burden countries, 1990-', thisyear-1, '. \nTrends in case notification rates (new and relapse cases, all forms) (black) and estimated TB incidence rates (green). \nShaded areas represent uncertainty bands.')) 
   
   figsave(inc_notif_hbc, egb, "4_4_inc_notif_hbc")
   
   # Incidence only
   # 2_8_inc_hbc -----------------------------------------------------
   
-inc_hbc <- qplot(year, e_inc_100k, data=egb, geom='line', colour=I('green')) +
-    geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I('green'), alpha=0.4) +
+inc_hbc <- qplot(year, e_inc_100k, data=egb, geom='line', colour=I(inc.color)) +
+    geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I(inc.color), alpha=0.4) +
     #   geom_line(aes(year, newrel_100k)) + 
-    geom_line(aes(year, e_inc_tbhiv_100k), colour=I('red')) +
+    geom_line(aes(year, e_inc_tbhiv_100k), colour=I(inch.color)) +
     geom_ribbon(aes(year, ymin=e_inc_tbhiv_100k_lo, ymax=e_inc_tbhiv_100k_hi), 
-                fill=I('red'), alpha=0.4) +
+                fill=I(inch.color), alpha=0.4) +
     facet_wrap(~country, scales='free_y') +
     scale_x_continuous('') + ylab('Rate per 100 000 population per year') +
     expand_limits(y=0) + # geom_point(aes(year, top), alpha=0) +
@@ -197,8 +197,8 @@ inc_hbc <- facetAdjust(inc_hbc)
   
   # epb <- subset(araw.t, group_type=="global", select=c("group_name", "year", "e_prev_100k", "e_prev_100k_lo", "e_prev_100k_hi"))
   # 
-  # epc <- qplot(year, e_prev_100k, data=epb, geom='line', colour=I('orange')) +
-  #   geom_ribbon(aes(year, ymin=e_prev_100k_lo, ymax=e_prev_100k_hi), fill=I('orange'), alpha=0.4) + scale_x_continuous('') + ylab('Rate per 100 000 population') + theme_glb.rpt() + 
+  # epc <- qplot(year, e_prev_100k, data=epb, geom='line', colour=I(mort.color)) +
+  #   geom_ribbon(aes(year, ymin=e_prev_100k_lo, ymax=e_prev_100k_hi), fill=I(mort.color), alpha=0.4) + scale_x_continuous('') + ylab('Rate per 100 000 population') + theme_glb.rpt() + 
   #   ggtitle(glue('Global trends in estimated TB prevalence rates, 1990-', thisyear-1, " \nand forecast TB prevalence rates ", thisyear, "-2015, by WHO region.")) 
   # 
   # figsave(epc, epb, "prev_glo", width=6, height=6)
@@ -215,8 +215,8 @@ inc_hbc <- facetAdjust(inc_hbc)
 regional2 <- ddply(regional, .(g_whoregion), transform, target.prev=e_prev_100k[1]/2, target.mort=e_mort_exc_tbhiv_100k[1]/2)
 
 
-prev_reg <- ggplot(regional2, aes(year, e_prev_100k, linetype=forecast)) + geom_line(colour=I('blue')) +
-    geom_ribbon(aes(year, ymin=e_prev_100k_lo, ymax=e_prev_100k_hi), fill=I('blue'), alpha=0.4) +
+prev_reg <- ggplot(regional2, aes(year, e_prev_100k, linetype=forecast)) + geom_line(colour=I(prev.color)) +
+    geom_ribbon(aes(year, ymin=e_prev_100k_lo, ymax=e_prev_100k_hi), fill=I(prev.color), alpha=0.4) +
     facet_wrap(~g_whoregion, scales='free_y') + 
       geom_hline(aes(yintercept=target.prev), linetype=2)  +
     scale_x_continuous('') + ylab('Rate per 100 000 population') +
@@ -229,8 +229,8 @@ prev_reg <- ggplot(regional2, aes(year, e_prev_100k, linetype=forecast)) + geom_
   
   # 2_13_mort_reg ----------------------------------------------------
   
-mort_reg <- ggplot(regional2, aes(year, e_mort_exc_tbhiv_100k, linetype=forecast)) + geom_line(colour=I('orange')) +
-    geom_ribbon(aes(year, ymin=e_mort_exc_tbhiv_100k_lo, ymax=e_mort_exc_tbhiv_100k_hi), fill=I('orange'), alpha=0.4) + 
+mort_reg <- ggplot(regional2, aes(year, e_mort_exc_tbhiv_100k, linetype=forecast)) + geom_line(colour=I(mort.color)) +
+    geom_ribbon(aes(year, ymin=e_mort_exc_tbhiv_100k_lo, ymax=e_mort_exc_tbhiv_100k_hi), fill=I(mort.color), alpha=0.4) + 
       geom_hline(aes(yintercept=target.mort), linetype=2) +
     facet_wrap(~g_whoregion, scales='free_y') +
     scale_x_continuous('') + ylab('Rate per 100 000 population') +
@@ -304,12 +304,12 @@ figsave(mort_hbc, hbc.ff3, "2_14_mort_hbc")
   
   pdf(width=14, height=9.5, file='CPFigs/hbc_cp_inc.pdf')
   # windows(14,9.5) windows(3, 0.87)
-  qplot(year, e_inc_100k, data=hest, geom='line', colour=I('green')) +
-    geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I('green'), alpha=0.4) +
-    geom_line(aes(year, e_inc_tbhiv_100k), colour=I('red')) +
+  qplot(year, e_inc_100k, data=hest, geom='line', colour=I(inc.color)) +
+    geom_ribbon(aes(year, ymin=e_inc_100k_lo, ymax=e_inc_100k_hi), fill=I(inc.color), alpha=0.4) +
+    geom_line(aes(year, e_inc_tbhiv_100k), colour=I(inch.color)) +
     geom_line(aes(year, c_newinc_100k)) + 
     geom_ribbon(aes(year, ymin=e_inc_tbhiv_100k_lo, ymax=e_inc_tbhiv_100k_hi), 
-                fill=I('red'), alpha=0.4) +
+                fill=I(inch.color), alpha=0.4) +
     facet_wrap(~group_name, scales='free', ncol=4) +
     scale_y_continuous(name = "") +
     scale_x_continuous(name="", expand = c(0, 0)) + 
@@ -320,8 +320,8 @@ figsave(mort_hbc, hbc.ff3, "2_14_mort_hbc")
   # Prevalence
   
   pdf(width=14, height=9.5, file='CPFigs/hbc_cp_prev.pdf')
-  p1 <- qplot(year, e_prev_100k, data=hest, geom='line', colour=I('blue')) +
-    geom_ribbon(aes(year, ymin=e_prev_100k_lo, ymax=e_prev_100k_hi), fill=I('blue'), alpha=0.4) +
+  p1 <- qplot(year, e_prev_100k, data=hest, geom='line', colour=I(prev.color)) +
+    geom_ribbon(aes(year, ymin=e_prev_100k_lo, ymax=e_prev_100k_hi), fill=I(prev.color), alpha=0.4) +
     # geom_hline(aes(yintercept=target.prev), linetype=2) +
     facet_wrap(~group_name, scales='free', ncol=4) +
     scale_y_continuous(name = "") +
@@ -335,8 +335,8 @@ figsave(mort_hbc, hbc.ff3, "2_14_mort_hbc")
   # Mortality
   
   pdf(width=14, height=9.5, file='CPFigs/hbc_cp_mort.pdf')
-  p2 <- qplot(year, e_mort_exc_tbhiv_100k, data=hest, geom='line', colour=I('orange')) +
-    geom_ribbon(aes(year, ymin=e_mort_exc_tbhiv_100k_lo, ymax=e_mort_exc_tbhiv_100k_hi), fill=I('orange'), alpha=0.4) +
+  p2 <- qplot(year, e_mort_exc_tbhiv_100k, data=hest, geom='line', colour=I(mort.color)) +
+    geom_ribbon(aes(year, ymin=e_mort_exc_tbhiv_100k_lo, ymax=e_mort_exc_tbhiv_100k_hi), fill=I(mort.color), alpha=0.4) +
     # geom_hline(aes(yintercept=target.mort), linetype=2) +
     facet_wrap(~group_name, scales='free', ncol=4) +
     scale_y_continuous(name = "") +
@@ -346,7 +346,7 @@ figsave(mort_hbc, hbc.ff3, "2_14_mort_hbc")
     theme(legend.position='none', panel.grid.minor = element_blank()) + ggtitle('Mortality')
   print(p2)
   dev.off()
-}
+} # End of flg_show_estimates
 
 
 # 7_1_hivtest_graph -------------------------------------------------------------------
@@ -416,10 +416,10 @@ gcc$value <- gcc$value/1000
 
 gcc$variable <- factor(gcc$variable, levels = c("e_inc_tbhiv_num", "hivtest_pos", "hiv_art"), labels = c("Estimated HIV-positive incident TB cases", 'Notified HIV-positive TB patients', 'HIV-positive TB patients on ART'))
 
-hiv_art_etbhiv <- ggplot(gcc, aes(year, value, color=variable)) + geom_ribbon(aes(year, ymin=e_inc_tbhiv_num_lo/1000, ymax=e_inc_tbhiv_num_hi/1000), alpha=0.4, fill="red", color=NA) + geom_line(size=1) + scale_y_continuous("Numbers in thousands", limits=c(0,1500)) + theme_glb.rpt() + scale_x_continuous(name="") +  scale_colour_manual(name="", values=c("red", "firebrick", "dark blue")) + geom_text(data=gcc[gcc$year==thisyear-2, ], aes(label=variable), vjust=3, hjust=1)  + ggtitle(paste("ART enrolment among HIV-positive TB patients compared with the reported number of HIV-positive \nTB patients and the estimated number of HIV-positive people who developed TB, 2004", thisyear-1, sep="\u2013")) + theme(legend.position="none")
+hiv_art_etbhiv <- ggplot(gcc, aes(year, value, color=variable)) + geom_ribbon(aes(year, ymin=e_inc_tbhiv_num_lo/1000, ymax=e_inc_tbhiv_num_hi/1000), alpha=0.4, fill=inch.color, color=NA) + geom_line(size=1) + scale_y_continuous("Numbers in thousands", limits=c(0,1500)) + theme_glb.rpt() + scale_x_continuous(name="") +  scale_colour_manual(name="", values=c(inch.color, "firebrick", "dark blue")) + geom_text(data=gcc[gcc$year==thisyear-2, ], aes(label=variable), vjust=3, hjust=1)  + ggtitle(paste("ART enrolment among HIV-positive TB patients compared with the reported number of HIV-positive \nTB patients and the estimated number of HIV-positive people who developed TB, 2004", thisyear-1, sep="\u2013")) + theme(legend.position="none")
 
 # windows (10,7); hiv_art_etbhiv; dev.off()
-figsave(hiv_art_etbhiv, gcb, "7_4_hiv_art_etbhiv")
+figsave(hiv_art_etbhiv, gcc, "7_4_hiv_art_etbhiv")
 
 # bars with estimate added and cpt dropped
 
@@ -596,7 +596,7 @@ figsave(ged, geb, "7_xxxx_tbscr_graph")
 # gee <- ggplot(geb, aes(year, value)) + geom_line(size=1) +
 #   scale_y_continuous("Number of people screened (millions)", limits = c(0, 2.5), expand = c(0, 0)) + theme_glb.rpt() +
 #   scale_x_continuous(name="") +  scale_color_brewer(name="Data provided", palette="Dark2") +
-#   # scale_fill_manual(values=c("grey50", "blue")) + 
+#   # scale_fill_manual(values=c("grey50", prev.color)) + 
 #   # geom_text(data=gec[gec$year==thisyear-1, ], aes(label=c('Tested HIV-positive','CPT','ART')), 
 #   # vjust=3, hjust=2, colour="black", size=6) +
 #   opts(legend.position="none", panel.grid.major = theme_blank(),
@@ -649,7 +649,7 @@ figsave(hiv_ipt_graph, gfc, "7_6_hiv_ipt_graph")
 #   scale_y_continuous("Number of HIV-positive people without active TB (thousands)", 
 #                      limits = c(0, 420), expand = c(0, 0)) + theme_glb.rpt() +
 #                        scale_x_continuous(name="") +  scale_color_brewer(name="Data provided", palette="Dark2") +
-#                        # scale_fill_manual(values=c("grey50", "blue")) + 
+#                        # scale_fill_manual(values=c("grey50", prev.color)) + 
 #                        # geom_text(data=gec[gec$year==thisyear-1, ], aes(label=c('Tested HIV-positive','CPT','ART')), 
 #                        # vjust=3, hjust=2, colour="black", size=6) +
 #                        opts(legend.position="none", panel.grid.major = theme_blank(),
@@ -705,7 +705,7 @@ figsave(gnc, gnb, "hivdist_graph")
 # write.csv(gnb, file=paste(outfolder, "/FigData/", "hivdist_graph", Sys.Date(), ".csv", sep=""), row.names=F, na="")
 
 # 7_3_hivprog_graph_all -------------------------------------------------------------------
-
+warning("I should come back to this figure next year and make sure it still works.")
 gg <- subset(tbhiv, year>=2003, select=c('iso3', 'year', 'g_hbhiv63', 'hivtest', 'hivtest_pos', 'hiv_cpt', 'hiv_art', 'hiv_cpt_pct_numerator', 'hiv_cpt_pct_denominator', 'hiv_art_pct_numerator', 'hiv_art_pct_denominator', 'c_notified', 'hivtest_pos_pct_denominator', 'hivtest_pos_pct_numerator'))
 
 # replace denominators with interpolated rates across years
@@ -1045,12 +1045,12 @@ if(FALSE){ # should delete these out, but in there for now...
   sgc <- rbind(sga, sgb)
   sgc[2:10] <- sgc[2:10] / 1000000
   
-  sga1 <- ggplot(sgc, aes(x=year, y=inc.num)) + geom_line(colour="green") + 
-    geom_ribbon(aes (year, ymin=inc.lo.num, ymax=inc.hi.num), fill=I('green'), alpha=I(0.2)) +
-    geom_line(aes(year, mort.num), color='purple') +
-    geom_ribbon(aes (year, ymin=mort.lo.num, ymax=mort.hi.num), fill=I('purple'), alpha=I(0.2)) +
-    geom_line(aes(year, mort.nh.num), color='blue') +
-    geom_ribbon(aes (year, ymin=mort.nh.lo.num, ymax=mort.nh.hi.num), fill=I('blue'), alpha=I(0.2)) +
+  sga1 <- ggplot(sgc, aes(x=year, y=inc.num)) + geom_line(colour=inc.color) + 
+    geom_ribbon(aes (year, ymin=inc.lo.num, ymax=inc.hi.num), fill=I(inc.color), alpha=I(0.2)) +
+    geom_line(aes(year, mort.num), color=mort.color) +
+    geom_ribbon(aes (year, ymin=mort.lo.num, ymax=mort.hi.num), fill=I(mort.color), alpha=I(0.2)) +
+    geom_line(aes(year, mort.nh.num), color=prev.color) +
+    geom_ribbon(aes (year, ymin=mort.nh.lo.num, ymax=mort.nh.hi.num), fill=I(prev.color), alpha=I(0.2)) +
     facet_wrap(~ im, scales='free') + 
     geom_point(aes(year, inc.num*0), alpha=0) + geom_point(aes(year, mort.num*0), alpha=0) +
     
@@ -1072,8 +1072,8 @@ if(FALSE){ # should delete these out, but in there for now...
   sgf <- merge(sgd, sge)
   sgf[2:5] <- sgf[2:5] / 1000000
   
-  sga2 <- ggplot(sgf, aes(x=year, y=inc.num)) + geom_line(colour="green", size=1) + 
-    geom_ribbon(aes (year, ymin=inc.lo.num, ymax=inc.hi.num), fill=I('green'), alpha=I(0.2)) +
+  sga2 <- ggplot(sgf, aes(x=year, y=inc.num)) + geom_line(colour=inc.color, size=1) + 
+    geom_ribbon(aes (year, ymin=inc.lo.num, ymax=inc.hi.num), fill=I(inc.color), alpha=I(0.2)) +
     geom_line(aes(year, c_newinc), size=1) +
     scale_y_continuous(name = "Cases (millions)") + theme_glb.rpt() +
     scale_x_continuous(name="") +  

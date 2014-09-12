@@ -134,7 +134,7 @@ meb <- subset(mea, source_mort %in% c('VR', 'VR imputed'), select=c("g_whoregion
 meb$cat <- factor("Estimated with \nVR data")
 
 # map
-mort_src_map <- WHOmap.print(meb, paste0("Countries (in orange) for which TB mortality is estimated using measurements from vital registration systems \nand/or mortality surveys (n=", nrow(meb),")"), "[remove legend]", low.color="dark orange", copyright=FALSE, show=FALSE)
+mort_src_map <- WHOmap.print(meb, paste0("Countries (in ", mort.color, ") for which TB mortality is estimated using measurements from vital registration systems \nand/or mortality surveys (n=", nrow(meb),")"), "[remove legend]", low.color=mort.color, copyright=FALSE, show=FALSE)
 
 figsave(mort_src_map, meb, "2_11_mort_src_map")
 
@@ -241,4 +241,4 @@ bdq_map <- WHOmap.print(mib, paste("Countries that had used bedaquiline for the 
 figsave(bdq_map, mib, "5_10_bdq_map")
 
 
-# ======================
+# END ======================

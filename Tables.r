@@ -1,5 +1,5 @@
 # -------------------------------------------------
-# Tables in the global report
+# Tables in the global report 
 # Tom Hiatt
 # 6 July 2012, updated 23 June 2014
 # -------------------------------------------------

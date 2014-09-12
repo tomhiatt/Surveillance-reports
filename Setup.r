@@ -76,6 +76,13 @@ theme_glb.rpt <- function(base_size=10, base_family="") {
     )
 }
 
+# Burden colors
+
+inc.color <- "green"
+inch.color <- "red"
+prev.color <- "blue"
+mort.color <- "violet"
+
 # Dummy data ---------------------------------------------------
 # Create dummy data for latest year until data are available
 # new dataframes have names with .t appended ...
@@ -382,5 +389,5 @@ tableCat <- function(inFrame) {
 # Run everything ------------------------------------------------
 
 source(file.path(scriptsfolder, "Figures.r"))
-source(file.path(scriptsfolder, "Tables.r"))
+source(file.path(scriptsfolder, "Tables.r")) # Need to run manually currently
 source(file.path(scriptsfolder, "Maps.r"))
