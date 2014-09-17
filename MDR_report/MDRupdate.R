@@ -2,13 +2,30 @@
 # Tom Hiatt
 # Updated: 01 September 2014
 # Regional MDR-TB annual analysis
-# This is the data munging script to be called from the associated Rmd file. Changes to data crunching are done here and changes to the text are done on the google doc file, then copied to the Rmd file, and then run.
+# This is the data munging script to be called from the associated Rmd file. Changes to data crunching are done here and changes to the text are done on the google doc file, then copied to the Rmd file, and then run. 
+# The bulk of data munging for tables and figures goes here. In-paragraph code still largely is processed there in order to avoid mistakes.
 ###################################################
 # title: "Drug resistant tuberculosis in the WHO Western Pacific Region"
 
 # Script found at: https://docs.google.com/document/d/1QGiWYD68Y6w1lo8d2or4889kSxHrzcNkMK3lhPQOvCQ/edit
 
-## Change this information to customize for your own data.
+# How to reproduce this analysis.
+# - Download and open in R the "MDRWPRO2014.Rdata" data and scripts. (If you are seeing this you have completed this step.)
+# - Save the four script files to your computer using 
+### cat(script1, file = "script1.Rmd")
+### cat(script2, file = "script2.R")
+### cat(script3, file = "springer-vancouver.csl")
+### cat(script4, file = "MDRupdate.bib")
+# - Open script1.Rmd in Rstudio and run.
+
+# TO DELETE BEFORE PUBLICATION
+# setwd("./MDR_report")
+
+# script1 <- readChar("./MDRupdate.Rmd", file.info("./MDRupdate.Rmd")$size)
+# script2 <- readChar("./MDRupdate.R", file.info("./MDRupdate.R")$size)
+# script3 <- readChar("./springer-vancouver.csl", file.info("./springer-vancouver.csl")$size)
+# script4 <- readChar("./MDRupdate.bib", file.info("./MDRupdate.bib")$size)
+
 
 # Year of TB notification data
 yr <- 2013
@@ -50,75 +67,114 @@ if(!any(grep("MDR_report", getwd()))) setwd("./MDR_report")
 
 # Theme for plots
 theme_report <- function(base_size=12, base_family="") {
-colors <- ggthemes_data$few
-gray <- colors$medium['gray']
-black <- colors$dark['black'] # I don't know why these last 3 parts are needed, but they are. List is here: http://docs.ggplot2.org/0.9.2.1/theme.html
-theme_bw(base_size=base_size, base_family=base_family) +
-theme(
-line = element_line(colour = gray),
-rect = element_rect(fill = "white", colour = NA),
-text = element_text(colour = black),
-axis.ticks.x = element_line(colour = gray),
-axis.ticks.y = element_blank(),
-legend.key = element_rect(colour = NA),
-## Examples do not use grid lines
-panel.border = element_rect(colour = gray),
-panel.grid.major.x = element_blank(),
-panel.grid.minor = element_blank(),
-strip.background = element_rect(fill="white", colour=NA),
-strip.text = element_text(hjust=0)
-)
+  colors <- ggthemes_data$few
+  gray <- colors$medium['gray']
+  black <- colors$dark['black'] # I don't know why these last 3 parts are needed, but they are. List is here: http://docs.ggplot2.org/0.9.2.1/theme.html
+  theme_bw(base_size=base_size, base_family=base_family) +
+    theme(
+      line = element_line(colour = gray),
+      rect = element_rect(fill = "white", colour = NA),
+      text = element_text(colour = black),
+      axis.ticks.x = element_line(colour = gray),
+      axis.ticks.y = element_blank(),
+      legend.key = element_rect(colour = NA),
+      ## Examples do not use grid lines
+      panel.border = element_rect(colour = gray),
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor = element_blank(),
+      strip.background = element_rect(fill="white", colour=NA),
+      strip.text = element_text(hjust=0)
+    )
 }
 
 # Functions for data formatting ##########################
 
 # Simple rounder that just adds in the thousands separator 
 rounder <- function(x, decimals=FALSE) {
-if(decimals==TRUE){
-ifelse(is.na(x), NA, ifelse(x==0, 0, ifelse(x < 0.01, "<0.01", ifelse(round(x,2) < 0.1, formatC(round(x,2), format='f', digits=2), ifelse(round(x,1) < 10, formatC(round(x,1), format='f', digits=1), formatC(round(x,0), big.mark=" ", format='d') )))))
-}
-else ifelse(is.na(x), NA, ifelse(x==0, 0, ifelse(x < 1, "< 1", formatC(round(x,0), big.mark=" ", format='d'))))
+  if(decimals==TRUE){
+    ifelse(is.na(x), NA, ifelse(x==0, 0, ifelse(x < 0.01, "<0.01", ifelse(round(x,2) < 0.1, formatC(round(x,2), format='f', digits=2), ifelse(round(x,1) < 10, formatC(round(x,1), format='f', digits=1), formatC(round(x,0), big.mark=" ", format='d') )))))
+  }
+  else ifelse(is.na(x), NA, ifelse(x==0, 0, ifelse(x < 1, "< 1", formatC(round(x,0), big.mark=" ", format='d'))))
 }
 
 .rowsums <- function(x) { 
-# This function sums rows ignoring NAs unless all are NA
-# use it like this
-# t3c$snu <- .rowsums(t3c[c('new_sn', 'new_su')])
-tosum <- as.matrix(x)
-summed <- rowMeans((tosum), na.rm=T) * rowSums(!is.na((tosum)))
-return(summed)
+  # This function sums rows ignoring NAs unless all are NA
+  # use it like this
+  # t3c$snu <- .rowsums(t3c[c('new_sn', 'new_su')])
+  tosum <- as.matrix(x)
+  summed <- rowMeans((tosum), na.rm=T) * rowSums(!is.na((tosum)))
+  return(summed)
 }
 
 # Change names to WPSAR convention
 .WPSARnames <- function(d, col='country', ord='no order'){
-d[col] <- as.character(d[[col]])
-d[col] <- ifelse(d[[col]]=='China, Hong Kong SAR', 'Hong Kong Special Administrative Region (China)', 
- ifelse(d[[col]]=='China, Macao SAR', 'Macao Special Administrative Region (China)', 
-ifelse(d[[col]]=='Micronesia (Federated States of)', 'Micronesia, Federated States of', 
- ifelse(d[[col]]=='WPR', 'Western Pacific Region
+  d[col] <- as.character(d[[col]])
+  d[col] <- ifelse(d[[col]]=='China, Hong Kong SAR', 'Hong Kong Special Administrative Region (China)', 
+                   ifelse(d[[col]]=='China, Macao SAR', 'Macao Special Administrative Region (China)', 
+                          ifelse(d[[col]]=='Micronesia (Federated States of)', 'Micronesia, Federated States of', 
+                                 ifelse(d[[col]]=='WPR', 'Western Pacific Region
 ', d[[col]]))))
+  
+#   if(!ord %in% c('wpr')) warning('Not ordering.')
+  if(ord=='wpr')d <- d[match(c("Afghanistan", "Bangladesh", "Brazil", "Cambodia", "China", "DR Congo", "Ethiopia", "India", "Indonesia", "Kenya", "Mozambique","Myanmar", "Nigeria", "Pakistan", "Philippines", "Russian Federation", "South Africa", "Thailand", "Uganda", "UR Tanzania", "Viet Nam", "Zimbabwe", "High-burden countries", "AFR", "AMR", "EMR", "EUR", "SEAR", "WPR", "Global"), d[[col]]),]
+  
+  return(d)
+}
 
-if(!ord %in% c('wpr')) warning('Not ordering.')
-if(ord=='wpr')d <- d[match(c("Afghanistan", "Bangladesh", "Brazil", "Cambodia", "China", "DR Congo", "Ethiopia", "India", "Indonesia", "Kenya", "Mozambique","Myanmar", "Nigeria", "Pakistan", "Philippines", "Russian Federation", "South Africa", "Thailand", "Uganda", "UR Tanzania", "Viet Nam", "Zimbabwe", "High-burden countries", "AFR", "AMR", "EMR", "EUR", "SEAR", "WPR", "Global"), d[[col]]),]
-
-return(d)
+# For adding an x-axis to orphaned plots -----------------------------
+facetAdjust <- function(x, pos = c("up", "down"))
+{
+  pos <- match.arg(pos)
+  p <- ggplot_build(x)
+  gtable <- ggplot_gtable(p); dev.off()
+  dims <- apply(p$panel$layout[2:3], 2, max)
+  nrow <- dims[1]
+  ncol <- dims[2]
+  panels <- sum(grepl("panel", names(gtable$grobs)))
+  space <- ncol * nrow
+  n <- space - panels
+  if(panels != space){
+    idx <- (space - ncol - n + 1):(space - ncol)
+    gtable$grobs[paste0("axis_b",idx)] <- list(gtable$grobs[[paste0("axis_b",panels)]])
+    if(pos == "down"){
+      rows <- grep(paste0("axis_b\\-[", idx[1], "-", idx[n], "]"), 
+                   gtable$layout$name)
+      lastAxis <- grep(paste0("axis_b\\-", panels), gtable$layout$name)
+      gtable$layout[rows, c("t","b")] <- gtable$layout[lastAxis, c("t")]
+    }
+  }
+  class(gtable) <- c("facetAdjust", "gtable", "ggplot"); gtable
+}
+# The function for printing which differs only by few lines from ggplot2:::print.ggplot:
+print.facetAdjust <- function(x, newpage = is.null(vp), vp = NULL) {
+  if(newpage)
+    grid.newpage()
+  if(is.null(vp)){
+    grid.draw(x)
+  } else {
+    if (is.character(vp)) 
+      seekViewport(vp)
+    else pushViewport(vp)
+    grid.draw(x)
+    upViewport()
+  }
+  invisible(x)
 }
 
 # Functions for maps ####################################
 
-source("./MapFunctions.r")
-load("gparts.Rdata")
+# source("./MapFunctions.r")
+# load("gparts.Rdata")
 
 # Tables and figure counts ##############################
 # Functions to assist with tables and figure in markdown document (from here: http://rmflight.github.io/posts/2012/10/papersinRmd.html)
-########################################################
 
 incCount <- function(inObj, useName) {
-nObj <- length(inObj)
-useNum <- max(inObj) + 1
-inObj <- c(inObj, useNum)
-names(inObj)[nObj + 1] <- useName
-inObj
+  nObj <- length(inObj)
+  useNum <- max(inObj) + 1
+  inObj <- c(inObj, useNum)
+  names(inObj)[nObj + 1] <- useName
+  inObj
 }
 figCount <- c(`_` = 0)
 tableCount <- c(`_` = 0)
@@ -126,78 +182,144 @@ tableCount <- c(`_` = 0)
 tableCount
 
 pasteLabel <- function(preText, inObj, objName, insLink = TRUE, sepper = " ") {
-objNum <- inObj[objName]
-
-useText <- paste(preText, objNum, sep = sepper)
-if (insLink) {
-useText <- paste("[", useText, "](#", objName, ")", sep = " ")
-}
-useText
+  objNum <- inObj[objName]
+  
+  useText <- paste(preText, objNum, sep = sepper)
+  if (insLink) {
+    useText <- paste("[", useText, "](#", objName, ")", sep = " ")
+  }
+  useText
 }
 
 tableCat <- function(inFrame) {
-outText <- paste(names(inFrame), collapse = " | ")
-outText <- c(outText, paste(rep("---", ncol(inFrame)), collapse = " | "))
-invisible(apply(inFrame, 1, function(inRow) {
-outText <<- c(outText, paste(inRow, collapse = " | "))
-}))
-return(outText)
+  outText <- paste(names(inFrame), collapse = " | ")
+  outText <- c(outText, paste(rep("---", ncol(inFrame)), collapse = " | "))
+  invisible(apply(inFrame, 1, function(inRow) {
+    outText <<- c(outText, paste(inRow, collapse = " | "))
+  }))
+  return(outText)
 }
 
 # Create directory and Get data #################
+# NOTE: After this is nearly final I will replace this portion with a subset of only the data used which will be embedded in the final HTML file.
 
-external.data <- FALSE
+# mdat1 <- subset(tb, g_whoregion=="WPR" & year %in% 2007:yr, c("iso3", "g_whoregion", "country", "e_new_mdr_num", "e_new_mdr_num_lo", 
+#  "e_new_mdr_num_hi", "e_ret_mdr_num", "e_ret_mdr_num_lo", "e_ret_mdr_num_hi", 
+#  "e_mdr_num", "e_mdr_num_lo", "e_mdr_num_hi", "mdr_new", "mdr_ret", 
+#  "mdr_unk", "dr_r_nh_new", "dr_r_nh_ret", "dr_r_nh_unk", "xpert_dr_r_new", 
+#  "xpert_dr_r_ret", "xpert_dr_r_unk", "mdr", "rapid_dx_dr_r", "conf_mdr_tx", 
+#  "unconf_mdr_tx", "e_new_mdr_prop", "e_new_mdr_prop_lo", "e_new_mdr_prop_hi", 
+#  "e_ret_mdr_prop", "e_ret_mdr_prop_lo", "e_ret_mdr_prop_hi", "c_newunk", 
+#  "c_ret", "dst_rlt_new", "dst_rlt_ret", "dst_rlt_unk", "year", 
+#  "mdr_dst_rlt", "mdr_ds_fq2li", "mdr_dr_fq", 
+#  "mdr_dr_2li", "xdr", "mdr_coh", "mdr_cur", "mdr_cmplt", "mdr_died", 
+#  "mdr_fail", "mdr_def", "mdr_succ", "mdr_hivpos", "mdr_hivneg", 
+#  "mdr_hivunk", "nmdr_hivpos", "nmdr_hivneg", "nmdr_hivunk", "mdr_f", 
+#  "mdr_m", "mdr_sexunk", "nmdr_f", "nmdr_m", "nmdr_sexunk", "mdr_014", 
+#  "mdr_15plus", "mdr_ageunk", "nmdr_014", "nmdr_15plus", "nmdr_ageunk", 
+#  "c_notified", "new_ep", "ret_rel_ep", "xpert_new", "xpert_ret", 
+#  "xpert_unk", "new_labconf", "new_clindx", "ret_rel_labconf", 
+#  "ret_rel_clindx", "ret_nrel", "cullpa_new", "cullpa_ret", "cullpa_unk", 
+#  "dr_h_nr_new", "dr_h_nr_ret", "dr_h_nr_unk", "e_pop_num"))
+# 
+# mdat2 <- subset(f, year %in% 2007:yr & g_whoregion=="WPR", select=c(iso3, country, year, exp_sld, exp_mdrmgt))
+# 
+# mdat <- merge(mdat1, mdat2)
 
-if(!external.data){
-source("D:/Users/hiattt/Dropbox/Code/R/.Rprofile")
-runprofile()
-} 
+# madat1 <- subset(emdra,year==yr&group_name=="WPR",c("year", "group_name", "e_new_mdr_num","e_new_mdr_num_lo","e_new_mdr_num_hi","e_ret_mdr_num",
+# "e_ret_mdr_num_lo","e_ret_mdr_num_hi","e_new_mdr_prop","e_new_mdr_prop_lo",
+# "e_new_mdr_prop_hi","e_ret_mdr_prop","e_ret_mdr_prop_lo","e_ret_mdr_prop_hi",
+# "e_mdr_num","e_mdr_num_lo","e_mdr_num_hi"))
+# 
+# madat2 <- subset(a, year==yr & group_name=="WPR", c("year", "group_name", "e_inc_num", "e_mort_exc_tbhiv_num"))
+# 
+# madat <- merge(madat1, madat2)
+# 
+# save(mdat, madat, script1, script2, script3, script4, WHOmap.print, centres, gline, gpoly, gworld, pieces, file="MDRWPRO2014.Rdata")
+load("MDRWPRO2014.Rdata")
 
-if(external.data){
-if(!"data" %in% dir() | length(dir("./data"))==0){
-dir.create(paste("./data"))
-stop("Download the notification and treatment outcomes data from 'http://who.int/tb/country/data/download/en/' to './data'.")
-}
 
-data1 <- dir("./data", full.names=TRUE)
-tb <- NA
-for(i in data1){
-data3 <- read.csv(i)
-tb <- merge(tb, data3, all=TRUE)
-}
-
-# Note: to use your own data, make a flat data file with each row corresponding to the lower reporting unit and a aggregating variable. EG by country with aggregating variable of region.
-
-# Add needed variables
-tb$g_hbc22 <- ifelse(tb$iso3 %in% c("AFG", "BGD", "BRA", "CHN", "COD", "ETH", "IDN", "IND", "KEN", "KHM", "MMR", "MOZ", "NGA", "PAK", "PHL", "RUS", "THA", "TZA", "UGA", "VNM", "ZAF", "ZWE"), "high", "low")
-
-tb$c_new <- .rowsums(tb[c("new_sp", "new_sn", "new_su", "new_ep", "new_oth")])
-tb$c_newinc <- .rowsums(tb[c("c_new", "ret_rel", "newret_oth")])
-tb$c_ret <- .rowsums(tb[c("ret_rel", "ret_taf", "ret_tad", "ret_oth")])
-tb$c_notified <- .rowsums(tb[c("c_new", "c_ret", "newret_oth")])
-
-tb$c_tot_newrel_100k <- tb$tot_newrel / tb$e_pop_num * 1e5
-
-# Get population data (available from UN population division. http://esa.un.org/unpd/wpp/unpp/panel_population.htm) and formatted TB/HIV data and estimates for the WHO Western Pacific Region.
-
-} # End of external data part
+# external.data <- FALSE
+# 
+# if(!external.data){
+#   source("D:/Users/hiattt/Dropbox/Code/R/.Rprofile")
+#   runprofile()
+# } 
+# 
+# if(external.data){
+#   if(!"data" %in% dir() | length(dir("./data"))==0){
+#     dir.create(paste("./data"))
+#     stop("Download the notification and treatment outcomes data from 'http://who.int/tb/country/data/download/en/' to './data'.")
+#   }
+#   
+#   data1 <- dir("./data", full.names=TRUE)
+#   tb <- NA
+#   for(i in data1){
+#     data3 <- read.csv(i)
+#     tb <- merge(tb, data3, all=TRUE)
+#   }
+#   
+#   # Note: to use your own data, make a flat data file with each row corresponding to the lower reporting unit and a aggregating variable. EG by country with aggregating variable of region.
+#   
+#   # Add needed variables
+#   tb$g_hbc22 <- ifelse(tb$iso3 %in% c("AFG", "BGD", "BRA", "CHN", "COD", "ETH", "IDN", "IND", "KEN", "KHM", "MMR", "MOZ", "NGA", "PAK", "PHL", "RUS", "THA", "TZA", "UGA", "VNM", "ZAF", "ZWE"), "high", "low")
+#   
+#   tb$c_new <- .rowsums(tb[c("new_sp", "new_sn", "new_su", "new_ep", "new_oth")])
+#   tb$c_newinc <- .rowsums(tb[c("c_new", "ret_rel", "newret_oth")])
+#   tb$c_ret <- .rowsums(tb[c("ret_rel", "ret_taf", "ret_tad", "ret_oth")])
+#   tb$c_notified <- .rowsums(tb[c("c_new", "c_ret", "newret_oth")])
+#   
+#   tb$c_tot_newrel_100k <- tb$tot_newrel / tb$e_pop_num * 1e5
+#   
+#   # Get population data (available from UN population division. http://esa.un.org/unpd/wpp/unpp/panel_population.htm) and formatted TB/HIV data and estimates for the WHO Western Pacific Region.
+#   
+# } # End of external data part
 
 
 # Common data munging 
 
-whbc <- subset(tb, g_whoregion=="WPR" & year==yr & mdr>=1, c(iso3))
+whbc <- subset(mdat, g_whoregion=="WPR" & year==yr & mdr>=1, c(iso3))
 whbc <- whbc$iso3
 
-#c("KHM", "CHN", "JPN", "MYS", "MNG", "PNG", "PHL", "KOR", "VNM")
+whbc10 <- subset(mdat, g_whoregion=="WPR" & year==yr & mdr>=10, c(iso3))
+whbc10 <- whbc10$iso3
 
-tb$country2 <- ifelse(tb$iso3 %in% whbc, as.character(tb$iso3), "Other") 
-tb$country2 <- factor(tb$country2, c("KHM", "CHN", "JPN", "MYS", "MNG", "PNG", "PHL", "KOR", "VNM", "Other"), c("Cambodia", "China", "Japan", "Malaysia", "Mongolia", "Papua New Guinea", "Philippines", "Republic of Korea", "Viet Nam", "Other countries"))
+mdat$country2 <- ifelse(mdat$iso3 %in% whbc, as.character(mdat$iso3), "Other") 
+mdat$country2 <- factor(mdat$country2, c("KHM", "CHN", "JPN", "MYS", "MNG", "PNG", "PHL", "KOR", "VNM", "Other"), c("Cambodia", "China", "Japan", "Malaysia", "Mongolia", "Papua New Guinea", "Philippines", "Republic of Korea", "Viet Nam", "Other countries"))
+
+# Embed data -----------------------------------------
+
+# The function below, when called, will print HTML code containing a link to an encoded version of an RData file. From here: http://bayesfactor.blogspot.com/2014/09/embedding-rdata-files-in-rmarkdown.html
+
+setDownloadURI = function(list, filename = stop("'filename' must be specified"), textHTML = "Click here to download the data.", fileext = "RData", envir = parent.frame()){
+  require(base64enc,quietly = TRUE)
+  divname = paste(sample(LETTERS),collapse="")
+  tf = tempfile(pattern=filename, fileext = fileext)
+  save(list = list, file = tf, envir = envir)
+  filenameWithExt = paste(filename,fileext,sep=".")
+  
+  uri = dataURI(file = tf, mime = "application/octet-stream", encoding = "base64")
+  cat("<a style='text-decoration: none' id='",divname,"'></a>
+    <script>
+    var a = document.createElement('a');
+    var div = document.getElementById('",divname,"');
+    div.appendChild(a);
+    a.setAttribute('href', '",uri,"');
+    a.innerHTML = '",textHTML,"' + ' (",filenameWithExt,")';
+    if (typeof a.download != 'undefined') {
+      a.setAttribute('download', '",filenameWithExt,"');
+    }else{
+      a.setAttribute('onclick', 'confirm(\"Your browser does not support the download HTML5 attribute. You must rename the file to ",filenameWithExt," after downloading it (or use Chrome/Firefox/Opera). \")');
+    }
+    </script>",
+      sep="")
+}
 
 # End of setup
 
 
-# m-coverage -----------------------------------------------
-figCount <- incCount(figCount, "m-coverage")
+# m.coverage -----------------------------------------------
+figCount <- incCount(figCount, "m.coverage")
 
 coa <- read.table(textConnection("
 iso3 coverage year
@@ -230,97 +352,105 @@ VNM	Nationwide	2012
 "), header = TRUE, as.is = TRUE)
 # closeAllConnections() # This breaks stuff if left in there.
 
-coa$cat <- cut(coa$year, c(0, 2005, 2010, 2014, Inf), c('1997–2004', '2005–2009', '2010–2013', 'Ongoing survey in 2014'), right=FALSE)
+coa$cat <- cut(coa$year, c(0, 2005, 2010, 2014, Inf), c('1997\u20132004', '2005\u20132009', '2010\u20132013', 'Ongoing survey in 2014'), right=FALSE)
 # 
-mc1 <- WHOmap.print(coa, legend.title= "Year of most \nrecent data", copyright=FALSE, show=FALSE, zoom="WPR")
+m.coverage <- WHOmap.print(coa, legend.title= "Year of most \nrecent data", copyright=FALSE, show=FALSE, zoom="WPR")
 
-write.csv(coa, file=paste0(pasteLabel("./figure_data/table", tableCount, "m-coverage", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
+write.csv(coa, file=paste0(pasteLabel("./figure_data/table", tableCount, "m.coverage", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
 
-# t-drestnotif ----------------------------------------------------
-tableCount <- incCount(tableCount, "t-drestnotif")
+# t.drestnotif ----------------------------------------------------
+tableCount <- incCount(tableCount, "t.drestnotif")
 
 # Notification table
 
-oa <- subset(tb, year==yr & g_whoregion=="WPR", 
-select=c(iso3, g_whoregion, country, 
-e_new_mdr_prop, e_new_mdr_prop_lo, e_new_mdr_prop_hi,
-e_ret_mdr_prop, e_ret_mdr_prop_lo, e_ret_mdr_prop_hi,
-e_mdr_num, e_mdr_num_lo, e_mdr_num_hi,
-c_newunk, c_ret, 
-dst_rlt_new, dst_rlt_ret, dst_rlt_unk, 
-mdr_new,mdr_ret,mdr, rapid_dx_dr_r, 
-conf_mdr_tx, unconf_mdr_tx))
+oa1 <- subset(mdat, year==yr & g_whoregion=="WPR", 
+             select=c(iso3, g_whoregion, country, 
+                      e_new_mdr_num, e_new_mdr_num_lo, e_new_mdr_num_hi,
+                      e_ret_mdr_num, e_ret_mdr_num_lo, e_ret_mdr_num_hi,
+                      e_new_mdr_prop, e_new_mdr_prop_lo, e_new_mdr_prop_hi,
+                      e_ret_mdr_prop, e_ret_mdr_prop_lo, e_ret_mdr_prop_hi,
+                      e_mdr_num, e_mdr_num_lo, e_mdr_num_hi,
+                      c_newunk, c_ret, 
+                      dst_rlt_new, dst_rlt_ret, dst_rlt_unk, 
+                      mdr_new,mdr_ret,mdr, rapid_dx_dr_r, 
+                      conf_mdr_tx, unconf_mdr_tx))
 
-oa <- oa[order(oa$country),]
-names(oa)[names(oa)=='country'] <- 'area'
-estvars <- c("e_new_mdr_prop", "e_new_mdr_prop_lo", "e_new_mdr_prop_hi", "e_ret_mdr_prop", "e_ret_mdr_prop_lo", "e_ret_mdr_prop_hi", "e_mdr_num", "e_mdr_num_lo", "e_mdr_num_hi")
+oa1 <- oa1[order(oa1$country),]
+names(oa1)[names(oa1)=='country'] <- 'area'
+estvars <- c("e_new_mdr_num", "e_new_mdr_num_lo", "e_new_mdr_num_hi", "e_ret_mdr_num", "e_ret_mdr_num_lo", "e_ret_mdr_num_hi", "e_new_mdr_prop", "e_new_mdr_prop_lo", "e_new_mdr_prop_hi", "e_ret_mdr_prop", "e_ret_mdr_prop_lo", "e_ret_mdr_prop_hi", "e_mdr_num", "e_mdr_num_lo", "e_mdr_num_hi")
 
 # make aggregate rows
-ob <- oa[oa$iso3 %in% whbc, ]
-obh <- aggregate(ob[4:ncol(ob)], by=list(area=ob$g_whoregion), FUN=sum, na.rm=TRUE)
-obh$area <- "Total"
-obh[estvars] <- NA # Not the proper way to sum bounds. Maybe to replace this later.
+ob <- oa1[oa1$iso3 %in% whbc, ]
+# obh <- aggregate(ob[4:ncol(ob)], by=list(area=ob$g_whoregion), FUN=sum, na.rm=TRUE)
+# obh$area <- "Total"
+# obh[estvars] <- NA # Not the proper way to sum bounds. Maybe to replace this later.
 
-obw <- aggregate(oa[4:ncol(oa)], by=list(area=oa$g_whoregion), FUN=sum, na.rm=TRUE)
-obw[estvars] <- subset(emdra, year==yr & group_name=="WPR", estvars) # Proper sums for aggregates.
+obw <- aggregate(oa1[4:ncol(oa1)], by=list(area=oa1$g_whoregion), FUN=sum, na.rm=TRUE)
+obw[estvars] <- subset(madat, year==yr & group_name=="WPR", estvars) # Proper sums for aggregates.
 
 # combine together
-oc <- rbind(ob[3:ncol(ob)], obh, obw) 
+oc <- rbind(ob[3:ncol(ob)], obw) # Leaving out total for now  obh, 
 
 # calculate and format vars
 
 for(stima in c("new", "ret")){ # change proportional estimates to percent
-for(bound in c("", "_lo", "_hi")){
-oc[paste0("e_", stima, "_mdr_pct", bound)] <- oc[paste0("e_", stima, "_mdr_prop", bound)] * 100
-}
+  for(bound in c("", "_lo", "_hi")){
+    oc[paste0("e_", stima, "_mdr_pct", bound)] <- oc[paste0("e_", stima, "_mdr_prop", bound)] * 100
+  }
 }
 
+oc$e_new_mdr_num_range <- paste0("(", rounder(oc$e_new_mdr_num_lo), "&#8211;", rounder(oc$e_new_mdr_num_hi), ")")
 oc$e_new_mdr_pct_range <- paste0("(", rounder(oc$e_new_mdr_pct_lo), "&#8211;", rounder(oc$e_new_mdr_pct_hi), ")")
+
+oc$e_ret_mdr_num_range <- paste0("(", rounder(oc$e_ret_mdr_num_lo), "&#8211;", rounder(oc$e_ret_mdr_num_hi), ")")
 oc$e_ret_mdr_pct_range <- paste0("(", rounder(oc$e_ret_mdr_pct_lo), "&#8211;", rounder(oc$e_ret_mdr_pct_hi), ")")
+
 oc$e_mdr_num_range <- paste0("(", rounder(oc$e_mdr_num_lo), "&#8211;", rounder(oc$e_mdr_num_hi), ")")
 
-oc$dst_rlt_new_pct <- rounder(oc$dst_rlt_new / oc$c_newunk * 100)
-oc$dst_rlt_ret_pct <- rounder(oc$dst_rlt_ret / oc$c_ret * 100)
-
-oc$mdr_new_pct <- rounder(oc$mdr_new / oc$c_newunk * 100)
-oc$mdr_ret_pct <- rounder(oc$mdr_ret / oc$c_ret * 100)
-
-oc$mdr_tx <- .rowsums(oc[c('conf_mdr_tx', 'unconf_mdr_tx')])
+# oc$dst_rlt_new_pct <- rounder(oc$dst_rlt_new / oc$c_newunk * 100)
+# oc$dst_rlt_ret_pct <- rounder(oc$dst_rlt_ret / oc$c_ret * 100)
+# 
+# oc$mdr_new_pct <- rounder(oc$mdr_new / oc$c_newunk * 100)
+# oc$mdr_ret_pct <- rounder(oc$mdr_ret / oc$c_ret * 100)
+# 
+# oc$mdr_tx <- .rowsums(oc[c('conf_mdr_tx', 'unconf_mdr_tx')])
 
 # Format
-for(var in c("e_new_mdr_pct", "e_ret_mdr_pct", "e_mdr_num", "mdr", "rapid_dx_dr_r", "conf_mdr_tx", "mdr_tx")){
-oc[var] <- ifelse(is.na(oc[[var]]), "&#8211;", rounder(oc[[var]]))
+for(these in c("e_new_mdr_num", "e_ret_mdr_num", "e_new_mdr_pct", "e_ret_mdr_pct", "e_mdr_num")){
+  oc[these] <- ifelse(is.na(oc[[these]]), "&#8211;", rounder(oc[[these]]))
 }
-for(var in c("mdr_new_pct", "mdr_ret_pct")){
-oc[var] <- ifelse(is.na(oc[[var]]), "&#8211;", oc[[var]])
-}
+# for(var in c("mdr_new_pct", "mdr_ret_pct")){
+#   oc[var] <- ifelse(is.na(oc[[var]]), "&#8211;", oc[[var]])
+# }
 
 # Rename countries
 od <- .WPSARnames(oc, col="area")
 
 rownames(od) <- od$area
 
-oe <- subset(od, select=c("mdr_new_pct", "e_new_mdr_pct", "e_new_mdr_pct_range", "mdr_ret_pct", "e_ret_mdr_pct", "e_ret_mdr_pct_range", "mdr", "e_mdr_num", "e_mdr_num_range", "rapid_dx_dr_r", "conf_mdr_tx", "mdr_tx"))
+oe <- subset(od, select=c("e_new_mdr_num", "e_new_mdr_num_range", "e_new_mdr_pct", "e_new_mdr_pct_range", "e_ret_mdr_num", "e_ret_mdr_num_range", "e_ret_mdr_pct", "e_ret_mdr_pct_range", "e_mdr_num", "e_mdr_num_range"))
 
+# Make that table
+t.drestnotif <- htmlTable(oe, caption = "", rowlabel = "", cgroup = rbind(c("MDR-TB among new", "MDR-TB among retreatment", "Total MDR-TB cases", rep(NA,2)), c(rep(c("n", "%"),2), "n <br>___________________")), n.cgroup = rbind(c(4,4,2, rep(NA,2)), rep(2,5)), align=rep(c('r', 'l'),10), ctable = TRUE, headings = NA )
 
-write.csv(oe, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-drestnotif", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
+write.csv(oe, file=paste0(pasteLabel("./figure_data/table", tableCount, "t.drestnotif", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
 
-# t-drnotif -------------------------------------------------------------
-tableCount <- incCount(tableCount, "t-drnotif")
+# t.drnotif -------------------------------------------------------------
+tableCount <- incCount(tableCount, "t.drnotif")
 
 # Notification table
 
-nb <- subset(tb, year==yr & g_whoregion=="WPR", 
-select=c(iso3, g_whoregion, country,
-new_labconf, new_clindx, 
-ret_rel_labconf, ret_rel_clindx, ret_nrel, 
-cullpa_new, cullpa_ret, cullpa_unk, 
-dst_rlt_new, dst_rlt_ret, dst_rlt_unk, 
-dr_h_nr_new,dr_h_nr_ret,dr_h_nr_unk, 
-dr_r_nh_new,dr_r_nh_ret,dr_r_nh_unk, 
-mdr_new,mdr_ret,mdr_unk,
-xpert_new, xpert_ret, xpert_unk, 
-xpert_dr_r_new, xpert_dr_r_ret, xpert_dr_r_unk))
+nb <- subset(mdat, year==yr & g_whoregion=="WPR", 
+             select=c(iso3, g_whoregion, country,
+                      new_labconf, new_clindx, 
+                      ret_rel_labconf, ret_rel_clindx, ret_nrel, 
+                      cullpa_new, cullpa_ret, cullpa_unk, 
+                      dst_rlt_new, dst_rlt_ret, dst_rlt_unk, 
+                      dr_h_nr_new,dr_h_nr_ret,dr_h_nr_unk, 
+                      dr_r_nh_new,dr_r_nh_ret,dr_r_nh_unk, 
+                      mdr_new,mdr_ret,mdr_unk,
+                      xpert_new, xpert_ret, xpert_unk, 
+                      xpert_dr_r_new, xpert_dr_r_ret, xpert_dr_r_unk))
 
 nb <- nb[order(nb$country),]
 names(nb)[names(nb)=='country'] <- 'area'
@@ -375,7 +505,7 @@ nbd$xpert_dr_r_pct <- nbd$xpert_dr_r /nbd$mdrr * 100
 
 # Format
 for(var in 2:ncol(nbd)){
-nbd[var] <- ifelse(is.na(nbd[[var]]), "&#8211;", rounder(nbd[[var]]))
+  nbd[var] <- ifelse(is.na(nbd[[var]]), "&#8211;", rounder(nbd[[var]]))
 }
 
 
@@ -391,39 +521,69 @@ nbf <- subset(nbe, select=c("dstx_rlt_new", "dstx_rlt_new_pct", "dstx_rlt_ret", 
 names(nbf) <- rep(c("n", "%"), 9)
 
 # Make that table
-t_drnotif <- htmlTable(nbf, caption = "", rowlabel = "", cgroup = rbind(c("Notified cases with DST results", "MDR-TB and RR-TB<sup>*</sup> among cases with DST results", "Cases confirmed by Xpert among MDR-TB and RR-TB<sup>*</sup>", rep(NA,6)), rep(c("New", "Ret.", "Total"),3)), n.cgroup = rbind(c(rep(3,3), rep(NA,6)), rep(2,9)), ctable = TRUE, tfoot = "<sup>*</sup> Rif-resistant only cases are included whether confirmed by DST or Xpert.")
+t.drnotif <- htmlTable(nbf, caption = "", rowlabel = "", cgroup = rbind(c("Notified cases with DST results", "MDR-TB and RR-TB<sup>*</sup> among cases with DST results", "Cases confirmed by Xpert among MDR-TB and RR-TB<sup>*</sup>", rep(NA,6)), rep(c("New", "Ret.", "Total"),3)), n.cgroup = rbind(c(rep(3,3), rep(NA,6)), rep(2,9)), ctable = TRUE, tfoot = "<sup>*</sup> Rif-resistant only cases are included whether confirmed by DST or Xpert.")
 
-write.csv(nbf, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-drnotif", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
+write.csv(nbf, file=paste0(pasteLabel("./figure_data/table", tableCount, "t.drnotif", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
 
-# DST coverage trend --------------------------------------------------
-
-
-# f_alignment ------------------------------------------------------
-figCount <- incCount(figCount, "f_alignment")
-
-tea <- subset(tb, year %in% 2007:yr & g_whoregion=="WPR", select=c(iso3, country, year, e_mdr_num, e_mdr_num_lo, e_mdr_num_hi, mdr, rapid_dx_dr_r, conf_mdr_tx, unconf_mdr_tx))
-
-teb1 <- aggregate(tea[4:ncol(tea)], by=list(year=tea$year), FUN=sum, na.rm=TRUE)
-teb1$country <- teb1$iso3 <- "WPR"
-
-# Separate hbcs
-teb3 <- tea[tea$iso3 %in% whbc,] 
-# teb2 <- aggregate(teb3[4:ncol(tea)], by=list(year=teb3$year, area=teb3$country), FUN=sum, na.rm=TRUE)
+# f.dst.trend --------------------------------------------------
+figCount <- incCount(figCount, "f.dst.trend")
 
 
-#combine
-teb <- rbind(teb1, teb3)
+dsa <- subset(mdat, year %in% 2007:yr & g_whoregion=="WPR", 
+             select=c(iso3, g_whoregion, country, year, 
+                      c_notified, c_ret, new_ep, ret_rel_ep, 
+                      dst_rlt_new, dst_rlt_ret, dst_rlt_unk,
+                      dr_r_nh_ret, dr_r_nh_new, dr_r_nh_unk, 
+                      mdr_new,mdr_ret,mdr_unk,
+                      xpert_new, xpert_ret, xpert_unk, 
+                      xpert_dr_r_new, xpert_dr_r_ret, xpert_dr_r_unk))
 
-# Calculate new vars
-teb$`Cases confirmed` <- .rowsums(teb[c('mdr', 'rapid_dx_dr_r')])
-teb$`Patients enrolled on treatment` <- .rowsums(teb[c('conf_mdr_tx', 'unconf_mdr_tx')])
+dsb <- dsa[order(dsa$country),]
+names(dsb)[names(dsb)=='country'] <- 'area'
+
+# Treat all missings as 0s.
+# dsb[is.na(dsb)] <- 0
+
+# calculate numerators and denominators for aggregates
+  # Add up vars where needed
+dsb$dstx <- .rowsums(dsb[c("dst_rlt_ret", "xpert_ret")])
+dsb$mdrr <- .rowsums(dsb[c( 'mdr_ret', 'dr_r_nh_ret', 'xpert_dr_r_ret')])
+
+  # Only include country-years where the num and denom are both present
+dsb$dstx.numerator <- ifelse(is.na(dsb$c_ret), NA, dsb$dstx)
+dsb$dstx.denominator <- ifelse(is.na(dsb$dstx), NA, dsb$c_ret)
+
+dsb$mdrr.numerator <- ifelse(is.na(dsb$dstx), NA, dsb$mdrr)
+dsb$mdrr.denominator <- ifelse(is.na(dsb$mdrr), NA, dsb$dstx)
+
+# make aggregate rows
+dsbc <- dsb[dsb$iso3 %in% whbc10, ]
+# nbch <- aggregate(nbc[4:ncol(nbc)], by=list(area=nbc$g_whoregion), FUN=sum, na.rm=TRUE)
+# nbch$area <- "Total"
+
+dsbcw <- aggregate(dsb[5:ncol(dsb)], by=list(area=dsb$g_whoregion, year=dsb$year), FUN=sum, na.rm=TRUE)
+# dsbcw$iso3 <- dsbcw$g_whoregion <- "WPR"
+
+# combine together
+dsd <- rbind(dsbc[3:ncol(dsbc)], dsbcw) # nbch, 
+
+# calculate PERCENTAGE vars
+dsd$dstx_pct <- dsd$dstx.numerator / dsd$dstx.denominator * 100 
+
+dsd$mdrr_pct <- dsd$mdrr.numerator / dsd$mdrr.denominator * 100 
 
 
-tec <- melt(teb[c("country", "year", "Cases confirmed", "Patients enrolled on treatment")], id=1:2)
+# Rename countries
+dse <- .WPSARnames(dsd, col="area")
+  
 
-ted <- ggplot(tec, aes(year, value, color=variable)) + geom_point(alpha=.5) + geom_line(size=1, alpha=.5) + facet_wrap(~country, scales="free_y", ncol=4) + theme_report() + scale_color_brewer("", type="qual", palette=6) + scale_x_continuous("") + scale_y_continuous("MDR-TB cases")+ guides(fill = guide_legend(reverse = TRUE)) + theme(legend.position = "bottom")
+dsf <- melt(subset(dse, select=c(area, year, dstx_pct, mdrr_pct)), id=1:2)
+dsf <- subset(dsf, !is.na(value))
 
-write.csv(tec, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-align-bar", insLink=FALSE), ".csv"), row.names=FALSE)
+f.dst.trend <- facetAdjust(ggplot(dsf, aes(year, value, color=variable)) + geom_point(alpha=.5) + geom_line(size=1, alpha=.5) + facet_wrap(~area, scales="free_y") + theme_report() + scale_color_brewer("", type="qual", palette=6, breaks=c("dstx_pct", "mdrr_pct"), labels=c(expression("% DST among pulmonary cases"^a), "% MDR-TB or RR-TB among tested")) + scale_x_continuous("") + scale_y_continuous("Percent")+ guides(fill = guide_legend(reverse = TRUE)) + theme(legend.position = "bottom"))
+
+write.csv(dsf, file=paste0(pasteLabel("./figure_data/figure", figCount, "f.dst.trend", insLink=FALSE), ".csv"), row.names=FALSE)
+
 
 
 # t.est.enroll ------------------------------------------------------------
@@ -431,37 +591,59 @@ tableCount <- incCount(tableCount, "t.est.enroll")
 
 # Notification table
 
-oa <- subset(tb, year==yr & g_whoregion=="WPR", 
- select=c(iso3, g_whoregion, country, 
-e_mdr_num, e_mdr_num_lo, e_mdr_num_hi,
-mdr, rapid_dx_dr_r, 
-conf_mdr_tx, unconf_mdr_tx))
+oa2 <- subset(mdat, year==yr & g_whoregion=="WPR", 
+             select=c(iso3, g_whoregion, country, 
+                      e_new_mdr_num, e_new_mdr_num_lo, e_new_mdr_num_hi, 
+                      e_ret_mdr_num, e_ret_mdr_num_lo, e_ret_mdr_num_hi,
+                      e_mdr_num, e_mdr_num_lo, e_mdr_num_hi,
+                      mdr_new, mdr_ret, mdr_unk, 
+                      dr_r_nh_new, dr_r_nh_ret, dr_r_nh_unk, 
+                      xpert_dr_r_new, xpert_dr_r_ret, xpert_dr_r_unk, 
+                      mdr, rapid_dx_dr_r, 
+                      conf_mdr_tx, unconf_mdr_tx))
 
-oa <- oa[order(oa$country),]
-names(oa)[names(oa)=='country'] <- 'area'
-estvars <- c("e_mdr_num", "e_mdr_num_lo", "e_mdr_num_hi")
+oa2 <- oa2[order(oa2$country),]
+names(oa2)[names(oa2)=='country'] <- 'area'
+estvars <- c("e_new_mdr_num", "e_new_mdr_num_lo", "e_new_mdr_num_hi", "e_ret_mdr_num", "e_ret_mdr_num_lo", "e_ret_mdr_num_hi", "e_mdr_num", "e_mdr_num_lo", "e_mdr_num_hi")
+
+# caclulate pre-aggregating variables. (For this table, non-reporters are assumed to be 0.)
+oa2$mdrr.restricted <- .rowsums(oa2[c("mdr_new", "mdr_ret", "mdr_unk", "dr_r_nh_new", "dr_r_nh_ret", "dr_r_nh_unk", "xpert_dr_r_new", "xpert_dr_r_ret", "xpert_dr_r_unk")])
+oa2$mdrr.unrestricted <- .rowsums(oa2[c('mdr', 'rapid_dx_dr_r')])
+
+oa2$mdrr.best <- ifelse(oa2$mdrr.restricted > oa2$mdrr.unrestricted, oa2$mdrr.restricted, oa2$mdrr.unrestricted)
+
+oa2$mdrr.new <- .rowsums(oa2[c("mdr_new", "dr_r_nh_new","xpert_dr_r_new")])
+oa2$mdrr.ret <- .rowsums(oa2[c("mdr_ret", "dr_r_nh_ret","xpert_dr_r_ret")])
 
 # make aggregate rows
-ob <- oa[oa$iso3 %in% whbc, ]
-obh <- aggregate(ob[4:ncol(ob)], by=list(area=ob$g_whoregion), FUN=sum, na.rm=TRUE)
-obh$area <- "Total"
-obh[estvars] <- NA # Not the proper way to sum bounds. Maybe to replace this later.
+ob <- oa2[oa2$iso3 %in% whbc, ]
+# obh <- aggregate(ob[4:ncol(ob)], by=list(area=ob$g_whoregion), FUN=sum, na.rm=TRUE)
+# obh$area <- "Total"
+# obh[estvars] <- NA # Not the proper way to sum bounds. Maybe to replace this later.
 
-obw <- aggregate(oa[4:ncol(oa)], by=list(area=oa$g_whoregion), FUN=sum, na.rm=TRUE)
-obw[estvars] <- subset(emdra, year==yr & group_name=="WPR", estvars) # Proper sums for aggregates.
+obw <- aggregate(oa2[4:ncol(oa2)], by=list(area=oa2$g_whoregion), FUN=sum, na.rm=TRUE)
+obw[estvars] <- subset(madat, year==yr & group_name=="WPR", estvars) # Proper sums for aggregates.
 
 # combine together
-oc <- rbind(ob[3:ncol(ob)], obh, obw) 
+oc <- rbind(ob[3:ncol(ob)], obw) # obh, 
 
 # calculate and format vars
 
 oc$e_mdr_num_range <- paste0("(", rounder(oc$e_mdr_num_lo), "&#8211;", rounder(oc$e_mdr_num_hi), ")")
+oc$e_new_mdr_num_range <- paste0("(", rounder(oc$e_mdr_num_lo), "&#8211;", rounder(oc$e_new_mdr_num_hi), ")")
+oc$e_ret_mdr_num_range <- paste0("(", rounder(oc$e_ret_mdr_num_lo), "&#8211;", rounder(oc$e_ret_mdr_num_hi), ")")
 
-oc$pmdr <- .rowsums(oc[c('mdr', 'rapid_dx_dr_r')])
+oc$pmdr <- oc$mdrr.best
 oc$mdr_tx <- .rowsums(oc[c('conf_mdr_tx', 'unconf_mdr_tx')])
 
 oc$pmdr_pct <- rounder(oc$pmdr / oc$e_mdr_num * 100)
 oc$pmdr_pct_range <- paste0("(", rounder(oc$pmdr / oc$e_mdr_num_hi * 100), "&#8211;", rounder(oc$pmdr / oc$e_mdr_num_lo * 100), ")")
+
+oc$pmdr_new_pct <- rounder(oc$mdrr.new / oc$e_new_mdr_num * 100)
+oc$pmdr_new_pct_range <- paste0("(", rounder(oc$mdrr.new / oc$e_new_mdr_num_hi * 100), "&#8211;", rounder(oc$mdrr.new / oc$e_new_mdr_num_lo * 100), ")")
+
+oc$pmdr_ret_pct <- rounder(oc$mdrr.ret / oc$e_ret_mdr_num * 100)
+oc$pmdr_ret_pct_range <- paste0("(", rounder(oc$mdrr.ret / oc$e_ret_mdr_num_hi * 100), "&#8211;", rounder(oc$mdrr.ret / oc$e_ret_mdr_num_lo * 100), ")")
 
 oc$mdr_tx_pct <- rounder(oc$mdr_tx / oc$pmdr * 100)
 
@@ -469,7 +651,7 @@ oc$mdr_tx_pct <- rounder(oc$mdr_tx / oc$pmdr * 100)
 oc$e_mdr_num <- rounder(oc$e_mdr_num)
 
 for(var in 2:ncol(oc)){
-oc[var] <- ifelse(is.na(oc[[var]]), "&#8211;", oc[[var]])
+  oc[var] <- ifelse(is.na(oc[[var]]), "&#8211;", oc[[var]])
 }
 
 # Rename countries
@@ -477,16 +659,52 @@ od <- .WPSARnames(oc, col="area")
 
 rownames(od) <- od$area
 
-oe <- subset(od, select=c("e_mdr_num", "e_mdr_num_range", "pmdr", "pmdr_pct", "pmdr_pct_range", "mdr_tx", "mdr_tx_pct"))
+oe <- subset(od, select=c("e_new_mdr_num", "e_new_mdr_num_range", "e_ret_mdr_num", "e_ret_mdr_num_range", "e_mdr_num", "e_mdr_num_range", "mdrr.new", "mdrr.ret", "pmdr", "pmdr_new_pct", "pmdr_new_pct_range", "pmdr_ret_pct", "pmdr_ret_pct_range", "pmdr_pct", "pmdr_pct_range", "mdr_tx", "mdr_tx_pct"))
 
 # Make that table
-t.est.enroll <- htmlTable(oe, caption = "", rowlabel = "", cgroup = rbind(c("MDR-TB cases<sup>*</sup>", "Enrolled on treatment", rep(NA,3)), c("Estimated", "Detected", "%", "Number", "%")), n.cgroup = rbind(c(3,2, rep(NA,3)), c(2,1,2,1,1)), align=c(rep(c('r','l','r'),2), 'r'), ctable = TRUE, tfoot = "<sup>*</sup> All columns except estimates include Rif-resistant cases confirmed by Xpert only.", headings = NA )
+t.est.enroll <- htmlTable(oe, caption = "", rowlabel = "", cgroup = rbind(c("Estimated", "Notified<sup>a</sup>", "% notified among estimated", "Enrolled on treatment", rep(NA,7)), c(rep(c("New", "Ret.", "Total"),3), "n", "% among detected")), n.cgroup = rbind(c(6,3,6,2, rep(NA,7)), c(rep(2,3),rep(1,3),rep(2,3),1,1)), align=c(rep(c('r','l'),3), rep('r',3), rep(c('r','l'),3), rep('r',2)), ctable = TRUE, tfoot = "<sup>*</sup> All columns except estimates include Rif-resistant cases confirmed by Xpert only. Total MDR-TB cases detected include cases amongst extrapulmonary and from samples taken more than 2 weeks after start of treatment.", headings = NA )
 
 write.csv(oe, file=paste0(pasteLabel("./figure_data/table", tableCount, "t.est.enroll", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
+
+
+# f.alignment ------------------------------------------------------
+figCount <- incCount(figCount, "f.alignment")
+
+tea <- subset(mdat, year %in% 2007:yr & g_whoregion=="WPR", select=c(iso3, country, year, e_mdr_num, e_mdr_num_lo, e_mdr_num_hi, mdr, rapid_dx_dr_r, conf_mdr_tx, unconf_mdr_tx))
+
+# Calculate new vars
+tea$`Cases confirmed` <- .rowsums(tea[c('mdr', 'rapid_dx_dr_r')])
+tea$`Patients enrolled on treatment` <- .rowsums(tea[c('conf_mdr_tx', 'unconf_mdr_tx')])
+
+tea$agg.case.conf <- ifelse(is.na(tea$`Patients enrolled on treatment`), NA, tea$`Cases confirmed`)
+tea$agg.pts.enr <- ifelse(is.na(tea$`Cases confirmed`), NA, tea$`Patients enrolled on treatment`)
+
+teb1 <- aggregate(tea[4:ncol(tea)], by=list(year=tea$year), FUN=sum, na.rm=TRUE)
+teb1$country <- teb1$iso3 <- "WPR"
+
+# Separate hbcs
+teb3 <- tea[tea$iso3 %in% whbc10,] 
+# teb2 <- aggregate(teb3[4:ncol(tea)], by=list(year=teb3$year, area=teb3$country), FUN=sum, na.rm=TRUE)
+
+
+#combine
+teb <- rbind(teb1, teb3)
+
+# replace agg row with reporters only.
+teb[teb$country=="WPR", "Cases confirmed"] <- teb[teb$country=="WPR", "agg.case.conf"]
+teb[teb$country=="WPR", "Patients enrolled on treatment"] <- teb[teb$country=="WPR", "agg.pts.enr"]
+
+tec <- melt(teb[c("country", "year", "Cases confirmed", "Patients enrolled on treatment")], id=1:2)
+
+f.alignment <- ggplot(tec, aes(year, value, color=variable)) + geom_point(alpha=.5) + geom_line(size=1, alpha=.5) + facet_wrap(~country, scales="free_y", ncol=4) + theme_report() + scale_color_brewer("", type="qual", palette=6) + scale_x_continuous("") + scale_y_continuous("MDR-TB cases")+ guides(fill = guide_legend(reverse = TRUE)) + theme(legend.position = "bottom")
+
+write.csv(tec, file=paste0(pasteLabel("./figure_data/figure", figCount, "f.alignment", insLink=FALSE), ".csv"), row.names=FALSE)
+
+
 # f.tx.out --------------------------------------------
 figCount <- incCount(figCount, "f.tx.out")
 
-tra <- subset(tb, year %in% 2006:(yr-2) & g_whoregion=="WPR", select=c(iso3, country, year, mdr_coh, mdr_cur, mdr_cmplt, mdr_died, mdr_fail, mdr_def, mdr_succ))
+tra <- subset(mdat, year %in% 2006:(yr-2) & g_whoregion=="WPR", select=c(iso3, country, year, mdr_coh, mdr_cur, mdr_cmplt, mdr_died, mdr_fail, mdr_def, mdr_succ))
 
 # Fill in 0s for NAs
 tra[is.na(tra)] <- 0
@@ -521,10 +739,10 @@ tableCount <- incCount(tableCount, "t.xdr")
 
 # Notification table
 
-xa <- subset(tb, year==yr & g_whoregion=="WPR", 
- select=c(iso3, g_whoregion, country, 
-mdr, mdr_dst_rlt, mdr_ds_fq2li,
-mdr_dr_fq, mdr_dr_2li, xdr))
+xa <- subset(mdat, year==yr & g_whoregion=="WPR", 
+             select=c(iso3, g_whoregion, country, 
+                      mdr, mdr_dst_rlt, mdr_ds_fq2li,
+                      mdr_dr_fq, mdr_dr_2li, xdr))
 
 xa <- xa[order(xa$country),]
 names(xa)[names(xa)=='country'] <- 'area'
@@ -547,7 +765,7 @@ xe$xdr_pct <- xe$xdr / xe$mdr * 100
 
 # Format
 for(var in 2:ncol(xe)){
-xe[var] <- ifelse(is.na(xe[[var]]), "&#8211;", rounder(xe[[var]]))
+  xe[var] <- ifelse(is.na(xe[[var]]), "&#8211;", rounder(xe[[var]]))
 }
 
 # Rename countries
@@ -565,6 +783,34 @@ t.xdr <- htmlTable(xg, caption = "", rowlabel = "", cgroup = c("", "Resistance t
 write.csv(xf, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-drnotif", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
 
 
+# f.expend ------------------------------------------------------
+figCount <- incCount(figCount, "f.expend")
+
+tfa <- subset(mdat, year %in% 2007:yr & g_whoregion=="WPR", select=c(iso3, country, year, exp_sld, exp_mdrmgt))
+
+tfb1 <- aggregate(tfa[4:ncol(tfa)], by=list(year=tfa$year), FUN=sum, na.rm=TRUE)
+tfb1$country <- tfb1$iso3 <- "WPR"
+
+# Separate hbcs
+tfb3 <- tfa[tfa$iso3 %in% whbc10,] 
+# tfb2 <- aggregate(tfb3[4:ncol(tfa)], by=list(year=tfb3$year, area=tfb3$country), FUN=sum, na.rm=TRUE)
+
+
+#combine
+tfb <- rbind(tfb1, tfb3)
+
+# Calculate new vars
+tfb$exp_pmdt <- .rowsums(tfb[c('exp_sld', 'exp_mdrmgt')]) / 1000
+
+tfc <- subset(tfb, !is.na(exp_pmdt))
+
+
+# tfc <- melt(tfb[c("country", "year", "Cases confirmed", "Patients enrolled on treatment")], id=1:2)
+
+f.expend <- ggplot(tfc, aes(year, exp_pmdt)) + geom_point(alpha=.5) + geom_line(size=1, alpha=.5) + facet_wrap(~country, scales="free_y") + theme_report() + scale_x_continuous("") + scale_y_continuous("US$ (thousands)") + guides(fill = guide_legend(reverse = TRUE)) + theme(legend.position = "none")
+
+write.csv(tfc, file=paste0(pasteLabel("./figure_data/figure", figCount, "f.expend", insLink=FALSE), ".csv"), row.names=FALSE)
+
 ##### GRAPH ON SLD EXPENDITURE
 
 # age.sex.hiv.exploration -----------------------------------------------------
@@ -572,26 +818,26 @@ tableCount <- incCount(tableCount, "age.sex.hiv.exploration")
 
 # Explore the association between MDR adn other things
 
-oa <- subset(tb, year==yr & g_whoregion=="WPR", 
-select=c(iso3, g_whoregion, country, 
-mdr_hivpos, mdr_hivneg, mdr_hivunk, 
-nmdr_hivpos, nmdr_hivneg, nmdr_hivunk, 
-mdr_f, mdr_m, mdr_sexunk, 
-nmdr_f, nmdr_m, nmdr_sexunk, 
-mdr_014, mdr_15plus, mdr_ageunk, 
-nmdr_014, nmdr_15plus, nmdr_ageunk))
+oa3 <- subset(mdat, year==yr & g_whoregion=="WPR", 
+             select=c(iso3, g_whoregion, country, 
+                      mdr_hivpos, mdr_hivneg, mdr_hivunk, 
+                      nmdr_hivpos, nmdr_hivneg, nmdr_hivunk, 
+                      mdr_f, mdr_m, mdr_sexunk, 
+                      nmdr_f, nmdr_m, nmdr_sexunk, 
+                      mdr_014, mdr_15plus, mdr_ageunk, 
+                      nmdr_014, nmdr_15plus, nmdr_ageunk))
 
-oa <- oa[order(oa$country),]
-names(oa)[names(oa)=='country'] <- 'area'
+oa3 <- oa3[order(oa3$country),]
+names(oa3)[names(oa3)=='country'] <- 'area'
 
 
 # make aggregate rows
-ob <- oa[oa$iso3 %in% whbc, ]
+ob <- oa3[oa3$iso3 %in% whbc, ]
 obh <- aggregate(ob[4:ncol(ob)], by=list(area=ob$g_whoregion), FUN=sum, na.rm=TRUE)
 obh$area <- "Total"
 
 
-obw <- aggregate(oa[4:ncol(oa)], by=list(area=oa$g_whoregion), FUN=sum, na.rm=TRUE)
+obw <- aggregate(oa3[4:ncol(oa3)], by=list(area=oa3$g_whoregion), FUN=sum, na.rm=TRUE)
 
 
 # combine together
@@ -602,16 +848,16 @@ oc <- rbind(ob[3:ncol(ob)], obh, obw)
 vars <- data.frame(left=c("hivpos", "f", "014"), middle=c("hivneg", "m", "15plus"), right=c("hiv", "sex", "age"))
 
 for(type in 1:3){
-oc[paste0(vars[type,3], "_rr")] <- (oc[paste0("mdr_", vars[type,1])] /
-.rowsums(oc[c(paste0("mdr_", vars[type,1]), paste0("mdr_", vars[type,2]), paste0("mdr_", vars[type,3], "unk"))])) / 
-(oc[paste0("nmdr_", vars[type,1])] /
-.rowsums(oc[c(paste0("nmdr_", vars[type,1]), paste0("nmdr_", vars[type,2]), paste0("nmdr_", vars[type,3], "unk"))]))
+  oc[paste0(vars[type,3], "_rr")] <- (oc[paste0("mdr_", vars[type,1])] /
+                                        .rowsums(oc[c(paste0("mdr_", vars[type,1]), paste0("mdr_", vars[type,2]), paste0("mdr_", vars[type,3], "unk"))])) / 
+    (oc[paste0("nmdr_", vars[type,1])] /
+       .rowsums(oc[c(paste0("nmdr_", vars[type,1]), paste0("nmdr_", vars[type,2]), paste0("nmdr_", vars[type,3], "unk"))]))
 }
 
 
 # Format
 for(var in c("hiv_rr", "sex_rr", "age_rr")){
-oc[var] <- ifelse(is.na(oc[[var]]), "&#8211;", signif(oc[[var]], 3))
+  oc[var] <- ifelse(is.na(oc[[var]]), "&#8211;", signif(oc[[var]], 3))
 }
 
 
@@ -637,28 +883,28 @@ tableCount <- incCount(tableCount, "t-drestnotif2")
 
 # Notification table
 
-oa <- subset(tb, year==yr & g_whoregion=="WPR", 
-select=c(iso3, g_whoregion, country, 
-e_new_mdr_prop, e_new_mdr_prop_lo, e_new_mdr_prop_hi,
-e_ret_mdr_prop, e_ret_mdr_prop_lo, e_ret_mdr_prop_hi,
-e_mdr_num, e_mdr_num_lo, e_mdr_num_hi,
-c_newunk, c_ret, 
-dst_rlt_new, dst_rlt_ret, dst_rlt_unk, 
-mdr_new,mdr_ret,mdr, rapid_dx_dr_r, 
-conf_mdr_tx, unconf_mdr_tx))
+oa4 <- subset(mdat, year==yr & g_whoregion=="WPR", 
+             select=c(iso3, g_whoregion, country, 
+                      e_new_mdr_prop, e_new_mdr_prop_lo, e_new_mdr_prop_hi,
+                      e_ret_mdr_prop, e_ret_mdr_prop_lo, e_ret_mdr_prop_hi,
+                      e_mdr_num, e_mdr_num_lo, e_mdr_num_hi,
+                      c_newunk, c_ret, 
+                      dst_rlt_new, dst_rlt_ret, dst_rlt_unk, 
+                      mdr_new,mdr_ret,mdr, rapid_dx_dr_r, 
+                      conf_mdr_tx, unconf_mdr_tx))
 
-oa <- oa[order(oa$country),]
-names(oa)[names(oa)=='country'] <- 'area'
+oa4 <- oa4[order(oa4$country),]
+names(oa4)[names(oa4)=='country'] <- 'area'
 estvars <- c("e_new_mdr_prop", "e_new_mdr_prop_lo", "e_new_mdr_prop_hi", "e_ret_mdr_prop", "e_ret_mdr_prop_lo", "e_ret_mdr_prop_hi", "e_mdr_num", "e_mdr_num_lo", "e_mdr_num_hi")
 
 # make aggregate rows
-ob <- oa[oa$iso3 %in% whbc, ]
+ob <- oa4[oa4$iso3 %in% whbc, ]
 obh <- aggregate(ob[4:ncol(ob)], by=list(area=ob$g_whoregion), FUN=sum, na.rm=TRUE)
 obh$area <- "Total"
 obh[estvars] <- NA # Not the proper way to sum bounds. Maybe to replace this later.
 
-obw <- aggregate(oa[4:ncol(oa)], by=list(area=oa$g_whoregion), FUN=sum, na.rm=TRUE)
-obw[estvars] <- subset(emdra, year==yr & group_name=="WPR", estvars) # Proper sums for aggregates.
+obw <- aggregate(oa4[4:ncol(oa4)], by=list(area=oa4$g_whoregion), FUN=sum, na.rm=TRUE)
+obw[estvars] <- subset(madat, year==yr & group_name=="WPR", estvars) # Proper sums for aggregates.
 
 # combine together
 oc <- rbind(ob[3:ncol(ob)], obh, obw) 
@@ -666,9 +912,9 @@ oc <- rbind(ob[3:ncol(ob)], obh, obw)
 # calculate and format vars
 
 for(stima in c("new", "ret")){ # change proportional estimates to percent
-for(bound in c("", "_lo", "_hi")){
-oc[paste0("e_", stima, "_mdr_pct", bound)] <- oc[paste0("e_", stima, "_mdr_prop", bound)] * 100
-}
+  for(bound in c("", "_lo", "_hi")){
+    oc[paste0("e_", stima, "_mdr_pct", bound)] <- oc[paste0("e_", stima, "_mdr_prop", bound)] * 100
+  }
 }
 
 oc$e_new_mdr_pct_range <- paste0("(", rounder(oc$e_new_mdr_pct_lo), "&#8211;", rounder(oc$e_new_mdr_pct_hi), ")")
@@ -685,10 +931,10 @@ oc$mdr_tx <- .rowsums(oc[c('conf_mdr_tx', 'unconf_mdr_tx')])
 
 # Format
 for(var in c("e_new_mdr_pct", "e_ret_mdr_pct", "e_mdr_num", "mdr", "rapid_dx_dr_r", "conf_mdr_tx", "mdr_tx")){
-oc[var] <- ifelse(is.na(oc[[var]]), "&#8211;", rounder(oc[[var]]))
+  oc[var] <- ifelse(is.na(oc[[var]]), "&#8211;", rounder(oc[[var]]))
 }
 for(var in c("mdr_new_pct", "mdr_ret_pct")){
-oc[var] <- ifelse(is.na(oc[[var]]), "&#8211;", oc[[var]])
+  oc[var] <- ifelse(is.na(oc[[var]]), "&#8211;", oc[[var]])
 }
 
 # Rename countries
