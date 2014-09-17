@@ -88,8 +88,9 @@ r_ver <- paste(info$R.version$major, info$R.version$minor, sep=".")
  
 Analysis was conducted by the statistical package R ((ver. `r r_ver`), R Core Team, 2013, Vienna, Austria, www.R-project.org). Due to calls for transparent and reproducible research, we have published programme code to generate the entire contents of this article including all figures and tables by using R with the knitr package (ver. `r info$otherPkgs$knitr$Version`, Yihui Xie, 2013). Readers can download the code (see supplement material) and reproduce all figures and tables under an appropriate personal computing environment. For non-commercial purposes, readers may modify the code to produce figures and tables that are not presented in this article. For instance, readers may wish to produce tables and figures for countries or regions other than the WHO Western Pacific Region.
 
-```{r results='asis', echo=FALSE, message=FALSE}
-# setDownloadURI(list("tb", "script1", "script2"), filename = "MDRWPRO2014", textHTML = "Click here to download the data and scripts.")
+```{r download, results='asis', echo=FALSE, message=FALSE}
+require(base64enc)
+setDownloadURI(c("mdat", "madat", "script1", "script2", "script3", "script4", "WHOmap.print", "centres", "gline", "gpoly", "gworld", "pieces"), filename = "MDRWPRO2014", textHTML = "Click here to download the data and scripts.")
 ```
 
 
