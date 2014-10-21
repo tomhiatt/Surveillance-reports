@@ -40,6 +40,7 @@ require("stringr")
 require("timeSeries")
 require("ggthemes")
 require("Gmisc")
+require("directlabels")
 
 ##################
 # Knitr settings #
@@ -107,16 +108,13 @@ rounder <- function(x, decimals=FALSE) {
 }
 
 # Change names to WPSAR convention
-.WPSARnames <- function(d, col='country', ord='no order'){
+.WPSARnames <- function(d, col='country'){
   d[col] <- as.character(d[[col]])
-  d[col] <- ifelse(d[[col]]=='China, Hong Kong SAR', 'Hong Kong Special Administrative Region (China)', 
-                   ifelse(d[[col]]=='China, Macao SAR', 'Macao Special Administrative Region (China)', 
+  d[col] <- ifelse(d[[col]]=='Lao People\'s Democratic Republic', 'Lao People\'s \nDemocratic \nRepublic', 
+                   ifelse(d[[col]]=='China, Macao SAR', 'China, Macao SAR', 
                           ifelse(d[[col]]=='Micronesia (Federated States of)', 'Micronesia, Federated States of', 
                                  ifelse(d[[col]]=='WPR', 'Western Pacific Region
 ', d[[col]]))))
-  
-#   if(!ord %in% c('wpr')) warning('Not ordering.')
-  if(ord=='wpr')d <- d[match(c("Afghanistan", "Bangladesh", "Brazil", "Cambodia", "China", "DR Congo", "Ethiopia", "India", "Indonesia", "Kenya", "Mozambique","Myanmar", "Nigeria", "Pakistan", "Philippines", "Russian Federation", "South Africa", "Thailand", "Uganda", "UR Tanzania", "Viet Nam", "Zimbabwe", "High-burden countries", "AFR", "AMR", "EMR", "EUR", "SEAR", "WPR", "Global"), d[[col]]),]
   
   return(d)
 }
@@ -203,6 +201,7 @@ tableCat <- function(inFrame) {
 # Create directory and Get data #################
 # NOTE: After this is nearly final I will replace this portion with a subset of only the data used which will be embedded in the final HTML file.
 
+# runprofile()
 # mdat1 <- subset(tb, g_whoregion=="WPR" & year %in% 2007:yr, c("iso3", "g_whoregion", "country", "e_new_mdr_num", "e_new_mdr_num_lo", 
 #  "e_new_mdr_num_hi", "e_ret_mdr_num", "e_ret_mdr_num_lo", "e_ret_mdr_num_hi", 
 #  "e_mdr_num", "e_mdr_num_lo", "e_mdr_num_hi", "mdr_new", "mdr_ret", 
@@ -222,10 +221,10 @@ tableCat <- function(inFrame) {
 #  "ret_rel_clindx", "ret_nrel", "cullpa_new", "cullpa_ret", "cullpa_unk", 
 #  "dr_h_nr_new", "dr_h_nr_ret", "dr_h_nr_unk", "e_pop_num"))
 # 
-# mdat2 <- subset(f, year %in% 2007:yr & g_whoregion=="WPR", select=c(iso3, country, year, exp_sld, exp_mdrmgt))
+# mdat2 <- subset(f, year %in% 2007:yr & g_whoregion=="WPR", select=c(iso3, country, year, exp_sld, exp_mdrmgt, exp_tot, rcvd_sld_gov, rcvd_sld_loan, rcvd_sld_gf, rcvd_sld_grnt, rcvd_mdrmgt_gov, rcvd_mdrmgt_loan, rcvd_mdrmgt_gf, rcvd_mdrmgt_grnt))
 # 
 # mdat <- merge(mdat1, mdat2)
-
+# 
 # madat1 <- subset(emdra,year==yr&group_name=="WPR",c("year", "group_name", "e_new_mdr_num","e_new_mdr_num_lo","e_new_mdr_num_hi","e_ret_mdr_num",
 # "e_ret_mdr_num_lo","e_ret_mdr_num_hi","e_new_mdr_prop","e_new_mdr_prop_lo",
 # "e_new_mdr_prop_hi","e_ret_mdr_prop","e_ret_mdr_prop_lo","e_ret_mdr_prop_hi",
@@ -352,9 +351,15 @@ VNM	Nationwide	2012
 "), header = TRUE, as.is = TRUE)
 # closeAllConnections() # This breaks stuff if left in there.
 
-coa$cat <- cut(coa$year, c(0, 2005, 2010, 2014, Inf), c('1997\u20132004', '2005\u20132009', '2010\u20132013', 'Ongoing survey in 2014'), right=FALSE)
-# 
-m.coverage <- WHOmap.print(coa, legend.title= "Year of most \nrecent data", copyright=FALSE, show=FALSE, zoom="WPR")
+# coa$cat <- cut(coa$year, c(0, 2005, 2010, 2014, Inf), c('1997\u20132004', '2005\u20132009', '2010\u20132013', 'Ongoing survey in 2014'), right=FALSE)
+
+cob <- merge(coa, subset(mdat, year==yr, iso3), all.y=TRUE)
+cob$cat <- cut(cob$year, c(0, 2005, 2010, 2014, Inf), c('1997\u20132004', '2005\u20132009', '2010\u20132013', 'Ongoing survey in 2014'), right=FALSE)
+
+# levels(cob$cat) <- c(levels(cob$cat), "No data")
+# cob[is.na(cob$cat), "cat"] <- "No data"
+
+m.coverage <- WHOmap.print(cob, legend.title= "Year of most \nrecent data", na.label = "No recent data", copyright=FALSE, show=FALSE, zoom="WPR")
 
 write.csv(coa, file=paste0(pasteLabel("./figure_data/table", tableCount, "m.coverage", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
 
@@ -434,6 +439,68 @@ oe <- subset(od, select=c("e_new_mdr_num", "e_new_mdr_num_range", "e_new_mdr_pct
 t.drestnotif <- htmlTable(oe, caption = "", rowlabel = "", cgroup = rbind(c("MDR-TB among new", "MDR-TB among retreatment", "Total MDR-TB cases", rep(NA,2)), c(rep(c("n", "%"),2), "n <br>___________________")), n.cgroup = rbind(c(4,4,2, rep(NA,2)), rep(2,5)), align=rep(c('r', 'l'),10), ctable = TRUE, headings = NA )
 
 write.csv(oe, file=paste0(pasteLabel("./figure_data/table", tableCount, "t.drestnotif", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
+
+# f.estxy ----------------------------------------------------
+figCount <- incCount(figCount, "f.estxy")
+
+ea <- subset(mdat, year==yr & g_whoregion=="WPR", 
+              select=c(country, 
+                       e_new_mdr_prop, e_new_mdr_prop_lo, e_new_mdr_prop_hi,
+                       e_ret_mdr_prop, e_ret_mdr_prop_lo, e_ret_mdr_prop_hi
+                       ))
+
+names(ea)[names(ea)=='country'] <- 'area'
+
+eb <- subset(madat, year==yr & group_name=="WPR", c(group_name, e_new_mdr_prop, e_new_mdr_prop_lo, e_new_mdr_prop_hi, e_ret_mdr_prop, e_ret_mdr_prop_lo, e_ret_mdr_prop_hi))
+
+names(eb)[names(eb)=='group_name'] <- 'area'
+
+# combine together
+ec <- .WPSARnames(rbind(ea, eb))
+
+# ec$mdr.sum <- ec$e_new_mdr_prop + ec$e_ret_mdr_prop
+# 
+# ec$dupe <- duplicated(ec$mdr.sum)
+# ec$counter <- 1
+# ed <- aggregate(ec["counter"], by=list(mdr.sum=ec$mdr.sum), FUN=sum, na.rm=TRUE)
+# 
+# ee <- merge(ec[-ncol(ec)], ed)
+# ee$area2 <- ifelse(ee$counter==1, ee$area, paste(ee$counter, "countries"))
+
+# Remove estimates that only use the regional average
+ec$dupe <- ifelse(signif(ec$e_new_mdr_prop,2) %in% c(0, 0.044, 0.045) | signif(ec$e_ret_mdr_prop,2) %in% c(0, 0.222), TRUE, FALSE)
+# 
+
+ef <- subset(ec, !dupe)
+
+#####
+# # This is currently a dirty hack. I should try and fix it to more systematic.
+# library(dplyr)
+# ef <- ef[!grepl("countries", ef$area2),] %>%
+#   filter(area2 %nin% c("Brunei Darussalam", "Solomon Islands", "Marshall Islands", "Vanuatu", "WPR", "Malaysia") )
+# #   ef[!grepl("Brunei", ef$area2),] %>%
+# #   ef[!grepl("Solomon", ef$area2),] %>%
+# #   ef[!grepl("Marshall", ef$area2),] %>%
+# #   ef[!grepl("Vanu", ef$area2),] %>%
+#   ef[!grepl("WPR", ef$area2),]
+
+
+
+# library(dplyr)
+# lm(ef$e_ret_mdr_prop ~ ef$e_new_mdr_prop) %>%
+#   summary()
+
+# ggplot(ef, aes(e_new_mdr_prop, e_ret_mdr_prop, color=area)) + geom_point() + geom_text(aes(label=area), hjust=1.25, vjust=0.3, size=4) + geom_smooth(aes(group=1)) + theme_report() + theme(legend.position = "none")
+#####
+
+p <- ggplot(ef, aes(e_new_mdr_prop, e_ret_mdr_prop, color=area)) + geom_point() + geom_smooth(aes(group=1), method="lm", se=T, fullrange=TRUE) + theme_report() + theme(legend.position = "none") + labs(x="Proportion of MDR-TB among new cases", y="Proportion of MDR-TB among retreatment cases") + expand_limits(x=0, y=0)
+f.estxy <- direct.label(p)
+f.estxy
+
+# geom_pointrange gives you bars.I need to ask PG how he does them on the x axis as well. These ranges are kind of dumb looking here. , ymin=e_ret_mdr_prop_lo, ymax=e_ret_mdr_prop_hi
+
+write.csv(ef, file=paste0(pasteLabel("./figure_data/figure", figCount, "f.estxy", insLink=FALSE), ".csv"), row.names=FALSE)
+
 
 # t.drnotif -------------------------------------------------------------
 tableCount <- incCount(tableCount, "t.drnotif")
@@ -580,7 +647,7 @@ dse <- .WPSARnames(dsd, col="area")
 dsf <- melt(subset(dse, select=c(area, year, dstx_pct, mdrr_pct)), id=1:2)
 dsf <- subset(dsf, !is.na(value))
 
-f.dst.trend <- facetAdjust(ggplot(dsf, aes(year, value, color=variable)) + geom_point(alpha=.5) + geom_line(size=1, alpha=.5) + facet_wrap(~area, scales="free_y") + theme_report() + scale_color_brewer("", type="qual", palette=6, breaks=c("dstx_pct", "mdrr_pct"), labels=c(expression("% DST among pulmonary cases"^a), "% MDR-TB or RR-TB among tested")) + scale_x_continuous("") + scale_y_continuous("Percent")+ guides(fill = guide_legend(reverse = TRUE)) + theme(legend.position = "bottom"))
+f.dst.trend <- facetAdjust(ggplot(dsf, aes(year, value, color=variable)) + geom_point(alpha=.5) + geom_line(size=1, alpha=.5) + facet_wrap(~area, scales="free_y") + theme_report() + scale_color_brewer("", type="qual", palette=6, breaks=c("dstx_pct", "mdrr_pct"), labels=c(expression("% DST among pulmonary cases"^a), "% MDR-TB or RR-TB among tested")) + scale_x_continuous("", breaks=seq(min(dsf$year), max(dsf$year),2)) + scale_y_continuous("Percent")+ guides(fill = guide_legend(reverse = TRUE)) + theme(legend.position = "bottom") + expand_limits(y=0))
 
 write.csv(dsf, file=paste0(pasteLabel("./figure_data/figure", figCount, "f.dst.trend", insLink=FALSE), ".csv"), row.names=FALSE)
 
@@ -662,7 +729,7 @@ rownames(od) <- od$area
 oe <- subset(od, select=c("e_new_mdr_num", "e_new_mdr_num_range", "e_ret_mdr_num", "e_ret_mdr_num_range", "e_mdr_num", "e_mdr_num_range", "mdrr.new", "mdrr.ret", "pmdr", "pmdr_new_pct", "pmdr_new_pct_range", "pmdr_ret_pct", "pmdr_ret_pct_range", "pmdr_pct", "pmdr_pct_range", "mdr_tx", "mdr_tx_pct"))
 
 # Make that table
-t.est.enroll <- htmlTable(oe, caption = "", rowlabel = "", cgroup = rbind(c("Estimated", "Notified<sup>a</sup>", "% notified among estimated", "Enrolled on treatment", rep(NA,7)), c(rep(c("New", "Ret.", "Total"),3), "n", "% among detected")), n.cgroup = rbind(c(6,3,6,2, rep(NA,7)), c(rep(2,3),rep(1,3),rep(2,3),1,1)), align=c(rep(c('r','l'),3), rep('r',3), rep(c('r','l'),3), rep('r',2)), ctable = TRUE, tfoot = "<sup>*</sup> All columns except estimates include Rif-resistant cases confirmed by Xpert only. Total MDR-TB cases detected include cases amongst extrapulmonary and from samples taken more than 2 weeks after start of treatment.", headings = NA )
+t.est.enroll <- htmlTable(oe, caption = "", rowlabel = "", cgroup = rbind(c("Estimated", "Notified<sup>a</sup>", "% notified among estimated", "Enrolled on treatment", rep(NA,7)), c(rep(c("New", "Ret.", "Total"),3), "n", "% among detected")), n.cgroup = rbind(c(6,3,6,2, rep(NA,7)), c(rep(2,3),rep(1,3),rep(2,3),1,1)), align=c(rep(c('r','l'),3), rep('r',3), rep(c('r','l'),3), rep('r',2)), ctable = TRUE, tfoot = "<sup>a</sup> All columns except estimates include Rif-resistant cases confirmed by Xpert only. Total MDR-TB cases detected include cases with history unknown, amongst extrapulmonary and from samples taken more than 2 weeks after start of treatment.<br>", headings = NA )
 
 write.csv(oe, file=paste0(pasteLabel("./figure_data/table", tableCount, "t.est.enroll", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
 
@@ -696,7 +763,7 @@ teb[teb$country=="WPR", "Patients enrolled on treatment"] <- teb[teb$country=="W
 
 tec <- melt(teb[c("country", "year", "Cases confirmed", "Patients enrolled on treatment")], id=1:2)
 
-f.alignment <- ggplot(tec, aes(year, value, color=variable)) + geom_point(alpha=.5) + geom_line(size=1, alpha=.5) + facet_wrap(~country, scales="free_y", ncol=4) + theme_report() + scale_color_brewer("", type="qual", palette=6) + scale_x_continuous("") + scale_y_continuous("MDR-TB cases")+ guides(fill = guide_legend(reverse = TRUE)) + theme(legend.position = "bottom")
+f.alignment <- ggplot(tec, aes(year, value, color=variable)) + geom_point(alpha=.5) + geom_line(size=1, alpha=.5) + facet_wrap(~country, scales="free_y", ncol=4) + theme_report() + scale_color_brewer("", type="qual", palette=6) + scale_x_continuous("", breaks=seq(min(tec$year), max(tec$year),2)) + scale_y_continuous("MDR-TB cases")+ guides(fill = guide_legend(reverse = TRUE)) + theme(legend.position = "bottom")
 
 write.csv(tec, file=paste0(pasteLabel("./figure_data/figure", figCount, "f.alignment", insLink=FALSE), ".csv"), row.names=FALSE)
 
@@ -720,16 +787,18 @@ trb2 <- rename(trb2, c(country="area"))
 #combine
 trb <- rbind(trb1, trb2)
 
+trb <- .WPSARnames(trb, col = "area")
+
 trb$mdr_succ <- ifelse(trb$year>=2011, trb$mdr_succ, trb$mdr_cur + trb$mdr_cmplt)
 trb$Success <- trb$mdr_succ / trb$mdr_coh * 100
 trb$Died <- trb$mdr_died / trb$mdr_coh * 100
 trb$Failed <- trb$mdr_fail / trb$mdr_coh * 100
-trb$Defaulted <- trb$mdr_def / trb$mdr_coh * 100
+trb$`Lost to follow-up` <- trb$mdr_def / trb$mdr_coh * 100
 trb$`Not evaluated` <- (trb$mdr_coh - (trb$mdr_succ + trb$mdr_died + trb$mdr_fail + trb$mdr_def)) / trb$mdr_coh * 100
 
-trc <- melt(trb[c("area", "year", "Success", "Died", "Failed", "Defaulted", "Not evaluated")], id=1:2)
+trc <- melt(trb[c("area", "year", "Success", "Died", "Failed", "Lost to follow-up", "Not evaluated")], id=1:2)
 
-f.tx.out <- ggplot(trc, aes(year, value, fill=variable)) + geom_bar(stat="identity", position="stack") + facet_wrap(~area) + theme_report() + scale_fill_brewer('Outcome', type="qual", palette=6) + scale_x_continuous("") + scale_y_continuous("Percent of cohort") + coord_cartesian(ylim=c(0,100)) + guides(fill = guide_legend(reverse = TRUE))
+f.tx.out <- ggplot(trc, aes(year, value, fill=variable)) + geom_bar(stat="identity", position="stack") + facet_wrap(~area) + theme_report() + scale_fill_brewer('Outcome', type="qual", palette=6) + scale_x_continuous("", breaks=seq(min(trc$year), max(trc$year),2)) + scale_y_continuous("Percent of cohort") + coord_cartesian(ylim=c(0,100)) + guides(fill = guide_legend(reverse = TRUE))
 
 write.csv(trc, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-mtxout-bar", insLink=FALSE), ".csv"), row.names=FALSE)
 
@@ -807,11 +876,10 @@ tfc <- subset(tfb, !is.na(exp_pmdt))
 
 # tfc <- melt(tfb[c("country", "year", "Cases confirmed", "Patients enrolled on treatment")], id=1:2)
 
-f.expend <- ggplot(tfc, aes(year, exp_pmdt)) + geom_point(alpha=.5) + geom_line(size=1, alpha=.5) + facet_wrap(~country, scales="free_y") + theme_report() + scale_x_continuous("") + scale_y_continuous("US$ (thousands)") + guides(fill = guide_legend(reverse = TRUE)) + theme(legend.position = "none")
+f.expend <- ggplot(tfc, aes(year, exp_pmdt)) + geom_point(alpha=.5) + geom_line(size=1, alpha=.5) + facet_wrap(~country, scales="free_y") + theme_report() + scale_x_continuous("", breaks=seq(min(tfc$year), max(tfc$year),2)) + scale_y_continuous("US$ (thousands)") + guides(fill = guide_legend(reverse = TRUE)) + theme(legend.position = "none")
 
 write.csv(tfc, file=paste0(pasteLabel("./figure_data/figure", figCount, "f.expend", insLink=FALSE), ".csv"), row.names=FALSE)
 
-##### GRAPH ON SLD EXPENDITURE
 
 # age.sex.hiv.exploration -----------------------------------------------------
 tableCount <- incCount(tableCount, "age.sex.hiv.exploration")
@@ -843,22 +911,36 @@ obw <- aggregate(oa3[4:ncol(oa3)], by=list(area=oa3$g_whoregion), FUN=sum, na.rm
 # combine together
 oc <- rbind(ob[3:ncol(ob)], obh, obw) 
 
-# calculate and format vars
+# calculate and format Risk ratios (the increased risk of having MDR if you're male vs female, etc.) I'm ignoring unkowns here.
 
 vars <- data.frame(left=c("hivpos", "f", "014"), middle=c("hivneg", "m", "15plus"), right=c("hiv", "sex", "age"))
 
-for(type in 1:3){
-  oc[paste0(vars[type,3], "_rr")] <- (oc[paste0("mdr_", vars[type,1])] /
-                                        .rowsums(oc[c(paste0("mdr_", vars[type,1]), paste0("mdr_", vars[type,2]), paste0("mdr_", vars[type,3], "unk"))])) / 
-    (oc[paste0("nmdr_", vars[type,1])] /
-       .rowsums(oc[c(paste0("nmdr_", vars[type,1]), paste0("nmdr_", vars[type,2]), paste0("nmdr_", vars[type,3], "unk"))]))
+for(type in 1:3){ # mdr kids over all kids divided by mdr adults over all adults
+  oc[paste0(vars[type,3], "_rr", vars[type,1], "vs", vars[type,2])] <- (oc[paste0("mdr_", vars[type,1])] /
+                                        .rowsums(oc[c(paste0("mdr_", vars[type,1]), paste0("nmdr_", vars[type,1]))])) /
+    
+    (oc[paste0("mdr_", vars[type,2])] /
+       .rowsums(oc[c(paste0("mdr_", vars[type,2]), paste0("nmdr_", vars[type,2]))]))
 }
 
 
 # Format
-for(var in c("hiv_rr", "sex_rr", "age_rr")){
+for(var in c("hiv_rrhivposvshivneg", "sex_rrfvsm", "age_rr014vs15plus")){
   oc[var] <- ifelse(is.na(oc[[var]]), "&#8211;", signif(oc[[var]], 3))
 }
+
+# for(type in 1:3){
+#   oc[paste0(vars[type,3], "_rr")] <- (oc[paste0("mdr_", vars[type,1])] /
+#                                         .rowsums(oc[c(paste0("mdr_", vars[type,1]), paste0("mdr_", vars[type,2]), paste0("mdr_", vars[type,3], "unk"))])) / 
+#     (oc[paste0("nmdr_", vars[type,1])] /
+#        .rowsums(oc[c(paste0("nmdr_", vars[type,1]), paste0("nmdr_", vars[type,2]), paste0("nmdr_", vars[type,3], "unk"))]))
+# }
+# 
+# 
+# # Format
+# for(var in c("hiv_rr", "sex_rr", "age_rr")){
+#   oc[var] <- ifelse(is.na(oc[[var]]), "&#8211;", signif(oc[[var]], 3))
+# }
 
 
 # Rename countries
@@ -866,11 +948,11 @@ od <- .WPSARnames(oc, col="area")
 
 rownames(od) <- od$area
 
-oe <- subset(od, select=c("hiv_rr", "sex_rr", "age_rr"))
+oe <- subset(od, select=c("hiv_rrhivposvshivneg", "sex_rrfvsm", "age_rr014vs15plus"))
 
 # Make that table
 age.sex.hiv.exploration <- htmlTable(oe, caption = "Risk ratios for MDR-TB")
-
+# View(od)
 
 write.csv(oe, file=paste0(pasteLabel("./figure_data/table", tableCount, "age.sex.hiv.exploration", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
 

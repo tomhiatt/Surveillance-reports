@@ -122,7 +122,12 @@ t.drestnotif
 ### MDR-TB rate
 The Region includes Member States with a wide range of MDR-TB rate and case load. Table 1 shows the rate of MDR-TB of countries and areas reported at least 1 MDR-Tb case in 2013. The proportion of previously treated TB cases with MDR-TB ranged from 0% to 34%. Mongolia has the highest estimated proportion 34% (95% CI: 29-38) of MDR-TB among retreatment cases. Countries with more than 20% MDR-TB among retreatment cases are China (26%), Mongolia (34%), New Zealand(20%), Philippines (21%) and Viet Nam (23%).The proportion of new TB cases with MDR-TB ranged from 0% to 6%.  China has the highest proportion 6% (95% CI: 5-7) of MDR-TB among new cases.Combining data from all countries of the Region, 4% (95% confidence interval: 3-6) of new and 22% (95% CI: 18-26) of previously treated TB cases were estimated to have MDR-TB.  Though highest % of MDR-TB is observed among retreatment cases, absolute number of estimated MDR cases is lower among retreatment cases than the new cases. Among the total estimated MDR-TB, 24% are from retreatment cases and 76% are from new cases.
 
+<a id="f.estxy"></a> 
 
+##### `r I(pasteLabel("Figure", figCount, "f.estxy", insLink=FALSE))`. Estimated proportion of MDR-TB among new and retreatment cases, `r yr`
+``` {r f.estxy, fig.width=9, fig.height=9}
+f.estxy
+```
 
 
 ### Management of drug resistant TB: 
@@ -182,8 +187,8 @@ f.alignment
 
 #### Treatment outcome
 ``` {r d.tx.out}
-txo1 <- subset(mdat, year==yr-2 & g_whoregion=="WPR" & !is.na(mdr_coh) & mdr_coh!=0, select=c(country, mdr_coh, mdr_succ, mdr_def, mdr_died))
-txo1$c_tsrm <- rounder(txo1$mdr_succ / txo1$mdr_coh * 100)
+txo1 <- .WPSARnames(subset(mdat, year==yr-2 & g_whoregion=="WPR" & !is.na(mdr_coh) & mdr_coh!=0, select=c(country, mdr_coh, mdr_succ, mdr_def, mdr_died)))
+txo1$c_tsrm <- txo1$mdr_succ / txo1$mdr_coh * 100
 txo2 <- nrow(txo1)
 txo3 <- rounder(sum(txo1$mdr_succ) / sum(txo1$mdr_coh) * 100)
 txo4 <- rounder(sum(txo1$mdr_def) / sum(txo1$mdr_coh) * 100)
@@ -218,13 +223,24 @@ t.xdr
 ```
 
 ### Funding situation; drug cost
+``` {r d.expend}
+exp1 <- subset(mdat, year==yr & g_whoregion=="WPR", select=c(exp_sld, exp_mdrmgt, exp_tot, rcvd_sld_gov, rcvd_sld_loan, rcvd_sld_gf, rcvd_sld_grnt, rcvd_mdrmgt_gov, rcvd_mdrmgt_loan, rcvd_mdrmgt_gf, rcvd_mdrmgt_grnt))
+exp2ex <- sum(exp1$exp_sld, exp1$exp_mdrmgt, na.rm=TRUE)
+exp2rc <- sum(exp1$rcvd_sld_gov, exp1$rcvd_mdrmgt_gov, exp1$rcvd_sld_loan, exp1$rcvd_mdrmgt_loan, exp1$rcvd_sld_gf, exp1$rcvd_mdrmgt_gf, exp1$rcvd_sld_grnt, exp1$rcvd_mdrmgt_grnt, na.rm=TRUE)
+exp3 <- signif(exp2ex / 1e6, 3)
+exp4 <- signif(exp2ex / sum(exp1$exp_tot, na.rm=TRUE) * 100, 3)
+exp5 <- signif(sum(exp1$rcvd_sld_gov, exp1$rcvd_mdrmgt_gov, na.rm=TRUE) / exp2rc * 100, 3)
+exp6 <- signif(sum(exp1$rcvd_sld_loan, exp1$rcvd_mdrmgt_loan, na.rm=TRUE) / exp2rc * 100, 3)
+exp7 <- signif(sum(exp1$rcvd_sld_gf, exp1$rcvd_mdrmgt_gf, exp1$rcvd_sld_grnt, exp1$rcvd_mdrmgt_grnt, na.rm=TRUE) / exp2rc * 100, 3)
+exp8 <- signif(sum(exp1$exp_sld, na.rm=TRUE) / exp2ex * 100, 3)
+```
 
-X million USD was spent for MDR-TB management which was X% of the total budget of NTP in 2013. Among the total spent X% is from domestic source (Government allocation), X% from loan and X% from grant. Second line drugs are X% of the total cost for MDR-TB management. Expenditure for SLD has been significantly increased over years.
+`r exp3` million USD was spent for MDR-TB management which was `r exp4`% of the total expenditure of NTPs in 2013. Of funding received `r exp5`% is from domestic sources (government allocation), `r exp6`% from loans and the remaining `r exp7`% from grants. Second-line drugs are `r exp8`% of the total cost for MDR-TB management. Expenditure for SLD has been significantly increased over years.
 
 
 <a id="f.expend"></a> 
 
-##### `r I(pasteLabel("Figure", figCount, "f.expend", insLink=FALSE))`. Trend of notification and enrolment of MDR-TB cases in the Western Pacific Region, 2006`r paste0("\u2013", yr-2)`
+##### `r I(pasteLabel("Figure", figCount, "f.expend", insLink=FALSE))`. Trend of expenditure on MDR-TB in countries of the Western Pacific Region, 2007`r paste0("\u2013", yr)`
 Graph showing notification and enrolment
 ``` {r f.expend, fig.width=9, fig.height=9}
 f.expend
