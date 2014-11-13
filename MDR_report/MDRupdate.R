@@ -19,7 +19,7 @@
 # - Open script1.Rmd in Rstudio and run.
 
 # TO DELETE BEFORE PUBLICATION
-# setwd("./MDR_report")
+# setwd("D:/Users/hiattt/Dropbox/Code/Surveillance reports/MDR_report")
 
 # script1 <- readChar("./MDRupdate.Rmd", file.info("./MDRupdate.Rmd")$size)
 # script2 <- readChar("./MDRupdate.R", file.info("./MDRupdate.R")$size)
@@ -41,6 +41,7 @@ require("timeSeries")
 require("ggthemes")
 require("Gmisc")
 require("directlabels")
+require("dplyr")
 
 ##################
 # Knitr settings #
@@ -361,7 +362,7 @@ cob$cat <- cut(cob$year, c(0, 2005, 2010, 2014, Inf), c('1997\u20132004', '2005\
 
 m.coverage <- WHOmap.print(cob, legend.title= "Year of most \nrecent data", na.label = "No recent data", copyright=FALSE, show=FALSE, zoom="WPR")
 
-write.csv(coa, file=paste0(pasteLabel("./figure_data/table", tableCount, "m.coverage", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
+write.csv(coa, file=paste0(pasteLabel("./figure_data/figure", figCount, "m.coverage", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
 
 # t.drestnotif ----------------------------------------------------
 tableCount <- incCount(tableCount, "t.drestnotif")
@@ -487,19 +488,18 @@ ef <- subset(ec, !dupe)
 
 
 # library(dplyr)
-# lm(ef$e_ret_mdr_prop ~ ef$e_new_mdr_prop) %>%
-#   summary()
+mod <- lm(ef$e_ret_mdr_prop ~ ef$e_new_mdr_prop) %>%
+  summary()
 
-# ggplot(ef, aes(e_new_mdr_prop, e_ret_mdr_prop, color=area)) + geom_point() + geom_text(aes(label=area), hjust=1.25, vjust=0.3, size=4) + geom_smooth(aes(group=1)) + theme_report() + theme(legend.position = "none")
-#####
 
-p <- ggplot(ef, aes(e_new_mdr_prop, e_ret_mdr_prop, color=area)) + geom_point() + geom_smooth(aes(group=1), method="lm", se=T, fullrange=TRUE) + theme_report() + theme(legend.position = "none") + labs(x="Proportion of MDR-TB among new cases", y="Proportion of MDR-TB among retreatment cases") + expand_limits(x=0, y=0)
-f.estxy <- direct.label(p)
+
+p <- ggplot(ef, aes(e_new_mdr_prop, e_ret_mdr_prop, color=area)) + geom_point() + geom_smooth(aes(group=1), method="lm", se=TRUE, fullrange=TRUE) + theme_report() + theme(legend.position = "none") + labs(x="Proportion of MDR-TB among new cases", y="Proportion of MDR-TB among retreatment cases") + expand_limits(x=0, y=0)
+f.estxy <- direct.label(p) + annotate("text", x = .04, y = .4, label = paste0(as.character(expression("r2")), "=", signif(mod$r.squared,3))) 
 f.estxy
 
 # geom_pointrange gives you bars.I need to ask PG how he does them on the x axis as well. These ranges are kind of dumb looking here. , ymin=e_ret_mdr_prop_lo, ymax=e_ret_mdr_prop_hi
 
-write.csv(ef, file=paste0(pasteLabel("./figure_data/figure", figCount, "f.estxy", insLink=FALSE), ".csv"), row.names=FALSE)
+write.csv(ef, file=paste0(pasteLabel("./figure_data/figure", figCount, "f.estxy", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
 
 
 # t.drnotif -------------------------------------------------------------
@@ -649,7 +649,7 @@ dsf <- subset(dsf, !is.na(value))
 
 f.dst.trend <- facetAdjust(ggplot(dsf, aes(year, value, color=variable)) + geom_point(alpha=.5) + geom_line(size=1, alpha=.5) + facet_wrap(~area, scales="free_y") + theme_report() + scale_color_brewer("", type="qual", palette=6, breaks=c("dstx_pct", "mdrr_pct"), labels=c(expression("% DST among pulmonary cases"^a), "% MDR-TB or RR-TB among tested")) + scale_x_continuous("", breaks=seq(min(dsf$year), max(dsf$year),2)) + scale_y_continuous("Percent")+ guides(fill = guide_legend(reverse = TRUE)) + theme(legend.position = "bottom") + expand_limits(y=0))
 
-write.csv(dsf, file=paste0(pasteLabel("./figure_data/figure", figCount, "f.dst.trend", insLink=FALSE), ".csv"), row.names=FALSE)
+write.csv(dsf, file=paste0(pasteLabel("./figure_data/figure", figCount, "f.dst.trend", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
 
 
 
@@ -763,9 +763,9 @@ teb[teb$country=="WPR", "Patients enrolled on treatment"] <- teb[teb$country=="W
 
 tec <- melt(teb[c("country", "year", "Cases confirmed", "Patients enrolled on treatment")], id=1:2)
 
-f.alignment <- ggplot(tec, aes(year, value, color=variable)) + geom_point(alpha=.5) + geom_line(size=1, alpha=.5) + facet_wrap(~country, scales="free_y", ncol=4) + theme_report() + scale_color_brewer("", type="qual", palette=6) + scale_x_continuous("", breaks=seq(min(tec$year), max(tec$year),2)) + scale_y_continuous("MDR-TB cases")+ guides(fill = guide_legend(reverse = TRUE)) + theme(legend.position = "bottom")
+f.alignment <- ggplot(tec, aes(year, value, color=variable)) + geom_point(alpha=.5) + geom_line(size=1, alpha=.5) + facet_wrap(~country, scales="free_y", ncol=4) + theme_report() + scale_color_brewer("", type="qual", palette=6) + scale_x_continuous("", breaks=seq(min(tec$year), max(tec$year),2)) + scale_y_continuous("MDR-TB cases")+ guides(fill = guide_legend(reverse = TRUE)) + theme(legend.position = "bottom") + expand_limits(y=0)
 
-write.csv(tec, file=paste0(pasteLabel("./figure_data/figure", figCount, "f.alignment", insLink=FALSE), ".csv"), row.names=FALSE)
+write.csv(tec, file=paste0(pasteLabel("./figure_data/figure", figCount, "f.alignment", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
 
 
 # f.tx.out --------------------------------------------
@@ -800,7 +800,7 @@ trc <- melt(trb[c("area", "year", "Success", "Died", "Failed", "Lost to follow-u
 
 f.tx.out <- ggplot(trc, aes(year, value, fill=variable)) + geom_bar(stat="identity", position="stack") + facet_wrap(~area) + theme_report() + scale_fill_brewer('Outcome', type="qual", palette=6) + scale_x_continuous("", breaks=seq(min(trc$year), max(trc$year),2)) + scale_y_continuous("Percent of cohort") + coord_cartesian(ylim=c(0,100)) + guides(fill = guide_legend(reverse = TRUE))
 
-write.csv(trc, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-mtxout-bar", insLink=FALSE), ".csv"), row.names=FALSE)
+write.csv(trc, file=paste0(pasteLabel("./figure_data/figure", figCount, "f.tx.out", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
 
 
 # t.xdr -----------------------------------------------------------
@@ -849,7 +849,7 @@ names(xg) <- c("MDR-TB", "% 2<sup>nd</sup>-line DST", rep(c("Number", "%"),3))
 # Make that table
 t.xdr <- htmlTable(xg, caption = "", rowlabel = "", cgroup = c("", "Resistance to FQ", "Resistance to 2<sup>nd</sup>-line injectible", "XDR-TB"), n.cgroup = c(2,2,2,2), ctable = TRUE, tfoot = "")
 
-write.csv(xf, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-drnotif", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
+write.csv(xf, file=paste0(pasteLabel("./figure_data/table", tableCount, "t.xdr", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
 
 
 # f.expend ------------------------------------------------------
@@ -876,9 +876,9 @@ tfc <- subset(tfb, !is.na(exp_pmdt))
 
 # tfc <- melt(tfb[c("country", "year", "Cases confirmed", "Patients enrolled on treatment")], id=1:2)
 
-f.expend <- ggplot(tfc, aes(year, exp_pmdt)) + geom_point(alpha=.5) + geom_line(size=1, alpha=.5) + facet_wrap(~country, scales="free_y") + theme_report() + scale_x_continuous("", breaks=seq(min(tfc$year), max(tfc$year),2)) + scale_y_continuous("US$ (thousands)") + guides(fill = guide_legend(reverse = TRUE)) + theme(legend.position = "none")
+f.expend <- ggplot(tfc, aes(year, exp_pmdt)) + geom_point(alpha=.5) + geom_line(size=1, alpha=.5) + facet_wrap(~country, scales="free_y") + theme_report() + scale_x_continuous("", breaks=seq(min(tfc$year), max(tfc$year),2)) + scale_y_continuous("US$ (thousands)") + guides(fill = guide_legend(reverse = TRUE)) + theme(legend.position = "none") + expand_limits(y=0)
 
-write.csv(tfc, file=paste0(pasteLabel("./figure_data/figure", figCount, "f.expend", insLink=FALSE), ".csv"), row.names=FALSE)
+write.csv(tfc, file=paste0(pasteLabel("./figure_data/figure", figCount, "f.expend", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
 
 
 # age.sex.hiv.exploration -----------------------------------------------------
@@ -1026,11 +1026,11 @@ rownames(od) <- od$area
 
 oe <- subset(od, select=c("mdr_new_pct", "e_new_mdr_pct", "e_new_mdr_pct_range", "mdr_ret_pct", "e_ret_mdr_pct", "e_ret_mdr_pct_range", "mdr", "e_mdr_num", "e_mdr_num_range", "rapid_dx_dr_r", "conf_mdr_tx", "mdr_tx"))
 
-##### `r I(pasteLabel("Table", tableCount, "t-drestnotif", insLink=FALSE))`. Estimated drug resistant cases compared with notified cases and cases put on treatment, `r yr`
+##### `r I(pasteLabel("Table", tableCount, "t-drestnotif", insLink=FALSE, sepper=""))`. Estimated drug resistant cases compared with notified cases and cases put on treatment, `r yr`
 
 drestnotif2 <- htmlTable(oe, caption = "", rowlabel = "", cgroup = rbind(c("% MDR-TB among new", "% MDR-TB among ret.", "MDR-TB cases", "", rep(NA,5)), c(rep(c("Detected", "Estimated"),2), "Detected", "Estimated <br>___________________", "RR cases<sup>*</sup>", "Confirmed MDR-TB on treatment", "Total MDR-TB on treatment")), n.cgroup = rbind(c(3,3,3,3, rep(NA,5)), c(1,2,1,2,1,2,1,1,1)), align=c(rep(c('c','r', 'l'),3), rep("c",3) ), ctable = TRUE, tfoot = "<sup>*</sup> Additional Rifampicine resistant cases detected by Xpert.", headings = NA )
 
-write.csv(oe, file=paste0(pasteLabel("./figure_data/table", tableCount, "drestnotif2", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
+write.csv(oe, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-drestnotif2", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
 
 # Bit to copy html file over
 # file.copy("D:/Users/hiattt/Dropbox/Code/Surveillance reports/MDR_report/MDRupdate.html", "D:/Users/hiattt/Dropbox/STB-WPRO/MDR article/MDRupdate.html", overwrite = TRUE)
