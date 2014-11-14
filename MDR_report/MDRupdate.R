@@ -494,7 +494,7 @@ mod <- lm(ef$e_ret_mdr_prop ~ ef$e_new_mdr_prop) %>%
 
 
 p <- ggplot(ef, aes(e_new_mdr_prop, e_ret_mdr_prop, color=area)) + geom_point() + geom_smooth(aes(group=1), method="lm", se=TRUE, fullrange=TRUE) + theme_report() + theme(legend.position = "none") + labs(x="Proportion of MDR-TB among new cases", y="Proportion of MDR-TB among retreatment cases") + expand_limits(x=0, y=0)
-f.estxy <- direct.label(p) + annotate("text", x = .04, y = .4, label = paste0(as.character(expression("r2")), "=", signif(mod$r.squared,3))) 
+f.estxy <- direct.label(p) + annotate("text", x = .04, y = .4, label = paste0("r^2", "==", signif(mod$r.squared,3)), parse=TRUE) 
 f.estxy
 
 # geom_pointrange gives you bars.I need to ask PG how he does them on the x axis as well. These ranges are kind of dumb looking here. , ymin=e_ret_mdr_prop_lo, ymax=e_ret_mdr_prop_hi
@@ -677,7 +677,7 @@ estvars <- c("e_new_mdr_num", "e_new_mdr_num_lo", "e_new_mdr_num_hi", "e_ret_mdr
 oa2$mdrr.restricted <- .rowsums(oa2[c("mdr_new", "mdr_ret", "mdr_unk", "dr_r_nh_new", "dr_r_nh_ret", "dr_r_nh_unk", "xpert_dr_r_new", "xpert_dr_r_ret", "xpert_dr_r_unk")])
 oa2$mdrr.unrestricted <- .rowsums(oa2[c('mdr', 'rapid_dx_dr_r')])
 
-oa2$mdrr.best <- ifelse(oa2$mdrr.restricted > oa2$mdrr.unrestricted, oa2$mdrr.restricted, oa2$mdrr.unrestricted)
+oa2$mdrr.best <- ifelse(oa2$mdrr.restricted > oa2$mdrr.unrestricted & !is.na(oa2$mdrr.restricted), oa2$mdrr.restricted, oa2$mdrr.unrestricted)
 
 oa2$mdrr.new <- .rowsums(oa2[c("mdr_new", "dr_r_nh_new","xpert_dr_r_new")])
 oa2$mdrr.ret <- .rowsums(oa2[c("mdr_ret", "dr_r_nh_ret","xpert_dr_r_ret")])
