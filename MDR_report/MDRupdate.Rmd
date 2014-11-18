@@ -240,7 +240,7 @@ exp8 <- signif(sum(exp1$exp_sld, na.rm=TRUE) / exp2ex * 100, 3)
 
 <a id="f.expend"></a> 
 
-##### `r I(pasteLabel("Figure", figCount, "f.expend", insLink=FALSE))`. Trend of expenditure on MDR-TB in countries of the Western Pacific Region, 2007`r paste0("\u2013", yr)`
+##### `r I(pasteLabel("Figure", figCount, "f.expend", insLink=FALSE))`. Trend of expenditure (line) and funding received (bars) for MDR-TB in countries of the Western Pacific Region, 2007`r paste0("\u2013", yr)`
 Graph showing notification and enrolment
 ``` {r f.expend, fig.width=9, fig.height=9}
 f.expend

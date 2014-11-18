@@ -89,6 +89,23 @@ theme_report <- function(base_size=12, base_family="") {
     )
 }
 
+# theme_report <- theme_bw() +
+#     theme(
+# #       line = element_line(colour = gray),
+#       rect = element_rect(fill = "white", colour = NA),
+# #       text = element_text(colour = black),
+#       axis.ticks.x = element_line(colour = gray),
+#       axis.ticks.y = element_blank(),
+#       legend.key = element_rect(colour = NA),
+#       ## Examples do not use grid lines
+#       panel.border = element_rect(colour = gray),
+#       panel.grid.major.x = element_blank(),
+#       panel.grid.minor = element_blank(),
+#       strip.background = element_rect(fill="white", colour=NA),
+#       strip.text = element_text(hjust=0)
+#     )
+
+
 # Functions for data formatting ##########################
 
 # Simple rounder that just adds in the thousands separator 
@@ -818,13 +835,13 @@ names(xa)[names(xa)=='country'] <- 'area'
 
 # make aggregate rows
 xb <- xa[xa$iso3 %in% whbc, ]
-xc <- aggregate(xb[4:ncol(xb)], by=list(area=xb$g_whoregion), FUN=sum, na.rm=TRUE)
-xc$area <- "Total"
+# xc <- aggregate(xb[4:ncol(xb)], by=list(area=xb$g_whoregion), FUN=sum, na.rm=TRUE)
+# xc$area <- "Total"
 
 xd <- aggregate(xa[4:ncol(xa)], by=list(area=xa$g_whoregion), FUN=sum, na.rm=TRUE)
 
 # combine together
-xe <- rbind(xb[3:ncol(xb)], xc, xd) # , tbbh, tbbga
+xe <- rbind(xb[3:ncol(xb)], xd) # xc, , tbbh, tbbga
 
 # calculate and format vars
 xe$xdst_pct <- xe$mdr_dst_rlt / xe$mdr * 100
@@ -855,7 +872,7 @@ write.csv(xf, file=paste0(pasteLabel("./figure_data/table", tableCount, "t.xdr",
 # f.expend ------------------------------------------------------
 figCount <- incCount(figCount, "f.expend")
 
-tfa <- subset(mdat, year %in% 2007:yr & g_whoregion=="WPR", select=c(iso3, country, year, exp_sld, exp_mdrmgt))
+tfa <- subset(mdat, year %in% 2007:yr & g_whoregion=="WPR", select=c(iso3, country, year, exp_sld, exp_mdrmgt, rcvd_sld_gov, rcvd_mdrmgt_gov, rcvd_sld_loan, rcvd_mdrmgt_loan, rcvd_sld_gf, rcvd_mdrmgt_gf, rcvd_sld_grnt, rcvd_mdrmgt_grnt))
 
 tfb1 <- aggregate(tfa[4:ncol(tfa)], by=list(year=tfa$year), FUN=sum, na.rm=TRUE)
 tfb1$country <- tfb1$iso3 <- "WPR"
@@ -871,12 +888,20 @@ tfb <- rbind(tfb1, tfb3)
 # Calculate new vars
 tfb$exp_pmdt <- .rowsums(tfb[c('exp_sld', 'exp_mdrmgt')]) / 1000
 
+tfd <- melt(tfb[grep("rcvd|year|country", names(tfb))], id=c("country", "year"))
+
+tfd$`Funding source` <- ifelse(grepl("gov", tfd$variable), "Government", "External")
+
+tfd$value <- tfd$value / 1000
+
+tfd <- subset(tfd, !is.na(value))
+
 tfc <- subset(tfb, !is.na(exp_pmdt))
 
 
 # tfc <- melt(tfb[c("country", "year", "Cases confirmed", "Patients enrolled on treatment")], id=1:2)
 
-f.expend <- ggplot(tfc, aes(year, exp_pmdt)) + geom_point(alpha=.5) + geom_line(size=1, alpha=.5) + facet_wrap(~country, scales="free_y") + theme_report() + scale_x_continuous("", breaks=seq(min(tfc$year), max(tfc$year),2)) + scale_y_continuous("US$ (thousands)") + guides(fill = guide_legend(reverse = TRUE)) + theme(legend.position = "none") + expand_limits(y=0)
+f.expend <- ggplot(tfc, aes(year, exp_pmdt)) + geom_bar(data=tfd, aes(year, value, fill=`Funding source`), position = "stack", stat="identity") + geom_point(alpha=.5) + geom_line(size=1, alpha=.5) + facet_wrap(~country, scales="free_y") + theme_report() + scale_x_continuous("", breaks=seq(min(tfc$year), max(tfc$year),2)) + scale_y_continuous("US$ (thousands)") + guides(fill = guide_legend(reverse = TRUE)) + expand_limits(y=0) + theme(legend.position = "bottom") + scale_fill_brewer()
 
 write.csv(tfc, file=paste0(pasteLabel("./figure_data/figure", figCount, "f.expend", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
 
