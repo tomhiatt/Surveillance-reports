@@ -454,7 +454,10 @@ rownames(od) <- od$area
 oe <- subset(od, select=c("e_new_mdr_num", "e_new_mdr_num_range", "e_new_mdr_pct", "e_new_mdr_pct_range", "e_ret_mdr_num", "e_ret_mdr_num_range", "e_ret_mdr_pct", "e_ret_mdr_pct_range", "e_mdr_num", "e_mdr_num_range"))
 
 # Make that table
-t.drestnotif <- htmlTable(oe, caption = "", rowlabel = "", cgroup = rbind(c("MDR-TB among new", "MDR-TB among retreatment", "Total MDR-TB cases", rep(NA,2)), c(rep(c("n", "%"),2), "n <br>___________________")), n.cgroup = rbind(c(4,4,2, rep(NA,2)), rep(2,5)), align=rep(c('r', 'l'),10), ctable = TRUE, headings = NA )
+t.drestnotif <- htmlTable(oe, caption = "", rowlabel = "", cgroup = rbind(c("MDR-TB among new", "MDR-TB among retreatment", "Total MDR-TB cases", rep(NA,2)), c(rep(c("n", "%"),2), "n")), n.cgroup = rbind(c(4,4,2, rep(NA,2)), rep(2,5)), align=rep(c('r', 'l'),10), ctable = TRUE, headings = NA )
+
+# make text stop wrapping
+t.drestnotif <- gsub('<td', '<td nowrap="nowrap"; ', t.drestnotif)
 
 write.csv(oe, file=paste0(pasteLabel("./figure_data/table", tableCount, "t.drestnotif", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
 
@@ -602,10 +605,18 @@ rownames(nbe) <- nbe$area
 
 nbf <- subset(nbe, select=c("dstx_rlt_new", "dstx_rlt_new_pct", "dstx_rlt_ret", "dstx_rlt_ret_pct", "dstx_rlt", "dstx_rlt_pct", "mdrr_new", "mdrr_new_pct", "mdrr_ret", "mdrr_ret_pct", "mdrr", "mdrr_pct", "xpert_dr_r_new", "xpert_dr_r_new_pct", "xpert_dr_r_ret", "xpert_dr_r_ret_pct", "xpert_dr_r", "xpert_dr_r_pct"))
 
+# nbf <- apply(nbf, 2, gsub, patt=" ", replace="&nbsp;")
+
+for(clm in 1:ncol(nbf)){
+  nbf[,clm] <- gsub(' ', '&nbsp;', nbf[,clm])
+}
+
 names(nbf) <- rep(c("n", "%"), 9)
 
 # Make that table
 t.drnotif <- htmlTable(nbf, caption = "", rowlabel = "", cgroup = rbind(c("Notified cases with DST results", "MDR-TB and RR-TB<sup>*</sup> among cases with DST results", "Cases confirmed by Xpert among MDR-TB and RR-TB<sup>*</sup>", rep(NA,6)), rep(c("New", "Ret.", "Total"),3)), n.cgroup = rbind(c(rep(3,3), rep(NA,6)), rep(2,9)), ctable = TRUE, tfoot = "<sup>*</sup> Rif-resistant only cases are included whether confirmed by DST or Xpert.")
+
+# tmp <- gsub( '<td', '<td nowrap="nowrap"; ', t.drnotif)
 
 write.csv(nbf, file=paste0(pasteLabel("./figure_data/table", tableCount, "t.drnotif", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
 
@@ -827,7 +838,7 @@ tableCount <- incCount(tableCount, "t.xdr")
 
 xa <- subset(mdat, year==yr & g_whoregion=="WPR", 
              select=c(iso3, g_whoregion, country, 
-                      mdr, mdr_dst_rlt, mdr_ds_fq2li,
+                      unconf_mdr_tx, conf_mdr_tx, mdr_dst_rlt, mdr_ds_fq2li,
                       mdr_dr_fq, mdr_dr_2li, xdr))
 
 xa <- xa[order(xa$country),]
@@ -844,10 +855,12 @@ xd <- aggregate(xa[4:ncol(xa)], by=list(area=xa$g_whoregion), FUN=sum, na.rm=TRU
 xe <- rbind(xb[3:ncol(xb)], xd) # xc, , tbbh, tbbga
 
 # calculate and format vars
-xe$xdst_pct <- xe$mdr_dst_rlt / xe$mdr * 100
-xe$fq_pct <- xe$mdr_dr_fq / xe$mdr * 100
-xe$xli_pct <- xe$mdr_dr_2li / xe$mdr * 100
-xe$xdr_pct <- xe$xdr / xe$mdr * 100
+xe$mdr_tx <- .rowsums(xe[c('conf_mdr_tx', 'unconf_mdr_tx')])
+
+xe$xdst_pct <- xe$mdr_dst_rlt / xe$mdr_tx * 100
+xe$fq_pct <- xe$mdr_dr_fq / xe$mdr_tx * 100
+xe$xli_pct <- xe$mdr_dr_2li / xe$mdr_tx * 100
+xe$xdr_pct <- xe$xdr / xe$mdr_tx * 100
 
 # Format
 for(var in 2:ncol(xe)){
@@ -859,12 +872,12 @@ xf <- .WPSARnames(xe, col="area")
 
 rownames(xf) <- xf$area
 
-xg <- subset(xf, select=c("mdr", "xdst_pct", "mdr_dr_fq", "fq_pct", "mdr_dr_2li", "xli_pct", "xdr", "xdr_pct"))
+xg <- subset(xf, select=c("mdr_tx", "mdr_dst_rlt", "xdst_pct", "mdr_dr_fq", "fq_pct", "mdr_dr_2li", "xli_pct", "xdr", "xdr_pct"))
 
-names(xg) <- c("MDR-TB", "% 2<sup>nd</sup>-line DST", rep(c("Number", "%"),3))
+names(xg) <- c("Enrolled on 2<sup>nd</sup>-line treatment", "number", "% of enrolled", rep(c("number", "% of tested"),3))
 
 # Make that table
-t.xdr <- htmlTable(xg, caption = "", rowlabel = "", cgroup = c("", "Resistance to FQ", "Resistance to 2<sup>nd</sup>-line injectible", "XDR-TB"), n.cgroup = c(2,2,2,2), ctable = TRUE, tfoot = "")
+t.xdr <- htmlTable(xg, caption = "", rowlabel = "", cgroup = c("", "2<sup>nd</sup>-line DST", "Resistance to FQ", "Resistance to 2<sup>nd</sup>-line injectible", "XDR-TB"), n.cgroup = c(1,2,2,2,2), ctable = TRUE, tfoot = "")
 
 write.csv(xf, file=paste0(pasteLabel("./figure_data/table", tableCount, "t.xdr", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
 
