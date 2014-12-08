@@ -30,7 +30,7 @@ source("./MDRupdate.R") # change before publication
 
 
 
-<sup>&dagger;</sup> Stop TB and Leprosy Elimination, Division of Communicable Disease, World Health Organization Regional Office for the Western Pacific, Manila, Philippines
+<sup>&dagger;</sup> Stop TB and Leprosy Elimination, Division of Communicable Diseases, World Health Organization Regional Office for the Western Pacific, Manila, Philippines
 
 Running title: DR-TB in the WHO Western Pacific Region
 
@@ -49,13 +49,13 @@ Email: islamt@wpro.who.int
 Abstract 
 --------------------------------------------------------
 
-Objective: To review the latest information about levels of anti TB drug resistant and various indicators of programmatic management of drug resistant TB in the Western Pacific Region of the World Health Organization (WHO).
+**Objective**: To review the latest information about anti-tuberculosis (TB) drug resistance and programmatic management of drug-resistant TB in the Western Pacific Region of the World Health Organization (WHO).
 
-Methods: we analysed routine data collected by WHO annually……
+**Methods**: We analysed routine data reported by countries to WHO from 2006 to 2013, focusing on data from the following areas; surveillance and surveys of drug resistance, management of drug-resistant TB and financing related to multi drug-resistant TB (MDR-TB) management.
 
-Findings: 4% (95% confidence limit 3-6) of new and 22% (95% confidence limit 18-27)  of previously treated TB cases are estimated to have MDR-TB in the Region. DST coverage among new is 3% and among retreatment cases is 21%.XXX cases are notified in 2013 which is 15% of the estimated MDR-TB cases. Among the notified cases, XXX or 65% are put on treatment.  AMong all MDR-TB cases 38% had DST to second line drug sand 7% are resistant to either or both FQ and injectable agent. Treatment outcome of 2011 cohort showed 50% success rate, X failed and X% loss to follow up.Over last 5 years case notification and enrolment has increased but also gap between notification and enrolment incresaed.
+**Results**: 4% (95% confidence interval [CI] 3–6) of new and 22% (95% CI 18–26) of previously treated TB cases in the Region were estimated to have MDR-TB; this means that in 2013, there were estimated 71,000 (95% CI 47,000–94,000) MDR-TB cases among notified pulmonary TB cases  in this Region. The coverage of drug susceptibility testing (DST) among new and previously treated TB  cases was 3% and 20% respectively. In 2013, 11,153 cases were notified—16% of the estimated MDR-TB cases. Among the notified cases, 6,926 or 62% were enrolled on treatment. Among all enrolled MDR-TB cases, 3834% had second line DST and of these 613% were resistant to fluoroquinolones (FQ) and/or second-line injectable agents. The 2011 cohort of MDR-TB showed a 52% treatment success. Over the last five years, case notification and enrolment have increased more than five times but the gap between notification and enrolment widened.
 
-Discussion:  The increasing trend in detection and enrolment of MDR-TB cases demonstrates readiness for PMDT scale-up at the country level. However, challenges remain considerable. More complete data will be helpful to understand the situation and address the gaps. 
+**Discussion**: The increasing trend in detection and enrolment of MDR-TB cases demonstrates readiness to scale up programmatic management of drug-resistant TB (PMDT) at country level. However, considerable challenges remain.
 
 
 Introduction
@@ -103,7 +103,7 @@ Estimate of MDR-TB is based on the availability of drug resistance data either f
 
 <a id="m.coverage"></a> 
 
-##### `r I(pasteLabel("Figure", figCount, "m.coverage", insLink=FALSE))`.  Progress in regional coverage of surveillance data on drug resistance, `r paste0(range(coa$year), collapse="\u2013")`^a^
+##### `r I(pasteLabel("Figure", figCount, "m.coverage", insLink=FALSE))`.  Year of most recent data on TB drug resistance by country, WHO Western Pacific Region, `r paste0(range(coa$year), collapse="\u2013")`^a^
 ``` {r m.coverage, fig.width=9, fig.height=9}
 m.coverage
 ```
@@ -113,22 +113,27 @@ m.coverage
 
 <a id="t.drestnotif"></a> 
 
-##### `r I(pasteLabel("Table", tableCount, "t.drestnotif", insLink=FALSE))`. Estimated drug resistant cases, `r yr`
+##### `r I(pasteLabel("Table", tableCount, "t.drestnotif", insLink=FALSE))`. Estimated number and proportion of MDR-TB cases among new and previously treated TB cases by country, WHO Western Pacific Region
 ```{r t-drestnotif, results='asis'}
 t.drestnotif
 ```
 
 
 ### MDR-TB rate
-The Region includes Member States with a wide range of MDR-TB rate and case load. Table 1 shows the rate of MDR-TB of countries and areas reported at least 1 MDR-Tb case in 2013. The proportion of previously treated TB cases with MDR-TB ranged from 0% to 34%. Mongolia has the highest estimated proportion 34% (95% CI: 29-38) of MDR-TB among retreatment cases. Countries with more than 20% MDR-TB among retreatment cases are China (26%), Mongolia (34%), New Zealand(20%), Philippines (21%) and Viet Nam (23%).The proportion of new TB cases with MDR-TB ranged from 0% to 6%.  China has the highest proportion 6% (95% CI: 5-7) of MDR-TB among new cases.Combining data from all countries of the Region, 4% (95% confidence interval: 3-6) of new and 22% (95% CI: 18-26) of previously treated TB cases were estimated to have MDR-TB.  Though highest % of MDR-TB is observed among retreatment cases, absolute number of estimated MDR cases is lower among retreatment cases than the new cases. Among the total estimated MDR-TB, 24% are from retreatment cases and 76% are from new cases.
+The Region includes Member States with a wide range of MDR-TB rate and case load. Table 1 shows the rate of MDR-TB of countries and areas reported at least 1 MDR-TB case in 2013. The proportion of previously treated TB cases with MDR-TB ranged from 0% to 34%. Mongolia has the highest estimated proportion 34% (95% CI: 29-38) of MDR-TB among retreatment cases. Countries with more than 20% MDR-TB among retreatment cases are China (26%), Mongolia (34%), New Zealand(20%), Philippines (21%) and Viet Nam (23%).The proportion of new TB cases with MDR-TB ranged from 0% to 6%.  China has the highest proportion 6% (95% CI: 5-7) of MDR-TB among new cases.Combining data from all countries of the Region, 4% (95% confidence interval: 3-6) of new and 22% (95% CI: 18-26) of previously treated TB cases were estimated to have MDR-TB.  Though highest % of MDR-TB is observed among retreatment cases, absolute number of estimated MDR cases is lower among retreatment cases than the new cases. Among the total estimated MDR-TB, 24% are from retreatment cases and 76% are from new cases.
 
 <a id="f.estxy"></a> 
 
-##### `r I(pasteLabel("Figure", figCount, "f.estxy", insLink=FALSE))`. Estimated proportion of MDR-TB among new and retreatment cases, `r yr`
+##### `r I(pasteLabel("Figure", figCount, "f.estxy", insLink=FALSE))`. Correlation* between the estimated proportion of MDR-TB cases among new and previously treated TB  cases respectively by selected country, WHO Western Pacific Region, `r yr`
 ``` {r f.estxy, fig.width=9, fig.height=9}
 f.estxy
 ```
 
+### Estimated MDR-TB burden over time
+
+<a id="f.estnotif"></a> 
+
+##### `r I(pasteLabel("Figure", figCount, "f.estnotif", insLink=FALSE))`. Rates per 100 000 population of new TB cases (black) and estimated MDR-TB cases among new TB cases (green) by selected countries, WHO Western Pacific Region, 1996-2012
 
 ### Management of drug resistant TB: 
   	
@@ -139,12 +144,6 @@ Drug sensitivity testing data was reported from 19 countries (53%  of 36 Member 
 
 <a id="f.dst.trend"></a> 
 
-##### `r I(pasteLabel("Figure", figCount, "f.dst.trend", insLink=FALSE))`. Trend of drug-resistance coverage and positivity of MDR-TB and RR-TB amongst retreatment patients, `r paste(2007, yr, sep="\u2013")`
-```{r f.dst.trend, fig.width=9, fig.height=9}
-f.dst.trend
-```
-
-^a^ Drug-resistance testing includes testing by Xpert for Rifampicin resistance only.
 
 Among cases with phenotypic DST result 8% has resistance to isoniazid (H) only, 2% has resistant to Rifampicin (R) only and 11% has resistant both to H and R (MDR-TB).
 
@@ -152,18 +151,24 @@ Countries started using the rapid diagnostic technology,Xpert MTB/Rif which was 
 
 <a id="t.drnotif"></a> 
 
-##### `r I(pasteLabel("Table", tableCount, "t.drnotif", insLink=FALSE))`. Drug resistance in select countries, `r yr`
+##### `r I(pasteLabel("Table", tableCount, "t.drnotif", insLink=FALSE))`. Number and proportion of notified TB cases with DST results, confirmed MDR-TB and RR-TB cases and cases confirmed by Xpert, by new and previously treated TB  cases and country, WHO Western Pacific Region, `r yr`
 ```{r t.drnotif, results='asis'}
 t.drnotif
 ```
 
+##### `r I(pasteLabel("Figure", figCount, "f.dst.trend", insLink=FALSE))`. DST coverage among previously treated TB cases and MDR-TB and RR-TB positivity rate by year and selected countries, WHO Western Pacific Region, `r paste(2007, yr, sep="\u2013")`
+```{r f.dst.trend, fig.width=9, fig.height=9}
+f.dst.trend
+```
+
+^a^ Drug-resistance testing includes testing by Xpert for Rifampicin resistance only.
 
 #### Notification and enrolment
 
 
 <a id="t.est.enroll"></a> 
 
-##### `r I(pasteLabel("Table", tableCount, "t.est.enroll", insLink=FALSE))`. Estimated drug resistant cases compared with notified cases and cases put on treatment, `r yr`
+##### `r I(pasteLabel("Table", tableCount, "t.est.enroll", insLink=FALSE))`. Number of estimated and notified MDR-TB and RR-TB cases, proportion notified among estimated MDR-TB and RR-TB cases and number and proportion of MDR-TB and RR-TB cases enrolled on treatment by country, WHO Western Pacific Region, `r yr`
 ```{r t.est.enroll, results='asis'}
 t.est.enroll
 ```
@@ -177,7 +182,7 @@ All the cases detected were not enrolled on treatment. MDR-TB cases started on s
 
 <a id="f.alignment"></a> 
 
-##### `r I(pasteLabel("Figure", figCount, "f.alignment", insLink=FALSE))`. Trend of notification and enrolment of MDR-TB cases in the Western Pacific Region, 2006`r paste0("\u2013", yr-2)`
+##### `r I(pasteLabel("Figure", figCount, "f.alignment", insLink=FALSE))`. Number of MDR-TB and RR-TB cases notified and enrolled in treatment by year and country,  WHO Western Pacific Region, 2007`r paste0("\u2013", yr-2)`
 Graph showing notification and enrolment
 ``` {r f.alignment, fig.width=9, fig.height=9}
 f.alignment
@@ -204,7 +209,7 @@ DO WE KNOW OUTCOME OF XDR_TB COHORT IN ANY COUNTRY?
 
 <a id="f.tx.out"></a> 
 
-##### `r I(pasteLabel("Figure", figCount, "f.tx.out", insLink=FALSE))`.  Trend of treatment outcome expressed as a proportion among MDR-TB cases in the Western Pacific Region, 2006--`r yr-2`
+##### `r I(pasteLabel("Figure", figCount, "f.tx.out", insLink=FALSE))`. Treatment outcomes of MDR-TB and RR-TB cases by year and country, WHO Western Pacific Region, 2007--`r yr-2`
 ``` {r f.tx.out, fig.width=9, fig.height=7}
 f.tx.out
 ```
@@ -217,7 +222,7 @@ Data on resistance to FQ and injectable agents among cases with MDR-TB were repo
 
 <a id="t.xdr"></a> 
 
-##### `r I(pasteLabel("Table", tableCount, "t.xdr", insLink=FALSE))`.			Rate (FQ and injectable)
+##### `r I(pasteLabel("Table", tableCount, "t.xdr", insLink=FALSE))`.	Number and proportion of MDR-TB and RR-TB cases resistant to second-line anti-TB drugs and XDR-TB, by country, WHO Western Pacific Region, `r yr`
 ```{r t.xdr, results='asis'}
 t.xdr
 ```
@@ -240,7 +245,7 @@ exp8 <- signif(sum(exp1$exp_sld, na.rm=TRUE) / exp2ex * 100, 3)
 
 <a id="f.expend"></a> 
 
-##### `r I(pasteLabel("Figure", figCount, "f.expend", insLink=FALSE))`. Trend of expenditure (line) and funding received (bars) for MDR-TB in countries of the Western Pacific Region, 2007`r paste0("\u2013", yr)`
+##### `r I(pasteLabel("Figure", figCount, "f.expend", insLink=FALSE))`. Expenditure on MDR-TB and RR-TB by funding source, year  and country, WHO Western Pacific Region, 2007`r paste0("\u2013", yr)`
 Graph showing notification and enrolment
 ``` {r f.expend, fig.width=9, fig.height=9}
 f.expend
@@ -254,30 +259,25 @@ In 2011 the Western Pacific Region Green Light Committee (WPR rGLC) was establis
 Discussion
 ---------------------------------------------------
 
+The Western Pacific Region comprises countries with high MDR-TB caseloads, such as China, Viet Nam and the Philippines, and several Pacific Island nations with very small, irregular caseloads. The Member States are also at different stages of PMDT implementation. 
 
+The first step for PMDT scale up is to establish diagnostic capacity and increase the proportion of TB cases who receive DST. The Global Plan to Stop TB13 set a target for DST at 100% of previously treated TB  cases and 20% of new cases by 2015. Overall DST coverage remained low with the current coverage for new cases at 3% and previously treated TB  cases at 20%, both far below the Global Plan to Stop TB target. The introduction of a rapid diagnostic tool has enabled a drastic increase in diagnostic capacity, as evidenced in Viet Nam, where 81% of notified MDR-TB cases were diagnosed by Xpert MTB/RIF in 2013. This analysis   indicates that the expansion of DST coverage is still on going to cover the highest risk groups and highly selected cases were being tested. Most countries starting PMDT focus on previously treated TB  cases first as diagnosing MDR-TB cases among new TB cases is a huge challenge in this Region. Although the proportion of MDR-TB among new TB cases is low the absolute numbers are very high. It is a challenge to identify effective and efficient strategies to identify MDR-TB cases among new TB cases considering current financial and human resource capacity. To identify potential high-risk groups that can be targeted for selective DST, surveillance systems need to be expanded and strengthened. 
 
-The region included countries with high MDR-TB caseloads such as China, Viet Nam and the Philippines and Pacific Island nations with very small, irregular caseloads. Member States of the Western Pacific Region are also at different stages of PMDT implementation
-National representative drug resistance survey data is available from 5 out of 7 high TB burden countries of the Region (Cambodia, China, Mongolia, Philippines and Viet Nam). Among them Cambodia, Mongolia, Philippines and Viet Nam have two national representative survey data point and China is conducting it's 2nd national DRS. Two remaining countries without representative data are PNG and Lao PDR. Subnational DRS in PNG is ongoing and results are expected to be available in 2015. Surveillance data are available from 19 countries and areas of the Region. Countries need to strengthen their routine surveillance system at least for all previously treated cases. This is the 1st step of universal access of MDR-Tb diagnosis.
+XDR-TB is also a growing concern. Currently, second-line DST coverage is low at 34% as reported from 12 countries and the true magnitude of XDR-TB burden is unknown. As PMDT is expanded with increased second-line DST capacity, more XDR-TB patients will likely be diagnosed. Programmes need to get ready to address XDR-TB with guidelines for the management of XDR-TB patients including policies for appropriate palliative care and infection control.
 
-A PARAGRAPH ON DATA INCOMPLETENESS >>>>>>>>
-
-Several countries such as Viet Nam and the Philippines showed commendable progress. These countries are quickly moving to nationwide expansion. The PMDT program in China has continued to evolve. To scale up PMDT, the first step is to establish diagnostic capacity. Introduction of rapid diagnostic (XPERT MTB/RIF) has paved the path. It is evident that countries has started using Xpert for diagnosis. In Viet Nam 81% of notified MDR-TB cases are from Xpert. However testing coverage remained low. In the Global plan to stop TB (REf…) 100% of retreatment cases and 20% of new cases were set as a target. Current coverage for retreatment cases is 21%. It should be noted that some countries did not report Xpert result and Rifampicin resistant cases. There is a sign of increasing trend in notification and enrolment of MDR-TB cases, so far the scale-up of the programmatic management of MDR-TB (PMDT) is slow with only 15% of the estimated MDR-TB among notified cases being reported under PMDT. As a logical step, most of the countries start PMDT targeting retreatment cases first. Data showed that countries have made tremendous progress to identify among retreatment cases (X% of estimated retreatment cases are notified). Countries still need to plan to increase the testing coverage among all retreatment cases.  Further scaling up to find MDR-TB cases among the new cases is a huge challenge. The strategy needs to be reviewed considering current financial and human resource capacity. Identifying high risk group groups among new Tb cases may be the reasonable way forward. To identify the high risk groups, surveillance data need to be strengthened.
+It is also of paramount importance that all TB cases diagnosed MDR-TB are quickly put on treatment. Detection of MDR-TB cases is challenging and requires a lot of effort and if notified cases are not put on treatment, all these efforts will be in vain. It is alarming that overall in the region in 2013, 38% of the notified cases were not put on treatment (48% in China, 43% in the Philippines and 21% in Viet Nam, respectively). As reported to the WHO Regional Office for the Western Pacific, reasons for this may be many-fold: some patients may be on the waiting list because of unavailability of treatment capacity including drugs, hospitalization and treatment support. Rapid scale up of diagnostic capacity especially with Xpert MTB/RIF may not be accompanied by an increasing treatment capacity. Another reason may be loss to follow-up of confirmed cases, which can occur due to non-accessibility of PMDT centres, non-coordination between diagnostic and treatment sites and economic burden to patients including direct and indirect cost. Instead, these patients return to their community and continue to spread their MDR-TB strain. Increasing diagnostic capacity must be aligned with drug and treatment provision and political commitment to coordinated treatment capacity to match diagnostic capacity is essential. In addition, underlying causes for the initial high loss to follow-up need to be identified and addressed. The call for integrated patient-centred TB care and prevention, and bold policies and supportive systems in the WHO End TB strategy14 need to be operationalised to address these issues. National TB Programmes alone may not be able to address this misalignment between diagnostic capacity and treatment availability. 
  
-Detection of MDR-Tb cases is challenging and needs lots of effort. But if the notified cases are not put on treatment, all the efforts will be in vain. For prevention and control of MDR-TB this is paramount important that all patients with reported MDR-TB are put on treatment. It is alarming that 35% of the notified cases are not put on treatment in 2013. This is 27% in China, 43% in Philippines and 36% in Viet Nam. There may be two types of situation- some cases can be in the waiting list because of unavailability of treatment capacity including drugs and another reason could be loss to follow up of confirmed cases and failed to put them on treatment. In both situations, these patients are back in community and continue to spread MDR-TB strain. Proper planning needs to be done to ensure availability of drugs and treatment provision. Political commitment to scale up treatment capacity matching the diagnostic capacity will be essential. But for the later cause, initial loss to follow up, underlying cause need to be identified and addressed. Most of the time weak health system is responsible for losing the patient initially.  Accessibility of PMDT centers and substantial out of pocket expenditure play major role. The call for integrated patient centered TB care and prevention and bold policies and supportive system in the post 2015 TB strategy need to be operationalised to address this issue. Only PMDT or NTP may not be able to address this mis alignment. 
-  
- 
-Treatment success rates are low, below 50%. The treatment success rate in Region is similar as the global average of the treatment success rate.With this kind of low success rate, it will be hard to keep faith on PMDT with current policy. The high number of loss to follow up and non evaluated acses (X% are loss to follow up and X% are not evaluated) are responsible for this low success rate and spreading TB strain with extensive drug resistance. High proportion of loss to follow up is seen in the Philippines and high proportion of non evaluated cases are seen in Malaysia. But there are some good country examples. Cambodia and Viet Nam showed treatment success above 70%.  
+It is also imperative that all enrolled MDR-TB patients complete their treatment. As shown, treatment success rates in the Region are low, at 52% for the 2011 cohort. This is similar to the global average of 48%.1 High numbers of MDR-TB cases lost to follow-up or not evaluated (21% and 17% respectively) are part of this low success rate, which result in continual transmission of drug-resistant TB strains. These low success rates challenge the usefulness of PMDT, however, that Cambodia and Viet Nam showed treatment success rates above 70% over several year cohorts, shows that increasing treatment success for MDR-TB is possible. 
 
-WPR rGLC oversight ensured optimal value extraction from country missions.  All reports were critically reviewed with clear formulation of feasible recommendations.  Bottlenecks identified include the complexity of MDR-TB management and the need for a broader health systems approach with development of workforce, infra-structure, referral and financing mechanisms in the context of universal health care. A compelling finding was the diversity of needs at different stages of PMDT implementation in various countries, requiring different types of technical assistance. rGLC created a platform for sharing experiences, both the frustrations and successes, strengthening local ownership and encouraging innovative local solutions.  
-The local ownership at the TB program level has improved, however domestic resources allocated to PMDT remains inadequate, demonstrating the need for greatly increased advocacy and strong political commitment to contain the spread of MDR-TB. While the long-term sustainability of programs was threatened by donor dependence. Donor-driven targets may also have unintended consequences, such as fragmenting service delivery and encouraging inaccurate reporting to save face. The delicate balance between ambition, vision, reality, feasibility and measurability has to be considered at all times.
+The overall increase in notification and enrolment in treatment of MDR-TB cases demonstrates the readiness for PMDT scale-up at the country level. The results of this analysis showed that notification of TB cases is increasing, however, currently only 16% of the estimated MDR-TB among notified cases were reported under PMDT. Considerable challenges remain for scaling up PMDT with serious concerns regarding national political commitment and the long-term sustainability of donor-funded programmes, which provide more than 80% of funding for MDR-TB. 
 
-The increasing trend in detection and enrolment of MDR-TB cases demonstrates readiness for PMDT scale-up at the country level. However, challenges remain considerable with serious concern regarding the long-term sustainability of donor-funded programs. MDR-TB is a man made phenomenon and unless we address the root cause it may be difficult to address MDR-TB. Prevention of MDR-TB including strengthening basic TB control needs to be at the center of the strategy to address MDR-TB. Ensuring scaling up of PMDT by increased DST coverage, ensuring all notified cases are on treatment, ensuring all enrolled patient complete their treatment need to be emphasized simultaneously.  TB control has entered the most dynamic phase since decades with many opportunities.  We have new diagnostic tools, new TB drugs and new strategies. It is therefore critical to invest both financial and technical resources to prevent MDR TB and scale up programmatic management of drug resistantTB. 
- 
-### Conflicts of interest
-None declared.
+The reader should note that the data reported in this analysis were not complete for all countries. As an example, many countries did not report numbers and results of Xpert MTB/RIF tests. As such, interpretation of the data should be made with caution. 
 
-### Funding
-None.
+MDR-TB is a man-made phenomenon and unless the root cause is addressed control efforts will not be successful. Prevention of MDR-TB including strengthening basic TB control needs to be at the centre of the strategy to address MDR-TB. Scaling up of PMDT has to progressively improve all critical steps of the cascade of services in a balanced manner. TB control has entered the most dynamic phase in decades with many opportunities. We have new diagnostic tools, new TB drugs and new strategies. It is therefore critical to invest both financial and technical resources to prevent MDR-TB and scale up PMDT.
+
+**Conflict of interest**: None.
+
+**Acknowledgement**: The authors are very grateful to Matteo Zignol and Anna Dean for their comments on the draft publication. They also thank the national tuberculosis control programmes of the countries of the Western Pacific Region.
 
 
 References

@@ -521,6 +521,9 @@ f.estxy
 
 write.csv(ef, file=paste0(pasteLabel("./figure_data/figure", figCount, "f.estxy", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
 
+# f.estnotif ----------------------------------------------------
+figCount <- incCount(figCount, "f.estnotif")
+
 
 # t.drnotif -------------------------------------------------------------
 tableCount <- incCount(tableCount, "t.drnotif")
