@@ -202,7 +202,7 @@ pasteLabel <- function(preText, inObj, objName, insLink = TRUE, sepper = " ") {
   
   useText <- paste(preText, objNum, sep = sepper)
   if (insLink) {
-    useText <- paste("[", useText, "](#", objName, ")", sep = " ")
+    useText <- paste("[", useText, "](#", objName, ")", sep = "")
   }
   useText
 }
@@ -678,7 +678,7 @@ dse <- .WPSARnames(dsd, col="area")
 dsf <- melt(subset(dse, select=c(area, year, dstx_pct, mdrr_pct)), id=1:2)
 dsf <- subset(dsf, !is.na(value))
 
-f.dst.trend <- facetAdjust(ggplot(dsf, aes(year, value, color=variable)) + geom_point(alpha=.5) + geom_line(size=1, alpha=.5) + facet_wrap(~area, scales="free_y") + theme_report() + scale_color_brewer("", type="qual", palette=6, breaks=c("dstx_pct", "mdrr_pct"), labels=c(expression("% DST among pulmonary cases"^a), "% MDR-TB or RR-TB among tested")) + scale_x_continuous("", breaks=seq(min(dsf$year), max(dsf$year),2)) + scale_y_continuous("Percent")+ guides(fill = guide_legend(reverse = TRUE)) + theme(legend.position = "bottom") + expand_limits(y=0))
+f.dst.trend <- facetAdjust(ggplot(dsf, aes(year, value, color=variable)) + geom_point(alpha=.5) + geom_line(size=1, alpha=.5) + facet_wrap(~area, scales="free_y") + theme_report() + scale_color_brewer("", type="qual", palette=6, breaks=c("dstx_pct", "mdrr_pct"), labels=c(expression("% DST among pulmonary cases"), "% MDR-TB or RR-TB among tested")) + scale_x_continuous("", breaks=seq(min(dsf$year), max(dsf$year),2)) + scale_y_continuous("Percent")+ guides(fill = guide_legend(reverse = TRUE)) + theme(legend.position = "bottom") + expand_limits(y=0))
 
 write.csv(dsf, file=paste0(pasteLabel("./figure_data/figure", figCount, "f.dst.trend", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
 
@@ -760,7 +760,7 @@ rownames(od) <- od$area
 oe <- subset(od, select=c("e_new_mdr_num", "e_new_mdr_num_range", "e_ret_mdr_num", "e_ret_mdr_num_range", "e_mdr_num", "e_mdr_num_range", "mdrr.new", "mdrr.ret", "pmdr", "pmdr_new_pct", "pmdr_new_pct_range", "pmdr_ret_pct", "pmdr_ret_pct_range", "pmdr_pct", "pmdr_pct_range", "mdr_tx", "mdr_tx_pct"))
 
 # Make that table
-t.est.enroll <- htmlTable(oe, caption = "", rowlabel = "", cgroup = rbind(c("Estimated", "Notified<sup>a</sup>", "% notified among estimated", "Enrolled on treatment", rep(NA,7)), c(rep(c("New", "Ret.", "Total"),3), "n", "% among detected")), n.cgroup = rbind(c(6,3,6,2, rep(NA,7)), c(rep(2,3),rep(1,3),rep(2,3),1,1)), align=c(rep(c('r','l'),3), rep('r',3), rep(c('r','l'),3), rep('r',2)), ctable = TRUE, tfoot = "<sup>a</sup> All columns except estimates include Rif-resistant cases confirmed by Xpert only. Total MDR-TB cases detected include cases with history unknown, amongst extrapulmonary and from samples taken more than 2 weeks after start of treatment.<br>", headings = NA )
+t.est.enroll <- htmlTable(oe, caption = "", rowlabel = "", cgroup = rbind(c("Estimated", "Notified", "% notified among estimated", "Enrolled on treatment", rep(NA,7)), c(c("New", "Ret.", "Total", "New", "Ret.", "Total<sup>&Dagger;</sup>", "New", "Ret.", "Total"), "n", "% among detected")), n.cgroup = rbind(c(6,3,6,2, rep(NA,7)), c(rep(2,3),rep(1,3),rep(2,3),1,1)), align=c(rep(c('r','l'),3), rep('r',3), rep(c('r','l'),3), rep('r',2)), ctable = TRUE, tfoot = "<sup>&Dagger;</sup> Total column includes cases with treatment history unavailable.<br>", headings = NA )
 
 write.csv(oe, file=paste0(pasteLabel("./figure_data/table", tableCount, "t.est.enroll", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
 
@@ -910,16 +910,16 @@ tfd$`Funding source` <- ifelse(grepl("gov", tfd$variable), "Government", "Extern
 
 tfd$value <- tfd$value / 1000
 
-tfd <- subset(tfd, !is.na(value))
+tfd <- subset(tfd, !is.na(value), c("country", "year", "Funding source", "value"))
 
-tfc <- subset(tfb, !is.na(exp_pmdt))
+tfc <- subset(tfb, !is.na(exp_pmdt), c(country, year, exp_pmdt))
 
 
 # tfc <- melt(tfb[c("country", "year", "Cases confirmed", "Patients enrolled on treatment")], id=1:2)
 
 f.expend <- ggplot(tfc, aes(year, exp_pmdt)) + geom_bar(data=tfd, aes(year, value, fill=`Funding source`), position = "stack", stat="identity") + geom_point(alpha=.5) + geom_line(size=1, alpha=.5) + facet_wrap(~country, scales="free_y") + theme_report() + scale_x_continuous("", breaks=seq(min(tfc$year), max(tfc$year),2)) + scale_y_continuous("US$ (thousands)") + guides(fill = guide_legend(reverse = TRUE)) + expand_limits(y=0) + theme(legend.position = "bottom") + scale_fill_brewer()
 
-write.csv(tfc, file=paste0(pasteLabel("./figure_data/figure", figCount, "f.expend", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
+write.csv(tfd, file=paste0(pasteLabel("./figure_data/figure", figCount, "f.expend", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
 
 
 # age.sex.hiv.exploration -----------------------------------------------------
