@@ -202,6 +202,7 @@ tableCat <- function(inFrame) {
 # Create directory and Get data #################
 # NOTE: After this is nearly final I will replace this portion with a subset of only the data used which will be embedded in the final HTML file.
 
+# setwd("D:/Users/hiattt/Dropbox/Code/Surveillance reports/MDR_report")
 # runprofile()
 # mdat1 <- subset(tb, g_whoregion=="WPR" & year %in% 2007:yr, c("iso3", "g_whoregion", "country", "e_new_mdr_num", "e_new_mdr_num_lo", 
 #  "e_new_mdr_num_hi", "e_ret_mdr_num", "e_ret_mdr_num_lo", "e_ret_mdr_num_hi", 

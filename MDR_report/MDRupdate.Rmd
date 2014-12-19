@@ -2,7 +2,7 @@
 title: "Drug resistant tuberculosis in the WHO Western Pacific Region"
 author: "Tauhid Islam,^a^ Tom Hiatt,^a^ Cornelia Hennig,^a^
   Nobuyuki Nishikiori^a^"
-csl: springer-vancouver.csl
+csl: vancouver-imperial-college-london.csl
 output:
   html_document:
     fig_caption: yes
