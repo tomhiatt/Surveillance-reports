@@ -1,0 +1,169 @@
+"country","year","variable","value"
+"WPR",2007,"Cases confirmed",0
+"WPR",2008,"Cases confirmed",1190
+"WPR",2009,"Cases confirmed",2057
+"WPR",2010,"Cases confirmed",3773
+"WPR",2011,"Cases confirmed",6412
+"WPR",2012,"Cases confirmed",8725
+"WPR",2013,"Cases confirmed",10263
+"Australia",2007,"Cases confirmed",24
+"Australia",2008,"Cases confirmed",21
+"Australia",2009,"Cases confirmed",31
+"Australia",2010,"Cases confirmed",33
+"Australia",2011,"Cases confirmed",28
+"Australia",2012,"Cases confirmed",18
+"Australia",2013,"Cases confirmed",24
+"China",2007,"Cases confirmed",79
+"China",2008,"Cases confirmed",NA
+"China",2009,"Cases confirmed",474
+"China",2010,"Cases confirmed",2792
+"China",2011,"Cases confirmed",1686
+"China",2012,"Cases confirmed",3313
+"China",2013,"Cases confirmed",3456
+"China, Hong Kong SAR",2007,"Cases confirmed",14
+"China, Hong Kong SAR",2008,"Cases confirmed",18
+"China, Hong Kong SAR",2009,"Cases confirmed",21
+"China, Hong Kong SAR",2010,"Cases confirmed",28
+"China, Hong Kong SAR",2011,"Cases confirmed",23
+"China, Hong Kong SAR",2012,"Cases confirmed",26
+"China, Hong Kong SAR",2013,"Cases confirmed",26
+"Japan",2007,"Cases confirmed",58
+"Japan",2008,"Cases confirmed",NA
+"Japan",2009,"Cases confirmed",NA
+"Japan",2010,"Cases confirmed",68
+"Japan",2011,"Cases confirmed",60
+"Japan",2012,"Cases confirmed",64
+"Japan",2013,"Cases confirmed",47
+"Republic of Korea",2007,"Cases confirmed",NA
+"Republic of Korea",2008,"Cases confirmed",NA
+"Republic of Korea",2009,"Cases confirmed",NA
+"Republic of Korea",2010,"Cases confirmed",450
+"Republic of Korea",2011,"Cases confirmed",516
+"Republic of Korea",2012,"Cases confirmed",1212
+"Republic of Korea",2013,"Cases confirmed",951
+"Mongolia",2007,"Cases confirmed",123
+"Mongolia",2008,"Cases confirmed",115
+"Mongolia",2009,"Cases confirmed",168
+"Mongolia",2010,"Cases confirmed",187
+"Mongolia",2011,"Cases confirmed",193
+"Mongolia",2012,"Cases confirmed",210
+"Mongolia",2013,"Cases confirmed",257
+"Malaysia",2007,"Cases confirmed",41
+"Malaysia",2008,"Cases confirmed",56
+"Malaysia",2009,"Cases confirmed",55
+"Malaysia",2010,"Cases confirmed",64
+"Malaysia",2011,"Cases confirmed",141
+"Malaysia",2012,"Cases confirmed",74
+"Malaysia",2013,"Cases confirmed",124
+"Philippines",2007,"Cases confirmed",568
+"Philippines",2008,"Cases confirmed",929
+"Philippines",2009,"Cases confirmed",1073
+"Philippines",2010,"Cases confirmed",522
+"Philippines",2011,"Cases confirmed",3074
+"Philippines",2012,"Cases confirmed",2673
+"Philippines",2013,"Cases confirmed",3962
+"Papua New Guinea",2007,"Cases confirmed",NA
+"Papua New Guinea",2008,"Cases confirmed",5
+"Papua New Guinea",2009,"Cases confirmed",NA
+"Papua New Guinea",2010,"Cases confirmed",NA
+"Papua New Guinea",2011,"Cases confirmed",15
+"Papua New Guinea",2012,"Cases confirmed",159
+"Papua New Guinea",2013,"Cases confirmed",103
+"Singapore",2007,"Cases confirmed",4
+"Singapore",2008,"Cases confirmed",4
+"Singapore",2009,"Cases confirmed",3
+"Singapore",2010,"Cases confirmed",3
+"Singapore",2011,"Cases confirmed",6
+"Singapore",2012,"Cases confirmed",22
+"Singapore",2013,"Cases confirmed",15
+"Viet Nam",2007,"Cases confirmed",NA
+"Viet Nam",2008,"Cases confirmed",NA
+"Viet Nam",2009,"Cases confirmed",217
+"Viet Nam",2010,"Cases confirmed",101
+"Viet Nam",2011,"Cases confirmed",601
+"Viet Nam",2012,"Cases confirmed",769
+"Viet Nam",2013,"Cases confirmed",1204
+"WPR",2007,"Patients enrolled on treatment",0
+"WPR",2008,"Patients enrolled on treatment",573
+"WPR",2009,"Patients enrolled on treatment",1429
+"WPR",2010,"Patients enrolled on treatment",2210
+"WPR",2011,"Patients enrolled on treatment",4946
+"WPR",2012,"Patients enrolled on treatment",6342
+"WPR",2013,"Patients enrolled on treatment",6926
+"Australia",2007,"Patients enrolled on treatment",NA
+"Australia",2008,"Patients enrolled on treatment",19
+"Australia",2009,"Patients enrolled on treatment",26
+"Australia",2010,"Patients enrolled on treatment",36
+"Australia",2011,"Patients enrolled on treatment",26
+"Australia",2012,"Patients enrolled on treatment",16
+"Australia",2013,"Patients enrolled on treatment",22
+"China",2007,"Patients enrolled on treatment",NA
+"China",2008,"Patients enrolled on treatment",NA
+"China",2009,"Patients enrolled on treatment",458
+"China",2010,"Patients enrolled on treatment",1222
+"China",2011,"Patients enrolled on treatment",1155
+"China",2012,"Patients enrolled on treatment",1906
+"China",2013,"Patients enrolled on treatment",2184
+"China, Hong Kong SAR",2007,"Patients enrolled on treatment",NA
+"China, Hong Kong SAR",2008,"Patients enrolled on treatment",23
+"China, Hong Kong SAR",2009,"Patients enrolled on treatment",30
+"China, Hong Kong SAR",2010,"Patients enrolled on treatment",28
+"China, Hong Kong SAR",2011,"Patients enrolled on treatment",21
+"China, Hong Kong SAR",2012,"Patients enrolled on treatment",22
+"China, Hong Kong SAR",2013,"Patients enrolled on treatment",22
+"Japan",2007,"Patients enrolled on treatment",NA
+"Japan",2008,"Patients enrolled on treatment",NA
+"Japan",2009,"Patients enrolled on treatment",0
+"Japan",2010,"Patients enrolled on treatment",NA
+"Japan",2011,"Patients enrolled on treatment",60
+"Japan",2012,"Patients enrolled on treatment",60
+"Japan",2013,"Patients enrolled on treatment",NA
+"Republic of Korea",2007,"Patients enrolled on treatment",NA
+"Republic of Korea",2008,"Patients enrolled on treatment",NA
+"Republic of Korea",2009,"Patients enrolled on treatment",NA
+"Republic of Korea",2010,"Patients enrolled on treatment",NA
+"Republic of Korea",2011,"Patients enrolled on treatment",307
+"Republic of Korea",2012,"Patients enrolled on treatment",1212
+"Republic of Korea",2013,"Patients enrolled on treatment",951
+"Mongolia",2007,"Patients enrolled on treatment",NA
+"Mongolia",2008,"Patients enrolled on treatment",44
+"Mongolia",2009,"Patients enrolled on treatment",88
+"Mongolia",2010,"Patients enrolled on treatment",156
+"Mongolia",2011,"Patients enrolled on treatment",126
+"Mongolia",2012,"Patients enrolled on treatment",171
+"Mongolia",2013,"Patients enrolled on treatment",192
+"Malaysia",2007,"Patients enrolled on treatment",NA
+"Malaysia",2008,"Patients enrolled on treatment",56
+"Malaysia",2009,"Patients enrolled on treatment",0
+"Malaysia",2010,"Patients enrolled on treatment",64
+"Malaysia",2011,"Patients enrolled on treatment",141
+"Malaysia",2012,"Patients enrolled on treatment",74
+"Malaysia",2013,"Patients enrolled on treatment",49
+"Philippines",2007,"Patients enrolled on treatment",NA
+"Philippines",2008,"Patients enrolled on treatment",387
+"Philippines",2009,"Patients enrolled on treatment",501
+"Philippines",2010,"Patients enrolled on treatment",548
+"Philippines",2011,"Patients enrolled on treatment",2397
+"Philippines",2012,"Patients enrolled on treatment",1918
+"Philippines",2013,"Patients enrolled on treatment",2262
+"Papua New Guinea",2007,"Patients enrolled on treatment",NA
+"Papua New Guinea",2008,"Patients enrolled on treatment",2
+"Papua New Guinea",2009,"Patients enrolled on treatment",NA
+"Papua New Guinea",2010,"Patients enrolled on treatment",NA
+"Papua New Guinea",2011,"Patients enrolled on treatment",60
+"Papua New Guinea",2012,"Patients enrolled on treatment",82
+"Papua New Guinea",2013,"Patients enrolled on treatment",145
+"Singapore",2007,"Patients enrolled on treatment",NA
+"Singapore",2008,"Patients enrolled on treatment",4
+"Singapore",2009,"Patients enrolled on treatment",3
+"Singapore",2010,"Patients enrolled on treatment",3
+"Singapore",2011,"Patients enrolled on treatment",5
+"Singapore",2012,"Patients enrolled on treatment",22
+"Singapore",2013,"Patients enrolled on treatment",15
+"Viet Nam",2007,"Patients enrolled on treatment",NA
+"Viet Nam",2008,"Patients enrolled on treatment",NA
+"Viet Nam",2009,"Patients enrolled on treatment",307
+"Viet Nam",2010,"Patients enrolled on treatment",101
+"Viet Nam",2011,"Patients enrolled on treatment",578
+"Viet Nam",2012,"Patients enrolled on treatment",713
+"Viet Nam",2013,"Patients enrolled on treatment",948

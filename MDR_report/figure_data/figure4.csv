@@ -1,0 +1,117 @@
+"area","year","variable","value"
+"Australia",2010,"dstx_pct",73.8461538461539
+"Australia",2011,"dstx_pct",55.1020408163265
+"Australia",2012,"dstx_pct",69.5652173913043
+"Australia",2013,"dstx_pct",54.3478260869565
+"China",2007,"dstx_pct",0.20919018578925
+"China",2012,"dstx_pct",12.509266566229
+"China",2013,"dstx_pct",19.8198947076753
+"China, Hong Kong SAR",2007,"dstx_pct",58.5664335664336
+"China, Hong Kong SAR",2008,"dstx_pct",55.2584670231729
+"China, Hong Kong SAR",2009,"dstx_pct",45.9724950884086
+"China, Hong Kong SAR",2010,"dstx_pct",41.130604288499
+"China, Hong Kong SAR",2011,"dstx_pct",42.5051334702259
+"China, Hong Kong SAR",2012,"dstx_pct",48.0331262939959
+"China, Hong Kong SAR",2013,"dstx_pct",48.5294117647059
+"Japan",2007,"dstx_pct",26.2908011869436
+"Japan",2010,"dstx_pct",39.3870601589103
+"Japan",2011,"dstx_pct",39.715471250741
+"Japan",2012,"dstx_pct",43.6377245508982
+"Japan",2013,"dstx_pct",34.4690966719493
+"Malaysia",2013,"dstx_pct",10.3784403669725
+"Mongolia",2007,"dstx_pct",29.5566502463054
+"Mongolia",2008,"dstx_pct",61.3970588235294
+"Mongolia",2009,"dstx_pct",89.2794376098418
+"Mongolia",2010,"dstx_pct",95.4081632653061
+"Mongolia",2011,"dstx_pct",109.85401459854
+"Mongolia",2012,"dstx_pct",133.791748526523
+"Mongolia",2013,"dstx_pct",85.3697749196141
+"Philippines",2007,"dstx_pct",6.40394088669951
+"Philippines",2008,"dstx_pct",14.719151815926
+"Philippines",2009,"dstx_pct",0.37597911227154
+"Philippines",2010,"dstx_pct",2.66582892020465
+"Philippines",2011,"dstx_pct",16.9152419061477
+"Philippines",2012,"dstx_pct",11.5670582893467
+"Philippines",2013,"dstx_pct",13.7439272841247
+"Republic of Korea",2011,"dstx_pct",13.3149931224209
+"Republic of Korea",2013,"dstx_pct",7.88873193523851
+"Singapore",2007,"dstx_pct",70.4697986577181
+"Singapore",2008,"dstx_pct",68.2119205298013
+"Singapore",2009,"dstx_pct",64.3939393939394
+"Singapore",2010,"dstx_pct",60.7692307692308
+"Singapore",2011,"dstx_pct",64.1975308641975
+"Singapore",2012,"dstx_pct",57.7639751552795
+"Singapore",2013,"dstx_pct",59.0277777777778
+"Viet Nam",2013,"dstx_pct",44.6388261851016
+"Western Pacific Region
+",2007,"dstx_pct",1.41909370588283
+"Western Pacific Region
+",2008,"dstx_pct",18.7898089171975
+"Western Pacific Region
+",2009,"dstx_pct",8.61846946284032
+"Western Pacific Region
+",2010,"dstx_pct",12.8559804719284
+"Western Pacific Region
+",2011,"dstx_pct",20.1293103448276
+"Western Pacific Region
+",2012,"dstx_pct",14.5317922756073
+"Western Pacific Region
+",2013,"dstx_pct",20.5996305229127
+"Australia",2010,"mdrr_pct",22.9166666666667
+"Australia",2011,"mdrr_pct",25.9259259259259
+"Australia",2012,"mdrr_pct",6.25
+"Australia",2013,"mdrr_pct",12
+"China",2007,"mdrr_pct",27.9661016949153
+"China",2012,"mdrr_pct",40.8908430510419
+"China",2013,"mdrr_pct",35.9429609953865
+"China, Hong Kong SAR",2007,"mdrr_pct",1.7910447761194
+"China, Hong Kong SAR",2008,"mdrr_pct",3.2258064516129
+"China, Hong Kong SAR",2009,"mdrr_pct",2.56410256410256
+"China, Hong Kong SAR",2010,"mdrr_pct",5.21327014218009
+"China, Hong Kong SAR",2011,"mdrr_pct",3.38164251207729
+"China, Hong Kong SAR",2012,"mdrr_pct",2.58620689655172
+"China, Hong Kong SAR",2013,"mdrr_pct",3.53535353535354
+"Japan",2007,"mdrr_pct",7.2234762979684
+"Japan",2010,"mdrr_pct",5.18731988472623
+"Japan",2011,"mdrr_pct",4.17910447761194
+"Japan",2012,"mdrr_pct",4.45969125214408
+"Japan",2013,"mdrr_pct",5.05747126436782
+"Malaysia",2013,"mdrr_pct",2.76243093922652
+"Mongolia",2007,"mdrr_pct",36.1111111111111
+"Mongolia",2008,"mdrr_pct",34.1317365269461
+"Mongolia",2009,"mdrr_pct",33.0708661417323
+"Mongolia",2010,"mdrr_pct",30.8377896613191
+"Mongolia",2011,"mdrr_pct",28.9036544850498
+"Mongolia",2012,"mdrr_pct",27.3127753303965
+"Mongolia",2013,"mdrr_pct",33.3333333333333
+"Philippines",2007,"mdrr_pct",83.0769230769231
+"Philippines",2008,"mdrr_pct",55.8620689655172
+"Philippines",2009,"mdrr_pct",63.8888888888889
+"Philippines",2010,"mdrr_pct",81.1447811447811
+"Philippines",2011,"mdrr_pct",48.0860215053763
+"Philippines",2012,"mdrr_pct",35.279685966634
+"Philippines",2013,"mdrr_pct",51.2732801216268
+"Republic of Korea",2011,"mdrr_pct",26.3429752066116
+"Republic of Korea",2013,"mdrr_pct",71.3498622589532
+"Singapore",2007,"mdrr_pct",0.952380952380952
+"Singapore",2008,"mdrr_pct",2.9126213592233
+"Singapore",2009,"mdrr_pct",0
+"Singapore",2010,"mdrr_pct",2.53164556962025
+"Singapore",2011,"mdrr_pct",0.961538461538462
+"Singapore",2012,"mdrr_pct",3.2258064516129
+"Singapore",2013,"mdrr_pct",4.70588235294118
+"Viet Nam",2013,"mdrr_pct",25.2085967130215
+"Western Pacific Region
+",2007,"mdrr_pct",26.5669925244393
+"Western Pacific Region
+",2008,"mdrr_pct",40.5863490609253
+"Western Pacific Region
+",2009,"mdrr_pct",21.3447171824973
+"Western Pacific Region
+",2010,"mdrr_pct",24.6835443037975
+"Western Pacific Region
+",2011,"mdrr_pct",32.1588475764065
+"Western Pacific Region
+",2012,"mdrr_pct",34.9583698510079
+"Western Pacific Region
+",2013,"mdrr_pct",35.2681073675033

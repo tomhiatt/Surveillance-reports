@@ -1,0 +1,306 @@
+"country","year","Funding source","value"
+"WPR",2007,"Government",672
+"WPR",2008,"Government",738.4
+"WPR",2009,"Government",7744.09
+"WPR",2010,"Government",1791.187
+"WPR",2011,"Government",1424.76
+"WPR",2012,"Government",3280.332
+"WPR",2013,"Government",3218.219
+"China",2008,"Government",0
+"China",2011,"Government",0
+"China",2012,"Government",1235.192
+"China",2013,"Government",0
+"China, Hong Kong SAR",2007,"Government",240
+"China, Hong Kong SAR",2008,"Government",243.3
+"China, Hong Kong SAR",2009,"Government",120
+"China, Hong Kong SAR",2010,"Government",120
+"China, Hong Kong SAR",2011,"Government",250
+"China, Hong Kong SAR",2012,"Government",280
+"China, Hong Kong SAR",2013,"Government",303
+"Republic of Korea",2010,"Government",1000
+"Republic of Korea",2011,"Government",933.636
+"Republic of Korea",2012,"Government",974.913
+"Republic of Korea",2013,"Government",1198
+"Mongolia",2007,"Government",0
+"Mongolia",2008,"Government",0
+"Mongolia",2009,"Government",0
+"Mongolia",2010,"Government",0
+"Mongolia",2011,"Government",0
+"Mongolia",2012,"Government",0
+"Mongolia",2013,"Government",0
+"Malaysia",2008,"Government",75
+"Malaysia",2009,"Government",165
+"Malaysia",2010,"Government",180
+"Malaysia",2011,"Government",241.124
+"Malaysia",2012,"Government",250
+"Malaysia",2013,"Government",73.5
+"Philippines",2007,"Government",400
+"Philippines",2008,"Government",420
+"Philippines",2009,"Government",7159.09
+"Philippines",2012,"Government",0
+"Philippines",2013,"Government",909.09
+"Papua New Guinea",2012,"Government",540.227
+"Papua New Guinea",2013,"Government",584.629
+"Viet Nam",2009,"Government",0
+"Viet Nam",2010,"Government",0
+"WPR",2007,"Government",253.557
+"WPR",2008,"Government",1374.743
+"WPR",2009,"Government",1032.968
+"WPR",2010,"Government",3093.236
+"WPR",2011,"Government",5462.945
+"WPR",2012,"Government",5618.366
+"WPR",2013,"Government",9613.979
+"China",2007,"Government",160
+"China",2008,"Government",342.643
+"China",2009,"Government",553.714
+"China",2010,"Government",553.714
+"China",2011,"Government",3451.88
+"China",2012,"Government",2134.835
+"China",2013,"Government",5595.161
+"China, Hong Kong SAR",2007,"Government",70.4
+"China, Hong Kong SAR",2008,"Government",75
+"China, Hong Kong SAR",2009,"Government",98.8
+"China, Hong Kong SAR",2010,"Government",101
+"China, Hong Kong SAR",2011,"Government",106
+"China, Hong Kong SAR",2012,"Government",128
+"China, Hong Kong SAR",2013,"Government",116
+"Republic of Korea",2008,"Government",887
+"Republic of Korea",2010,"Government",1000
+"Republic of Korea",2011,"Government",933.636
+"Republic of Korea",2012,"Government",2780.531
+"Republic of Korea",2013,"Government",3221
+"Mongolia",2007,"Government",0
+"Mongolia",2008,"Government",0
+"Mongolia",2009,"Government",0
+"Mongolia",2010,"Government",0
+"Mongolia",2011,"Government",0
+"Mongolia",2012,"Government",0
+"Mongolia",2013,"Government",0
+"Malaysia",2008,"Government",0
+"Malaysia",2009,"Government",200
+"Malaysia",2010,"Government",300
+"Malaysia",2011,"Government",400
+"Malaysia",2012,"Government",500
+"Malaysia",2013,"Government",500
+"Philippines",2007,"Government",21.157
+"Philippines",2008,"Government",70
+"Philippines",2009,"Government",170.454
+"Philippines",2010,"Government",177.777
+"Philippines",2011,"Government",571.429
+"Philippines",2012,"Government",75
+"Philippines",2013,"Government",181.818
+"Viet Nam",2009,"Government",0
+"Viet Nam",2010,"Government",0
+"WPR",2007,"External",0
+"WPR",2008,"External",0
+"WPR",2009,"External",0
+"WPR",2010,"External",0
+"WPR",2011,"External",0
+"WPR",2012,"External",0
+"WPR",2013,"External",0
+"China",2008,"External",0
+"China",2011,"External",0
+"China",2012,"External",0
+"China",2013,"External",0
+"China, Hong Kong SAR",2008,"External",0
+"China, Hong Kong SAR",2009,"External",0
+"China, Hong Kong SAR",2010,"External",0
+"China, Hong Kong SAR",2011,"External",0
+"China, Hong Kong SAR",2012,"External",0
+"China, Hong Kong SAR",2013,"External",0
+"Republic of Korea",2013,"External",0
+"Mongolia",2008,"External",0
+"Mongolia",2009,"External",0
+"Mongolia",2010,"External",0
+"Mongolia",2011,"External",0
+"Mongolia",2012,"External",0
+"Mongolia",2013,"External",0
+"Malaysia",2007,"External",0
+"Malaysia",2009,"External",0
+"Malaysia",2013,"External",0
+"Philippines",2012,"External",0
+"Viet Nam",2009,"External",0
+"Viet Nam",2010,"External",0
+"WPR",2007,"External",0
+"WPR",2008,"External",0
+"WPR",2009,"External",0
+"WPR",2010,"External",237.593
+"WPR",2011,"External",0
+"WPR",2012,"External",0
+"WPR",2013,"External",0
+"China",2008,"External",0
+"China",2011,"External",0
+"China",2012,"External",0
+"China",2013,"External",0
+"China, Hong Kong SAR",2008,"External",0
+"China, Hong Kong SAR",2009,"External",0
+"China, Hong Kong SAR",2010,"External",0
+"China, Hong Kong SAR",2011,"External",0
+"China, Hong Kong SAR",2012,"External",0
+"China, Hong Kong SAR",2013,"External",0
+"Republic of Korea",2013,"External",0
+"Mongolia",2008,"External",0
+"Mongolia",2009,"External",0
+"Mongolia",2010,"External",0
+"Mongolia",2011,"External",0
+"Mongolia",2012,"External",0
+"Mongolia",2013,"External",0
+"Malaysia",2007,"External",0
+"Malaysia",2009,"External",0
+"Malaysia",2013,"External",0
+"Philippines",2012,"External",0
+"Viet Nam",2009,"External",0
+"Viet Nam",2010,"External",237.593
+"WPR",2007,"External",926.372
+"WPR",2008,"External",5306.017
+"WPR",2009,"External",4486.8655
+"WPR",2010,"External",14995.818
+"WPR",2011,"External",17639.4035666
+"WPR",2012,"External",9188.63553
+"WPR",2013,"External",19129.032
+"China",2007,"External",155.859
+"China",2008,"External",703.107
+"China",2009,"External",482.464
+"China",2010,"External",2800.8
+"China",2011,"External",13864.432
+"China",2012,"External",4028.204
+"China",2013,"External",12448.076
+"China, Hong Kong SAR",2008,"External",0
+"China, Hong Kong SAR",2009,"External",0
+"China, Hong Kong SAR",2010,"External",0
+"China, Hong Kong SAR",2011,"External",0
+"China, Hong Kong SAR",2012,"External",0
+"China, Hong Kong SAR",2013,"External",0
+"Republic of Korea",2013,"External",0
+"Mongolia",2007,"External",140
+"Mongolia",2008,"External",225.4
+"Mongolia",2009,"External",186.8255
+"Mongolia",2010,"External",526.127
+"Mongolia",2011,"External",516.26878
+"Mongolia",2012,"External",884.686
+"Mongolia",2013,"External",398.504
+"Malaysia",2007,"External",0
+"Malaysia",2009,"External",0
+"Malaysia",2013,"External",0
+"Philippines",2007,"External",630.513
+"Philippines",2008,"External",4071.141
+"Philippines",2009,"External",3387.931
+"Philippines",2010,"External",10546.415
+"Philippines",2012,"External",3014.85453
+"Philippines",2013,"External",3502.537
+"Viet Nam",2008,"External",305.369
+"Viet Nam",2009,"External",429.645
+"Viet Nam",2010,"External",1122.476
+"Viet Nam",2011,"External",3151.905
+"Viet Nam",2012,"External",1082.335
+"Viet Nam",2013,"External",2740.108
+"WPR",2007,"External",924.835
+"WPR",2008,"External",5783.799
+"WPR",2009,"External",8310.88
+"WPR",2010,"External",8721.048
+"WPR",2011,"External",19538.2277157
+"WPR",2012,"External",19623.9371
+"WPR",2013,"External",36930.652
+"China",2007,"External",238.089
+"China",2008,"External",1131.786
+"China",2009,"External",1025.593
+"China",2010,"External",3836.862
+"China",2011,"External",17253.197
+"China",2012,"External",15104.752
+"China",2013,"External",30617.036
+"China, Hong Kong SAR",2008,"External",0
+"China, Hong Kong SAR",2009,"External",0
+"China, Hong Kong SAR",2010,"External",0
+"China, Hong Kong SAR",2011,"External",0
+"China, Hong Kong SAR",2012,"External",0
+"China, Hong Kong SAR",2013,"External",0
+"Republic of Korea",2013,"External",0
+"Mongolia",2007,"External",192.61
+"Mongolia",2008,"External",122
+"Mongolia",2009,"External",45
+"Mongolia",2010,"External",665.575
+"Mongolia",2011,"External",542.512
+"Mongolia",2012,"External",413.16947
+"Mongolia",2013,"External",463.509
+"Malaysia",2007,"External",0
+"Malaysia",2009,"External",0
+"Malaysia",2013,"External",0
+"Philippines",2007,"External",494.136
+"Philippines",2008,"External",4414.788
+"Philippines",2009,"External",6714.29
+"Philippines",2010,"External",4013.58
+"Philippines",2012,"External",3426.44663
+"Philippines",2013,"External",3814.47
+"Papua New Guinea",2008,"External",0
+"Viet Nam",2008,"External",109.225
+"Viet Nam",2009,"External",383.076
+"Viet Nam",2010,"External",56.03
+"Viet Nam",2011,"External",1621.825
+"Viet Nam",2012,"External",448.725
+"Viet Nam",2013,"External",1943.911
+"WPR",2007,"External",0
+"WPR",2008,"External",109.563
+"WPR",2009,"External",0
+"WPR",2010,"External",0
+"WPR",2011,"External",94.313
+"WPR",2012,"External",137.386
+"WPR",2013,"External",0
+"China",2008,"External",0
+"China",2011,"External",0
+"China",2012,"External",0
+"China",2013,"External",0
+"China, Hong Kong SAR",2008,"External",0
+"China, Hong Kong SAR",2009,"External",0
+"China, Hong Kong SAR",2010,"External",0
+"China, Hong Kong SAR",2011,"External",0
+"China, Hong Kong SAR",2012,"External",0
+"China, Hong Kong SAR",2013,"External",0
+"Republic of Korea",2013,"External",0
+"Mongolia",2008,"External",0
+"Mongolia",2009,"External",0
+"Mongolia",2010,"External",0
+"Mongolia",2011,"External",0
+"Mongolia",2012,"External",0
+"Mongolia",2013,"External",0
+"Malaysia",2007,"External",0
+"Malaysia",2009,"External",0
+"Malaysia",2013,"External",0
+"Philippines",2012,"External",0
+"Viet Nam",2008,"External",109.563
+"Viet Nam",2009,"External",0
+"Viet Nam",2010,"External",0
+"Viet Nam",2011,"External",94.313
+"WPR",2007,"External",350
+"WPR",2008,"External",531.611
+"WPR",2009,"External",695.881
+"WPR",2010,"External",891
+"WPR",2011,"External",667.214
+"WPR",2012,"External",470
+"WPR",2013,"External",877.034
+"China",2008,"External",0
+"China",2011,"External",0
+"China",2012,"External",0
+"China",2013,"External",0
+"China, Hong Kong SAR",2008,"External",0
+"China, Hong Kong SAR",2009,"External",0
+"China, Hong Kong SAR",2010,"External",0
+"China, Hong Kong SAR",2011,"External",0
+"China, Hong Kong SAR",2012,"External",0
+"China, Hong Kong SAR",2013,"External",0
+"Republic of Korea",2013,"External",0
+"Mongolia",2008,"External",0
+"Mongolia",2009,"External",10
+"Mongolia",2010,"External",0
+"Mongolia",2011,"External",70
+"Mongolia",2012,"External",0
+"Mongolia",2013,"External",0
+"Malaysia",2007,"External",0
+"Malaysia",2009,"External",0
+"Malaysia",2013,"External",0
+"Philippines",2007,"External",350
+"Philippines",2012,"External",0
+"Philippines",2013,"External",522.934
+"Viet Nam",2008,"External",531.611
+"Viet Nam",2009,"External",465.881
+"Viet Nam",2010,"External",0
+"Viet Nam",2011,"External",97.214
