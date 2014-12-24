@@ -1,56 +1,41 @@
+---
+title: 'Epidemiology and control of tuberculosis in the Western Pacific Region: analysis
+  of case notification data in `r yr <- 2013; yr`'
+author: "Tom Hiatt<sup>&dagger;</sup> and Nobuyuki Nishikiori<sup>&dagger;</sup>"
+csl: vancouver-imperial-college-london.csl
+output:
+  html_document:
+    fig_caption: yes
+    keep_md: yes
+    number_sections: no
+    theme: united
+    toc: yes
+  pdf_document:
+    toc: yes
+  word_document:
+    fig_height: 7
+bibliography: WPRupdate.bib
+---
+
 ```{r setup, echo=FALSE, include=FALSE}
 
 ###################################################
 # Tom Hiatt
-# Updated: 12 March 2014
+# Updated: 12 November 2014
 # Regional TB annual analysis
 ###################################################
 
 ## Change this information to customize for your own data.
 
-# Year of TB notification data
-yr <- 2012
-# 
+yr <- 2013
 
 ###################################################
 
 # > sessionInfo()
-# R version 3.0.2 (2013-09-25)
-# Platform: i386-w64-mingw32/i386 (32-bit)
-# 
-# locale:
-# [1] LC_COLLATE=English_United Kingdom.1252 
-# [2] LC_CTYPE=English_United Kingdom.1252   
-# [3] LC_MONETARY=English_United Kingdom.1252
-# [4] LC_NUMERIC=C                           
-# [5] LC_TIME=English_United Kingdom.1252    
-# 
-# attached base packages:
-# [1] grid      stats     graphics  grDevices utils     datasets  methods  
-# [8] base     
-# 
-# other attached packages:
-#  [1] maptools_0.8-27    sp_1.0-14          knitr_1.5         
-#  [4] ggthemes_1.6.0     timeSeries_3010.97 timeDate_3010.98  
-#  [7] stringr_0.6.2      xtable_1.7-1       scales_0.2.3      
-# [10] ggplot2_0.9.3.1    reshape_0.8.4      plyr_1.8          
-# 
-# loaded via a namespace (and not attached):
-#  [1] colorspace_1.2-4   dichromat_2.0-0    digest_0.6.4      
-#  [4] evaluate_0.5.1     foreign_0.8-55     formatR_0.10      
-#  [7] gtable_0.1.2       labeling_0.2       lattice_0.20-23   
-# [10] MASS_7.3-29        munsell_0.4.2      proto_0.3-10      
-# [13] RColorBrewer_1.0-5 reshape2_1.2.2     tools_3.0.2 
 
-require("reshape")
-require("ggplot2")
-require("grid")
-require("scales")
-require("xtable")
-require("stringr")
-require("timeSeries")
-require("ggthemes")
-
+library(plyr) #Note: plyr must be loaded before dplyr
+lapply(c("reshape", "plyr", "dplyr", "ggplot2", "grid", "scales", "xtable", "stringr", "ggthemes"), library, character.only=TRUE)
+#timeSeries is messing things up...I'm not sure what I need it for. , "timeSeries"
 
 # Reproducible research process inspired by: http://gforge.se/2014/01/fast-track-publishing-using-knitr-part-ii/
 
@@ -58,9 +43,9 @@ require("ggthemes")
 # change this to 'postscript' for EPS output.
 require(knitr)
 opts_chunk$set(
-#   dev="png",
-#   dev.args=list(type="cairo"),
-#   dpi=96,
+  #   dev="png",
+  #   dev.args=list(type="cairo"),
+  #   dpi=96,
   fig.width=7,
   echo=FALSE
   )
@@ -75,61 +60,66 @@ if(!any(grep("Regional_report", getwd()))) setwd("./Regional_report")
 
 # Theme for plots
 theme_report <- function(base_size=12, base_family="") {
-    colors <- ggthemes_data$few
-    gray <- colors$medium['gray']
-    black <- colors$dark['black'] # I don't know why these last 3 parts are needed, but they are. List is here: http://docs.ggplot2.org/0.9.2.1/theme.html
-    theme_bw(base_size=base_size, base_family=base_family) +
-        theme(
-            line = element_line(colour = gray),
-            rect = element_rect(fill = "white", colour = NA),
-            text = element_text(colour = black),
-            axis.ticks.x = element_line(colour = gray),
-            axis.ticks.y = element_blank(),
-            legend.key = element_rect(colour = NA),
-            ## Examples do not use grid lines
-            panel.border = element_rect(colour = gray),
-            panel.grid.major.x = element_blank(),
-            panel.grid.minor = element_blank(),
-            strip.background = element_rect(fill="white", colour=NA),
-            strip.text = element_text(hjust=0)
-            )
-}
+  colors <- ggthemes_data$few
+  gray <- colors$medium['gray']
+  black <- colors$dark['black'] # I don't know why these last 3 parts are needed, but they are. List is here: http://docs.ggplot2.org/0.9.2.1/theme.html
+  theme_bw(base_size=base_size, base_family=base_family) +
+    theme(
+      line = element_line(colour = gray),
+      rect = element_rect(fill = "white", colour = NA),
+      text = element_text(colour = black),
+      axis.ticks.x = element_line(colour = gray),
+      axis.ticks.y = element_blank(),
+      legend.key = element_rect(colour = NA),
+      ## Examples do not use grid lines
+      panel.border = element_rect(colour = gray),
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor = element_blank(),
+      strip.background = element_rect(fill="white", colour=NA),
+      strip.text = element_text(hjust=0)
+      )
+  }
 
 ########################################################
-# Functions for data formatting
+# Functions for data formatting and manipulation
 ########################################################
 
 # Simple rounder that just adds in the thousands separator 
 rounder <- function(x, decimals=FALSE) {
   if(decimals==TRUE){
     ifelse(is.na(x), NA, ifelse(x==0, 0, ifelse(x < 0.01, "<0.01", ifelse(round(x,2) < 0.1, formatC(round(x,2), format='f', digits=2), ifelse(round(x,1) < 10, formatC(round(x,1), format='f', digits=1), formatC(round(x,0), big.mark=" ", format='d') )))))
-  }
+    }
   else ifelse(is.na(x), NA, ifelse(x==0, 0, ifelse(x < 1, "< 1", formatC(round(x,0), big.mark=" ", format='d'))))
-}
+  }
 
 .rowsums <- function(x) { 
   # This function sums rows ignoring NAs unless all are NA
   # use it like this
   # t3c$snu <- .rowsums(t3c[c('new_sn', 'new_su')])
-		tosum <- as.matrix(x)
-		summed <- rowMeans((tosum), na.rm=T) * rowSums(!is.na((tosum)))
-		return(summed)
-}
+  tosum <- as.matrix(x)
+  summed <- rowMeans((tosum), na.rm=T) * rowSums(!is.na((tosum)))
+  return(summed)
+  }
+
+sum0 <- function(x) sum(x, na.rm = !all(is.na(x)))
 
 # Change names to WPSAR convention
-.WPSARnames <- function(d, col='country', ord='no order'){
+.WPSARnames <- function(d, col='country', the=FALSE){
   d[col] <- as.character(d[[col]])
   d[col] <- ifelse(d[[col]]=='China, Hong Kong SAR', 'Hong Kong Special Administrative Region (China)', 
                    ifelse(d[[col]]=='China, Macao SAR', 'Macao Special Administrative Region (China)', 
                           ifelse(d[[col]]=='Micronesia (Federated States of)', 'Micronesia, Federated States of', 
                                  ifelse(d[[col]]=='WPR', 'Western Pacific Region
-', d[[col]]))))
-
-  if(!ord %in% c('wpr')) warning('Not ordering.')
-if(ord=='wpr')  d <- d[match(c("Afghanistan", "Bangladesh", "Brazil", "Cambodia", "China", "DR Congo", "Ethiopia", "India", "Indonesia", "Kenya", "Mozambique",  "Myanmar", "Nigeria", "Pakistan", "Philippines", "Russian Federation", "South Africa", "Thailand", "Uganda", "UR Tanzania", "Viet Nam", "Zimbabwe", "High-burden countries", "AFR", "AMR", "EMR", "EUR", "SEAR", "WPR", "Global"), d[[col]]),]
-
+                                        ', d[[col]]))))
+  
+  if(the){
+    d[col] <- ifelse(d[[col]]=='Philippines', 'the Philippines',
+                     ifelse(d[[col]]=="Lao People's Democratic Republic", "the Lao People's Democratic Republic", d[[col]]))
+    }
+  
+  
   return(d)
-}
+  }
 
 ########################################################
 # Functions for maps
@@ -148,16 +138,16 @@ incCount <- function(inObj, useName) {
   inObj <- c(inObj, useNum)
   names(inObj)[nObj + 1] <- useName
   inObj
-}
+  }
 figCount <- c(`_` = 0)
 tableCount <- c(`_` = 0)
 
 # tableCount
 
-pasteLabel <- function(preText, inObj, objName, insLink = TRUE) {
+pasteLabel <- function(preText, inObj, objName, insLink = TRUE, sepper = " ") {
   objNum <- inObj[objName]
   
-  useText <- paste(preText, objNum, sep = " ")
+  useText <- paste(preText, objNum, sep = sepper)
   if (insLink) {
     useText <- paste("[", useText, "](#", objName, ")", sep = "")
   }
@@ -169,9 +159,9 @@ tableCat <- function(inFrame) {
   outText <- c(outText, paste(rep("---", ncol(inFrame)), collapse = " | "))
   invisible(apply(inFrame, 1, function(inRow) {
     outText <<- c(outText, paste(inRow, collapse = " | "))
-  }))
+    }))
   return(outText)
-}
+  }
 
 # Create directory and Get data
 
@@ -185,65 +175,95 @@ tb <- NA
 for(i in data1){
   data3 <- read.csv(i)
   tb <- merge(tb, data3, all=TRUE)
-}
+  }
 
 # Note: to use your own data, make a flat data file with each row corresponding to the lower reporting unit and a aggregating variable. EG by country with aggregating variable of region.
 
 # Add needed variables
 tb$g_hbc22 <- ifelse(tb$iso3 %in% c("AFG", "BGD", "BRA", "CHN", "COD", "ETH", "IDN", "IND", "KEN", "KHM", "MMR", "MOZ", "NGA", "PAK", "PHL", "RUS", "THA", "TZA", "UGA", "VNM", "ZAF", "ZWE"), "high", "low")
 
-tb$c_new <- .rowsums(tb[c("new_sp", "new_sn", "new_su", "new_ep", "new_oth")])
-tb$c_newinc <- .rowsums(tb[c("c_new", "ret_rel", "newret_oth")])
-tb$c_ret <- .rowsums(tb[c("ret_rel", "ret_taf", "ret_tad", "ret_oth")])
-tb$c_notified <- .rowsums(tb[c("c_new", "c_ret", "newret_oth")])
+# tb$c_new <- .rowsums(tb[c("new_sp", "new_sn", "new_su", "new_ep", "new_oth")])
+tb$c_newinc <- ifelse(tb$year < 2013, .rowsums(tb[c("tot_newrel", "newret_oth")]), .rowsums(tb[c("new_labconf", "new_clindx", "new_ep", "ret_rel_labconf", "ret_rel_clindx", "ret_rel_ep")]))
+# tb$c_ret <- .rowsums(tb[c("ret_rel", "ret_taf", "ret_tad", "ret_oth")])
+tb$c_notified <- ifelse(tb$year < 2013, .rowsums(tb[c("new_sp", "new_sn", "new_su", "new_ep", "new_oth", "ret_rel", "ret_taf", "ret_tad", "ret_oth", "newret_oth")]), .rowsums(tb[c("c_newinc", "ret_nrel")]))
+tb$c_newrel_tsr <- tb$newrel_succ / tb$newrel_coh * 100
 
-tb$c_tot_newrel_100k <- tb$tot_newrel / tb$e_pop_num * 1e5
+# tb$c_newinc_100k <- tb$c_newinc / tb$e_pop_num * 1e5
 
 # Get population data (available from UN population division. http://esa.un.org/unpd/wpp/unpp/panel_population.htm) and formatted TB/HIV data and estimates for the WHO Western Pacific Region.
 
+if(FALSE){
+  runprofile()
+  esta <- subset(araw, group_name=="WPR", select=c("year", "e_pop_num", "e_inc_100k", "e_inc_100k_lo", "e_inc_100k_hi", "e_prev_100k", "e_prev_100k_lo", "e_prev_100k_hi", "e_mort_exc_tbhiv_100k", "e_mort_exc_tbhiv_100k_lo", "e_mort_exc_tbhiv_100k_hi", "e_prev_num", "e_prev_num_lo", "e_prev_num_hi"))
+  save(esta, p, tbhiv, file="./addata.Rdata")
+}
+
 load("./addata.Rdata")
 
-tb <- merge(tb, tbhiv[c(3,4,13:20)], all=TRUE)
+tb <- merge(tb, tbhiv[c(3,4,13:ncol(tbhiv))], all=TRUE)
 
 ```
 
 
-Epidemiology and control of tuberculosis in the Western Pacific Region: analysis of case notification data in 2012
-========================================================
+<sup>&dagger;</sup> Stop TB and Leprosy Elimination, Division of Communicable Diseases, World Health Organization Regional Office for the Western Pacific, Manila, Philippines.
 
-### Tom Hiatt^a and Nobuyuki Nishikiori^a
-
-
-^a Stop TB and Leprosy Elimination, Division of Combating Communicable Diseases, World Health Organization Regional Office for the Western Pacific, Manila, the Philippines.
+--------------------------------------------------------
 
 Correspondence to Tom Hiatt (e-mail: hiattt@wpro.who.int).
 
-Abstract 
 --------------------------------------------------------
 
-Tuberculosis (TB) control in the World Health Organization (WHO) Western Pacific Region has seen substantial progress in the last decade with a 33% reduction in prevalent TB cases since 2000. The burden remains immense however, and national TB programmes must evolve and adapt to build upon these gains. Through routine surveillance, countries and areas in the Region reported 1.4 million TB cases in 2012. The case notification rate increased in the early 2000s, appears to have stabilized in recent years and is in decline for all forms and new smear-positive cases. The age and sex breakdown for smear-positive TB case rates by country shows generally higher rates with increased age and declining rates over time for all age groups. Treatment success remains high in the Region with 15 countries reaching or maintaining an 85% success rate. HIV testing among TB patients has increased gradually along with a slow decline in the number of HIV-positive patients found.
+To cite this article: 
 
-The trend of TB notification is heavily influenced by programmatic improvements in many countries and rapidly changing demographics. It appears that cases are being found earlier as reflected in declining rates of smear-positive TB with steady rates of TB in all forms. WHO estimates depict a decline in TB incidence in the Region. HIV testing, while still low, has increased substantially in recent years with essential TB/HIV services expanding in many countries.
+
+
+--------------------------------------------------------
+
+Abstract 
+--------------------------------------------------------
+```{r abstract, echo=FALSE}
+a1 <- signif((subset(esta, year==2000, e_prev_num) - subset(esta, year==yr, e_prev_num)) / subset(esta, year==2000, e_prev_num) * 100, 2)
+a2 <- tb %>% filter(year==yr, g_whoregion=="WPR") %>% summarize(cases=sum0(c_notified / 1e6)) %>% signif(2)
+a3 <- tb %>% filter(year==yr-1, g_whoregion=="WPR", c_newrel_tsr >= 85) %>% nrow()
+
+```
+
+Tuberculosis (TB) control in the World Health Organization (WHO) Western Pacific Region has seen substantial progress in the last decade with a `r a1` reduction in prevalent TB cases since 2000. The burden remains immense however, and national TB programmes must evolve and adapt to build upon these gains. Through routine surveillance, countries and areas in the Region reported `r a2` million TB cases in `r yr`. The case notification rate increased in the early 2000s, appears to have stabilized in recent years and is in decline for all forms and laboratory-confirmed cases. The age and sex breakdown for laboratory-confirmed TB case rates by country shows generally higher rates with increased age and declining rates over time for all age groups. Treatment success remains high in the Region with `r a3` countries reaching or maintaining an 85% success rate. HIV testing among TB patients has increased gradually along with a slow decline in the number of HIV-positive patients found.
+
+The trend of TB notification is heavily influenced by programmatic improvements in many countries and rapidly changing demographics. It appears that cases are being found earlier as reflected in declining rates of laboratory-confirmed TB with steady rates of TB in all forms. WHO estimates depict a decline in TB incidence in the Region. HIV testing, while still low, has increased substantially in recent years with essential TB/HIV services expanding in many countries.
 
 TB surveillance data, within inherent limitations, is an important source of programmatic and epidemiological information. Careful interpretation of these findings can provide useful insight for programmatic decision-making.
 
+--------------------------------------------------------
 
 Introduction
 --------------------------------------------------------
+```{r intro, echo=FALSE}
+i1 <- signif(subset(esta, year==2000, e_prev_num) / 1e6, 2)
+i2 <- signif(subset(esta, year==yr, e_prev_num) / 1e6, 2)
+i2a <- signif(sum0(subset(tb, g_whoregion=="WPR" & year >= 2000, c_newinc)) / 1e6, 3)
+i3 <- tb %>% filter(year==yr, g_whoregion=="WPR") %>% summarize(cases=sum0(c_notified / 1e6)) %>% signif(2)
+```
 
-Significant progress has been made in tuberculosis (TB) control in the World Health Organization (WHO) Western Pacific Region especially in the past decade. The number of prevalent TB patients in the Region fell from 3.6 million in 2000 to 2.4 million in 2012.^1 During the same period, over 10 million patients were diagnosed and treated, and an estimated 800 000 deaths were averted.^2 According to the latest WHO estimates, the Region is on track for achieving the TB-related Millennium Development Goals (MDGs) and other international targets by 2015. However, with 1.4 million TB patients notified annually in the Region and several countries with a persistent substantial disease burden, TB control policies and strategies require continuous evolution to adopt new tools and approaches as well as to address emerging challenges faced by national TB control programmes. In light of the MDG target date approaching, WHO has embarked on an extensive consultative process of developing the new Global TB Strategy after 2015.^3 At this critical period of strategy renewal, a thorough analysis of surveillance data provides valuable information on the current epidemiological situation, programmatic progress and future directions.
+Significant progress has been made in tuberculosis (TB) control in the World Health Organization (WHO) Western Pacific Region especially in since 2000. The number of prevalent TB patients in the Region fell from `r i1` million in 2000 to `r i2` million in `r yr`.[@WorldHealthOrganization2014] During the same period, `r i2a` million patients were diagnosed and treated, and an estimated 800 000 deaths were averted between 2000 and 2010.[@WorldHealthOrganization2011] According to the latest WHO estimates, the Region is on track for achieving the TB-related Millennium Development Goals (MDGs) and other international targets by 2015. However, with `r i3` million TB patients notified annually in the Region and several countries with a persistent substantial disease burden, TB control policies and strategies require continuous evolution to adopt new tools and approaches as well as to address emerging challenges faced by national TB control programmes. In light of the MDG target date approaching, WHO has developed a new Global TB Strategy for after 2015.[@WorldHealthOrganization2014a] Particularly at this critical period of strategy renewal, thorough analysis of surveillance data provides valuable information on the current epidemiological situation, programmatic progress and future directions.
 
-This article represents our first attempt to report a regional analysis of TB notification data as an article in the Western Pacific Surveillance and Response Journal. Throughout the year of 2014 and beyond, we plan to conduct a series of further regional analyses on various topics such as subnational data analysis and utilization, the situation of drug-resistant TB, contact investigation and other forms of TB screening activities to stimulate the utilization of surveillance data for informed programme decision-making.
-
+This article represents our second regional analysis of TB notification data as an article in the Western Pacific Surveillance and Response Journal. We plan to continue reporting an annual regional analysis in this way punctuated by complementary reports focused on various topics such as subnational data analysis and utilization, the situation of drug-resistant TB, contact investigation and other forms of TB screening activities to stimulate the utilization of surveillance data for informed programme decision-making.
 
 Methods
 --------------------------------------------------------
+```{r methods, echo=FALSE}
+m1 <- tb %>% filter(year==yr-1, g_whoregion=="WPR", !is.na(c_newinc)) %>% nrow()
+m2 <- floor(tb %>% filter(year==yr-1, g_whoregion=="WPR", !is.na(c_newinc)) %>% summarize(pop=sum(e_pop_num)) / tb %>% filter(year==yr-1, g_whoregion=="WPR") %>% summarize(pop=sum(e_pop_num)) * 100 / 0.1) * 0.1 # rounding to increment
+
+info <- sessionInfo()
+r_ver <- paste(info$R.version$major, info$R.version$minor, sep=".")
+```
 
 ### Data
-Every year, 36 countries and areas in the Region are requested to report TB surveillance data to WHO using a standardized data collection form. Since 2009, a web-based online system has been used for data submission and validation. Collected data covers the following areas: TB case notifications and treatment outcomes, diagnostic and treatment services, drug management, surveillance and surveys of drug-resistance, information on TB/HIV co-infection, infection control, engagement of all care providers and budgets and expenditures for TB control. The full description of methods is available in the Global Tuberculosis Report 2013 and the data sets are available from the WHO global TB database (www.who.int/tb/data). Case definitions for TB can be found in the 4th edition of the TB treatment guidelines.^4 In 2013, 30 countries and areas of the Western Pacific Region reported data representing more than 99.9% of the total population. This report described the epidemiological situation and progress in programmatic response with a focus on seven countries with a high burden of TB: Cambodia, China, the Lao People's Democratic Republic, Mongolia, Papua New Guinea, the Philippines and Viet Nam. (Globally, WHO designates 22 countries with a high burden of TB that include Cambodia, China, the Philippines and Viet Nam. The other three countries: the Lao People's Democratic Republic, Mongolia and Papua New Guinea are considered priority countries with a high burden of TB in the Western Pacific Region).
+Every year, 36 countries and areas in the Region are requested to report TB surveillance data to WHO using a standardized data collection form. Since 2009, a web-based online system has been used for data submission and validation. Collected data covers the following areas: TB case notifications and treatment outcomes, diagnostic and treatment services, drug management, surveillance and surveys of drug-resistance, information on TB/HIV co-infection, infection control, engagement of all care providers and budgets and expenditures for TB control. The full description of methods is available in the Global Tuberculosis Report 2014[@WorldHealthOrganization2014] and the data sets are available from the WHO global TB database (www.who.int/tb/data). Case definitions for TB can be found in the 4th edition of the TB treatment guidelines.[@WorldHealthOrganization2006] For `r yr`, `r m1` countries and areas of the Western Pacific Region reported data representing more than `r m2`% of the total population. This report describes the epidemiological situation and progress in programmatic response with a focus on seven countries with a high burden of TB: Cambodia, China, the Lao People's Democratic Republic, Mongolia, Papua New Guinea, the Philippines and Viet Nam. (Globally, WHO designates 22 countries with a high burden of TB that include Cambodia, China, the Philippines and Viet Nam. The other three countries: the Lao People's Democratic Republic, Mongolia and Papua New Guinea are considered priority countries with a high burden of TB in the Western Pacific Region).
 
 ### Analysis and reproducibility
-Analysis was conducted by the statistical package R (R Core Team, 2013, Vienna, Austria, www.R-project.org). Due to calls for transparent and reproducible research,^5,6 we have published programme code to generate the entire contents of this article including all figures and tables by using R with the knitr package (Yihui Xie, 2013). Readers can download the code (see supplement material) and reproduce all figures and tables under an appropriate personal computing environment. For non-commercial purposes, readers may modify the code to produce figures and tables that are not presented in this article. For instance, readers may wish to produce tables and figures for countries or regions other than the WHO Western Pacific Region.
+Analysis was conducted by the statistical package R (ver. `r r_ver`, R Core Team, `r info$R.version$year`, Vienna, Austria, www.R-project.org). Due to calls for transparent and reproducible research,[@Peng2006; @Groves2012] we have published programme code to generate the entire contents of this article including all figures and tables by using R with the knitr package (ver. `r info$otherPkgs$knitr$Version`, Yihui Xie, `r format.Date(info$otherPkgs$knitr$Date, "%Y")`). Readers can download the code (see supplement material) and reproduce all figures and tables under an appropriate personal computing environment. For non-commercial purposes, readers may modify the code to produce figures and tables that are not presented in this article. For instance, readers may wish to produce tables and figures for countries or regions other than the WHO Western Pacific Region.
 
 
 Results
@@ -257,128 +277,154 @@ tableCount <- incCount(tableCount, "t-notif")
 
 # Notification table
 
-tbb <- subset(tb, year==yr & g_whoregion=="WPR", select=c('country', 'g_whoregion', 'c_notified', "new_sp", "new_sn", "new_su", "new_ep", "new_oth", "ret_rel", 'c_newinc', "c_ret", "newret_oth", "new_labconf", 'c_new', "e_pop_num"))
-
-tbb$new.pulm <- .rowsums(tbb[c('new_sp', 'new_sn', 'new_su')])
+tbb <- subset(tb, year==yr & g_whoregion=="WPR", select=c('country', 'g_whoregion', 'g_hbc22', 'c_notified', 'c_newinc', "new_labconf", "new_clindx", "new_ep", "ret_rel_labconf", "ret_rel_clindx", "ret_rel_ep", "ret_nrel"))
 
 tbb <- tbb[order(tbb$country),]
 names(tbb)[names(tbb)=='country'] <- 'area'
 
-# make aggregate row
-tbbr <- aggregate(tbb[3:ncol(tbb)], by=list(area=tbb$g_whoregion), FUN=sum, na.rm=TRUE)
-
+# make aggregate rows
+tbbr <- aggregate(tbb[4:ncol(tbb)], by=list(area=tbb$g_whoregion), FUN=sum, na.rm=TRUE)
 
 # combine together
-tbc <- rbind(tbb[tbb$g_whoregion=='WPR', c(1, 3:ncol(tbb))], tbbr[tbbr$area=='WPR',]) # , tbbh, tbbga
-
-# Fill in data for countries not reporting lab confirmed (see below too)
-tbc$new_labconf2 <- ifelse(is.na(tbc$new_labconf), tbc$new_sp, tbc$new_labconf)
+tbc <- rbind(tbb[c(1, 4:ncol(tbb))], tbbr) # tbbh, , tbbga
 
 # calculate and format vars
-tbc$ret_nrel <- tbc$c_ret - tbc$ret_rel
-tbc$newpulm_lab_pct <- tbc$new_labconf2 / tbc$new.pulm * 100
-tbc$tot_newrel_100k <- tbc$c_newinc / tbc$e_pop_num * 1e5
+
+tbc$nrpulm_lab_pct <- .rowsums(tbc[c("new_labconf", "ret_rel_labconf")] )* 100 / .rowsums(tbc[c("new_labconf", "new_clindx", "ret_rel_labconf", "ret_rel_clindx")])
 
 for(var in 2:ncol(tbc)){
   tbc[var] <- rounder(tbc[[var]])
-}
-tbc[is.na(tbc$newpulm_lab_pct), 'newpulm_lab_pct'] <-  "--"
-tbc[is.na(tbc$tot_newrel_100k), 'newpulm_lab_pct'] <-  "--"
+  }
 
-# Add footnote for countries not reporting Lab confirmed 
-footnote.b <- ifelse(any(is.na(tbc$new_labconf) & !is.na(tbc$new_sp)), paste('(b) LABORATORY CONFIRMED data for', paste(subset(tbc, is.na(new_labconf), 'area'), collapse=', '), 'refer to smear-positive cases only. Data on cases that were laboratory confirmed using other methods were not reported.'), "")
-tbc$new_labconf2 <- ifelse(is.na(tbc$new_labconf) & !is.na(tbc$new_sp), paste0(tbc$new_sp, "(b)"), tbc$new_labconf2)
+tbc[is.na(tbc$nrpulm_lab_pct), 'nrpulm_lab_pct'] <- "\u2013"
 
-# Rename countries
-tbd <- .WPSARnames(tbc[c("area", "c_notified", "tot_newrel_100k", "new_sp", "new_sn", "new_su", "new_ep", "new_oth", "new_labconf2", "newpulm_lab_pct", "ret_rel", "ret_nrel", "c_newinc")], col="area")
+# rename
+tbc <- .WPSARnames(tbc, col='area')
 
-tbm <- xtable(tbd)
+# Add to file
+
+tbm <- xtable(tbc[c("area", "c_notified", 'c_newinc', "ret_nrel", "new_labconf", "new_clindx", "new_ep", "ret_rel_labconf", "ret_rel_clindx", "ret_rel_ep", "nrpulm_lab_pct")])
+
 digits(tbm) <- 0
 
-write.csv(tbm, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-notif", insLink=FALSE), ".csv"), row.names=FALSE, na="")
+write.csv(tbm, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-notif", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
+
+# for paragraph
+n1 <- tbc[nrow(tbc),"c_notified"]
+n2 <- signif(tbbr$c_notified / sum(subset(tb, year==yr, c_notified), na.rm=TRUE) * 100, 2)
+n3 <- signif(tbbr$c_newinc / tbbr$c_notified * 100, 3)
+n4 <- tbc[nrow(tbc),"c_newinc"]
+n5 <- signif(tbb[tbb$area == "China","c_notified"] / tbbr$c_notified * 100, 2)
+n6 <- tbc[tbc$area == "China","c_notified"]
+n7 <- signif(tbb[tbb$area == "Philippines","c_notified"] / tbbr$c_notified * 100, 2)
+n8 <- tbc[tbc$area == "Philippines","c_notified"]
+n9 <- signif(tbb[tbb$area == "Viet Nam","c_notified"] / tbbr$c_notified * 100, 2)
+n10 <- tbc[tbc$area == "Viet Nam","c_notified"]
+
 ```
 
 ```{r m-notif-data, include=FALSE}
 
 figCount <- incCount(figCount, "m-notif")
 
-mc <- subset(tb, year==yr & g_whoregion=="WPR", select=c(country, iso2, iso3, g_whoregion, c_tot_newrel_100k))
+mc <- subset(tb, year==yr & g_whoregion=="WPR", select=c(country, iso2, iso3, g_whoregion, c_newinc, e_pop_num))
 
-mc$cat <- cut(round(mc$c_tot_newrel_100k,0), c(0, 10, 50, 100, 200, Inf), c('0–9', '10–49', '50–99', '100–199', '>199'), right=FALSE)
+mc$c_newinc_100k <- mc$c_newinc / mc$e_pop_num *1e5
+
+mc$cat <- cut(round(mc$c_newinc_100k,0), c(0, 10, 50, 100, 200, Inf), c('0–9', '10–49', '50–99', '100–199', '>199'), right=FALSE)
 
 mc1 <- WHOmap.print(mc, legend.title= "TB cases per \n100 000 population", copyright=FALSE, show=FALSE, zoom="WPR")
 
-write.csv(mc, file=paste0(pasteLabel("./figure_data/figure", figCount, "m-notif", insLink=FALSE), ".csv"), row.names=FALSE)
+write.csv(mc, file=paste0(pasteLabel("./figure_data/figure", figCount, "m-notif", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
+
+# for paragraph
+n11 <- mc %>% filter(cat==">199") %>% arrange(desc(c_newinc_100k)) %>% .WPSARnames(the=TRUE) %>% mutate(c=country, r=signif(c_newinc_100k,3)) %>% select(c,r) 
+n12 <- paste(paste(n11[1:(nrow(n11)-1),"c"], collapse=", "), n11[nrow(n11),"c"], sep=" and ")
+n13 <- paste(paste(n11[1:(nrow(n11)-1),"r"], collapse=", "), n11[nrow(n11),"r"], sep=" and ")
+
 ```
 
 
-In 2012, countries and areas in the Region reported 1 410 835 people with TB disease (`r I(pasteLabel("Table", tableCount, "t-notif"))`) making up 23% of the global burden. Of these cases, 97.5% (1 375 713) were new episodes of TB disease (either new or relapse cases). Within the Region China accounts for 64% (900 678) of the caseload with the Philippines and Viet Nam following with 16% (230 162) and 7% (103 906), respectively. TB notification rates, expressed as cases per 100 000 population, vary substantially in the Region with the highest rates found in Kiribati, Papua New Guinea, the Marshall Islands, Cambodia and the Philippines (343, 287, 276, 270 and 224 per 100 000 population, respectively (`r I(pasteLabel("Table", tableCount, "t-notif"))`, `r I(pasteLabel("Figure", figCount, "m-notif"))`). 
+In `r yr`, countries and areas in the Region reported `r n1` people with TB disease (`r I(pasteLabel("Table", tableCount, "t-notif"))`) making up `r n2`% of the global burden. Of these cases, `r n3`% (`r n4`) were new episodes of TB disease (either new or relapse cases). Within the Region China accounts for `r n5`% (`r n6`) of the caseload with the Philippines and Viet Nam following with `r n7`% (`r n8`) and `r n9`% (`r n10`), respectively. TB notification rates, expressed as cases per 100 000 population, vary substantially in the Region with the highest rates found in `r n12`  with `r n13` per 100 000 population, respectively (`r I(pasteLabel("Table", tableCount, "t-notif"))`, `r I(pasteLabel("Figure", figCount, "m-notif"))`). 
 
+--------------------------------------------------------
 
 <a id="t-notif"></a> 
-#### `r I(pasteLabel("Table", tableCount, "t-notif", insLink=FALSE))`. Tuberculosis case notification from countries and areas of the Western Pacific Region, 2012
+**`r I(pasteLabel("Table", tableCount, "t-notif", insLink=FALSE))`. Tuberculosis case notification from countries and areas of the Western Pacific Region, `r yr`**  
 ```{r t-notif, results='asis'}
 
-print(tbm, type="html", include.rownames=FALSE, include.colnames=F, html.table.attributes="border=0 rules=rows width=900 cellpadding=5", 
-      add.to.row=list(pos=list(0,37), command=c(
-"<TR> <TD colspan=3></TD> 
-  <TH colspan=7>NEW CASES</TH> 
-  <TH colspan=2>RETREATMENT CASES</TH> 
-  <TD colspan=1></TD> </TR> 
-  <TR> <TD></TD> <TD>TOTAL NOTIFIED</TD>
-  <TD>TOTAL NOTIFIED PER 100 000</TD>
-  <TD>SMEAR-<br>POSITIVE</TD> 
-  <TD>SMEAR-<br>NEGATIVE</TD> 
-  <TD>SMEAR NOT DONE</TD>
-  <TD>EXTRA-<br>PULMONARY</TD> 
-  <TD>CASE TYPE<br> UNKNOWN</TD> 
-  <TD>PULMONARY CASES LABORATORY CONFIRMED</TD> 
-  <TD>PERCENTAGE OF PULMONARY CASES LABORATORY CONFIRMED</TD>   
-  <TD>RELAPSE</TD> 
-  <TD>RETREATMENT<br>EXCL. RELAPSE</TD> 
-  <TD>NEW AND<br>RELAPSE(a)</TD> 
- </TR>", 
-  paste0("<TR> <TD colspan=13>Blank cells indicate data not reported. -- indicates values that cannot be calculated.<br>
-(a) NEW AND RELAPSE includes cases for which the treatment history is unknown.<br>Data reported as of 1 October 2013. See ANNEX 4 of Global Tuberculosis Report, 2013.<br>", footnote.b,"</TD></TR>"))))
+print(tbm, type="html", include.rownames=F, include.colnames=F, html.table.attributes="border=0 rules=rows width=900 cellpadding=5", add.to.row=list(pos=list(0, nrow(tbm)), command=c(
+  "<TR> 
+  <TD colspan='4' style='border-right: solid 2px black;'></TD> 
+  <TH colspan='3' style='border-right: solid 2px black;'>NEW OR PREVIOUS TREATMENT HISTORY UNKNOWN</TH> 
+  <TH colspan='3' style='border-right: solid 2px black;'>RELAPSE</TH> 
+  <TD></TD> 
+  </TR> 
+  <TR> 
+  <TD></TD> 
+  <TD>TOTAL NOTIFIED</TD> 
+  <TD>NEW AND RELAPSE <sup>a</sup></TD> 
+  <TD style='border-right: solid 2px black;'>RETREATMENT EXCLUDING RELAPSE</TD> 
+  <TD>PULMONARY BACTERIOLOGICALLY CONFIRMED</TD>
+  <TD>PULMONARY CLINICALLY DIAGNOSED</TD> 
+  <TD style='border-right: solid 2px black;'>EXTRAPULMONARY</TD> 
+  <TD>PULMONARY BACTERIOLOGICALLY CONFIRMED</TD>
+  <TD>PULMONARY CLINICALLY DIAGNOSED</TD> 
+  <TD style='border-right: solid 2px black;'>EXTRAPULMONARY</TD> 
+  <TD>PERCENTAGE OF PULMONARY CASES BACTERIOLOGICALLY CONFIRMED</TD> 
+  </TR> 
+  <TR>", 
+  "<TR> <TD colspan=11>Blank cells indicate data not reported.<br>
+  <sup>a</sup> NEW AND RELAPSE includes cases for which the treatment history is unknown.</TD></TR>")))
 
-```
+```  
 
 
+--------------------------------------------------------
 
 <a id="m-notif"></a> 
-#### `r I(pasteLabel("Figure", figCount, "m-notif", insLink=FALSE))` Tuberculosis case notification rate (new and relapse) per 100 000 population in countries and areas of the Western Pacific Region, 2012
+**`r I(pasteLabel("Figure", figCount, "m-notif", insLink=FALSE))` Tuberculosis case notification rate (new and relapse) per 100 000 population in countries and areas of the Western Pacific Region, `r yr`**  
 ```{r m-notif, fig.height=5}
 
 mc1
-```
-> The boundaries shown and the designations used on this map do not imply the expression of any opinion whatsoever on the part of the World Health Organization concerning the legal status of any country, territory, city or area or of its authorities, or concerning the delimitation of its frontiers or boundaries. White lines on maps represent approximate border lines for which there may not yet be full agreement.
+```  
 
+<font size="1">The boundaries shown and the designations used on this map do not imply the expression of any opinion whatsoever on the part of the World Health Organization concerning the legal status of any country, territory, city or area or of its authorities, or concerning the delimitation of its frontiers or boundaries. White lines on maps represent approximate border lines for which there may not yet be full agreement.</font>
 
+--------------------------------------------------------
 
 ```{r f-notif-trend-data}
 
 figCount <- incCount(figCount, "f-notif-trend")
 
-nota <- subset(tb, year >= 2000 & g_whoregion=="WPR", c(year, tot_newrel, new_sp, e_pop_num))
+nota <- subset(tb, year >= 2000 & g_whoregion=="WPR", c(year, c_newinc, new_sp, new_labconf, e_pop_num))
 
 notb <- aggregate(nota[2:ncol(nota)], by=list(year=nota$year), FUN=sum, na.rm=TRUE)
 
-notb$`All forms of TB` <- notb$tot_newrel / notb$e_pop_num * 1e5
-notb$`New smear-positive` <- notb$new_sp / notb$e_pop_num * 1e5
-notc <- melt(notb[c("year", "New smear-positive", "All forms of TB")], id=1)
+notb$`All forms of TB` <- notb$c_newinc / notb$e_pop_num * 1e5
+notb$`New lab-confirmed` <- ifelse(notb$year < 2013, notb$new_sp / notb$e_pop_num * 1e5, notb$new_labconf / notb$e_pop_num * 1e5)
+notc <- melt(notb[c("year", "New lab-confirmed", "All forms of TB")], id=1)
 
-write.csv(notc, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-notif-trend", insLink=FALSE), ".csv"), row.names=FALSE)
+write.csv(notc, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-notif-trend", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
+
+# for paragraph
+
+
 ```
 
-Between 2002 and 2007, case notification rates in the Region increased from 47 to 77 per 100 000 population in all forms of TB and from 22 to 38 per 100 000 population in new smear-positive TB cases. After 2005 the case notification rates for all forms of TB stabilized, and new smear-positive cases seem to have started to decrease (`r I(pasteLabel("Figure", figCount, "f-notif-trend"))`). 
+Between 2002 and 2007, case notification rates in the Region increased from 47 to 77 per 100 000 population in all forms of TB and from 22 to 37 per 100 000 population in new laboratory-confirmed TB cases. After 2005 the case notification rates for all forms of TB stabilized, and new laboratory-confirmed cases seem to have started to decrease (`r I(pasteLabel("Figure", figCount, "f-notif-trend"))`). 
+
+--------------------------------------------------------
 
 <a id="f-notif-trend"></a> 
-#### `r I(pasteLabel("Figure", figCount, "f-notif-trend", insLink=FALSE))` Tuberculosis case notification rate (all forms and new smear-positive) per 100 000 population in the Western Pacific Region, 2000--2012
+**`r I(pasteLabel("Figure", figCount, "f-notif-trend", insLink=FALSE))` Tuberculosis case notification rate (all forms and new laboratory-confirmed) per 100 000 population in the Western Pacific Region, 2000--`r yr`**  
 ```{r f-notif-trend, fig.height=5}
 
 ggplot(notc, aes(year, value, color=variable, ymin=0)) + geom_line(size=1) + theme_report() + scale_x_continuous("", breaks = pretty_breaks()) + scale_y_continuous("TB cases per 100 000", breaks = pretty_breaks()) + theme(legend.position="none") + geom_text(data=subset(notc, year==max(notc$year)), aes(label=variable), hjust=1.1, vjust=3) + scale_color_brewer(type="qual", palette=6)
 
 ```
+
+--------------------------------------------------------
 
 ### Distribution by age and sex
 
@@ -387,7 +433,10 @@ ggplot(notc, aes(year, value, color=variable, ymin=0)) + geom_line(size=1) + the
 figCount <- incCount(figCount, "f-agesex-bar")
 figCount <- incCount(figCount, "f-agesex")
 
-aga <- merge(subset(tb, year>1999, select=c("iso3", "country", "year", "g_whoregion", "g_hbc22", "new_sp_m04", "new_sp_m514", "new_sp_m014", "new_sp_m1524", "new_sp_m2534", "new_sp_m3544", "new_sp_m4554", "new_sp_m5564", "new_sp_m65", "new_sp_mu", "new_sp_f04", "new_sp_f514", "new_sp_f014", "new_sp_f1524",  "new_sp_f2534", "new_sp_f3544", "new_sp_f4554", "new_sp_f5564", "new_sp_f65", "new_sp_fu")), subset(p, year>1999, select=c("iso3", "country", "year", "e_pop_m04", "e_pop_m514", "e_pop_m014", "e_pop_m1524", "e_pop_m2534", "e_pop_m3544", "e_pop_m4554", "e_pop_m5564", "e_pop_m65", "e_pop_f04", "e_pop_f514", "e_pop_f014", "e_pop_f1524", "e_pop_f2534", "e_pop_f3544", "e_pop_f4554", "e_pop_f5564", "e_pop_f65")))
+aga <- merge(subset(tb, year > 1999, select=c("iso3", "country", "year", "g_whoregion", "g_hbc22", "newrel_m04", "newrel_m514", "newrel_m014", "newrel_m1524", "newrel_m2534", "newrel_m3544", "newrel_m4554", "newrel_m5564", "newrel_m65", "newrel_mu", "newrel_f04", "newrel_f514", "newrel_f014", "newrel_f1524",  "newrel_f2534", "newrel_f3544", "newrel_f4554", "newrel_f5564", "newrel_f65", "newrel_fu",
+                                              "new_sp_m04", "new_sp_m514", "new_sp_m014", "new_sp_m1524", "new_sp_m2534", "new_sp_m3544", "new_sp_m4554", "new_sp_m5564", "new_sp_m65", "new_sp_mu", "new_sp_f04", "new_sp_f514", "new_sp_f014", "new_sp_f1524",  "new_sp_f2534", "new_sp_f3544", "new_sp_f4554", "new_sp_f5564", "new_sp_f65", "new_sp_fu",
+                                              "new_sn_m04", "new_sn_m514", "new_sn_m014", "new_sn_m1524", "new_sn_m2534", "new_sn_m3544", "new_sn_m4554", "new_sn_m5564", "new_sn_m65", "new_sn_mu", "new_sn_f04", "new_sn_f514", "new_sn_f014", "new_sn_f1524",  "new_sn_f2534", "new_sn_f3544", "new_sn_f4554", "new_sn_f5564", "new_sn_f65", "new_sn_fu", 
+                                              "new_ep_m04", "new_ep_m514", "new_ep_m014", "new_ep_m1524", "new_ep_m2534", "new_ep_m3544", "new_ep_m4554", "new_ep_m5564", "new_ep_m65", "new_ep_mu", "new_ep_f04", "new_ep_f514", "new_ep_f014", "new_ep_f1524",  "new_ep_f2534", "new_ep_f3544", "new_ep_f4554", "new_ep_f5564", "new_ep_f65", "new_ep_fu")), subset(p, year>1999, select=c("iso3", "country", "year", "e_pop_m04", "e_pop_m514", "e_pop_m014", "e_pop_m1524", "e_pop_m2534", "e_pop_m3544", "e_pop_m4554", "e_pop_m5564", "e_pop_m65", "e_pop_f04", "e_pop_f514", "e_pop_f014", "e_pop_f1524", "e_pop_f2534", "e_pop_f3544", "e_pop_f4554", "e_pop_f5564", "e_pop_f65")))
 
 # Aggregate for region
 agb1 <- aggregate(aga[6:ncol(aga)], by=list(year=aga$year, area=aga$g_whoregion), FUN=sum, na.rm=TRUE)
@@ -395,62 +444,82 @@ agb1 <- aggregate(aga[6:ncol(aga)], by=list(year=aga$year, area=aga$g_whoregion)
 agb1[c('iso3', 'g_hbc22')] <- NA
 agb1$iso3 <- agb1$area
 agb1$g_whoregion <- agb1$area
-aga1 <- rename(aga,c('country'='area'))
+aga1 <- reshape::rename(aga,c('country'='area'))
 agb <- rbind(aga1, agb1)
 
 # Calculate rates
 
 agc <- melt(agb, id=1:5)
 # agc[c('new', 'type', 'group')] <- str_split_fixed(agc$variable, '_', n=3) # This takes me 25 seconds...it's the '_all' or '_fixed' that's the killer.
-agc$type <- str_extract(agc$variable, 'new_sp|pop')
-agc$age <- str_replace(agc$variable, "new_sp_|e_pop_", "")
+agc$type1 <- str_extract(agc$variable, 'newrel|pop|new_sp|new_sn|new_ep')
+agc$age <- str_replace(agc$variable, "newrel_|e_pop_|new_sp_|new_sn_|new_ep_", "")
 agc$sex <- str_replace(agc$age, '[u]|[0-9]+', "")
 agc$age <- str_replace(agc$age, '[f]|[m]', "")
 
-agd <- cast(subset(agc, select= -variable), ...~type)
+# aggregate all types for previous years
+agc$type <- ifelse(agc$type1=="pop", "pop", "newrel")
+agc$value <- as.numeric(agc$value) # avoid integer overflow
+agd1 <- agc %>%
+  group_by(iso3, area, year, g_whoregion, g_hbc22, type, age, sex) %>%
+  summarise(value=sum0(value)) # %>%
+agd <- cast(agd1, ...~type, value = "value")
 
-agd$new_sp_100k <- agd$new_sp / agd$pop * 1e5
+agd$newrel_100k <- agd$newrel / agd$pop * 1e5
 
 # Subset for WPRO
 age <- subset(agd, (iso3 %in% whbc | area=="WPR") & age!="u" & !age %in% c("04", "514"))
 age$sex <- factor(age$sex, levels=c("m", "f"), labels=c("Male", "Female"))
 age$sh.name <- factor(age$iso3, c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM", "WPR"), c("Cambodia", "China", "Lao People’s \nDemocratic Republic", "Mongolia", "Papua New Guinea", "Philippines", "Viet Nam", "WPR"))
 age[is.na(age$sh.name), 'sh.name'] <- "WPR"
-age$age <- factor(age$age, c("014", "1524", "2534", "3544", "4554", "5564", "65"), c("0–14", "15–24", "25–34", "35–44", "45–54", "55–64", "\u2265 65"))
+age$age <- factor(age$age, c("014", "1524", "2534", "3544", "4554", "5564", "65"), c("0–14", "15–24", "25–34", "35–44", "45–54", "55–64", "\u2265 <65"))
 
-write.csv(age, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-agesex-bar", insLink=FALSE), ".csv"), row.names=FALSE)
+write.csv(age, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-agesex-bar", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
 
-write.csv(age, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-agesex", insLink=FALSE), ".csv"), row.names=FALSE)
+write.csv(age, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-agesex", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
 ```
 
-`r I(pasteLabel("Figure", figCount, "f-agesex-bar"))` shows age group and sex-specific case notification rates of new smear-positive cases for the seven countries with a high burden of TB in the Region (note that the scale of the vertical axis is different for each country). Many countries follow a typical pattern for cross-sectional observations with increasing notification rates towards older populations except Mongolia and Papua New Guinea. In general, males are more affected than females with male-to-female TB ratios as high as three as seen in Viet Nam.
+`r I(pasteLabel("Figure", figCount, "f-agesex-bar"))` shows age group and sex-specific case notification rates of new laboratory-confirmed cases for the countries with a high burden of TB in the Region with available data (note that the scale of the vertical axis is different for each country). Many countries follow a typical pattern for cross-sectional observations with increasing notification rates towards older populations except in Mongolia. In general, males are more affected than females with male-to-female TB ratios as high as three as seen in Viet Nam.
+
+--------------------------------------------------------
 
 <a id="f-agesex-bar"></a> 
-#### `r I(pasteLabel("Figure", figCount, "f-agesex-bar", insLink=FALSE))` Age group- and sex-specific notification rates (per 100 000 population) of new smear-positive tuberculosis cases in seven countries with a high-burden of TB in the Western Pacific Region, 2012
+**`r I(pasteLabel("Figure", figCount, "f-agesex-bar", insLink=FALSE))` Age group- and sex-specific notification rates (per 100 000 population) of new and relapse TB cases in countries with a high-burden of TB in the Western Pacific Region, `r yr`**  
 ``` {r f-agesex-bar, fig.height=11, warning=FALSE}
 
-p2 <- ggplot(subset(age, year==yr), aes(age, new_sp_100k, fill=sex)) + geom_bar(stat="identity", position="dodge") + facet_wrap(~sh.name, scales='free_y', ncol=2)   + theme_report() + scale_fill_brewer('Sex', type="qual", palette=6) + scale_x_discrete("Age group", labels=c("0–14", "15–24", "25–34", "35–44", "45–54", "55–64", "\u2265 65")) + theme(legend.position="bottom")
+# Workaround for non-reporting countries (so it doesn't break the plot)
 
-p2 + scale_y_continuous("New smear-positive cases per 100 000")
+age2 <- subset(age, year==yr)
+age2$newrel_100k <- ifelse(is.na(age2$newrel_100k), 0, age2$newrel_100k)
+agereport <- age2 %>% group_by(sh.name) %>% summarise(var=sum(newrel_100k)) %>% filter(var>0) %>% select(sh.name)
+age3 <- subset(age2, sh.name %in% agereport$sh.name)
+
+p2 <- ggplot(age3, aes(age, newrel_100k, fill=sex)) + geom_bar(stat="identity", position="dodge") + facet_wrap(~sh.name, scales="free_y", ncol=2)   + theme_report() + scale_fill_brewer('Sex', type="qual", palette=6) + scale_x_discrete("Age group", labels=c("0–14", "15–24", "25–34", "35–44", "45–54", "55–64", "\u2265 65")) + theme(legend.position="bottom")
+
+p2 + scale_y_continuous("New and relapse cases per 100 000")
 
 
 ```
 
+--------------------------------------------------------
 
-`r I(pasteLabel("Figure", figCount, "f-agesex"))` shows trends of notification rates of new smear-positive cases of age- and sex-specific groups in the seven countries with a high-burden of TB from 2000–2012. Some countries demonstrated a declining trend of case notification for almost all age- and sex- groups, such as Cambodia, China and Viet Nam while others showed a less apparent trend except Papua New Guinea with a sharply increasing trend.
+`r I(pasteLabel("Figure", figCount, "f-agesex"))` shows trends of notification rates of new laboratory-confirmed cases of age- and sex-specific groups in the seven countries with a high-burden of TB from 2000–`r yr`. Some countries demonstrated a declining trend of case notification for almost all age- and sex- groups, such as Cambodia, China and Viet Nam while others showed a less apparent trend except Papua New Guinea with a sharply increasing trend.
+
+--------------------------------------------------------
 
 <a id="f-agesex"></a> 
-#### `r I(pasteLabel("Figure", figCount, "f-agesex", insLink=FALSE))` Trend of age group- and sex-specific notification rates (per 100 000 population) of new smear-positive tuberculosis cases in seven countries with a high-burden of TB in the Western Pacific Region, 2000--2012
+**`r I(pasteLabel("Figure", figCount, "f-agesex", insLink=FALSE))` Trend of age group- and sex-specific notification rates (per 100 000 population) of new and relapse^a^ tuberculosis cases in seven countries with a high-burden of TB in the Western Pacific Region, 2000--`r yr`**  
 ``` {r f-agesex, warning=FALSE, fig.height=15}
 
-p1 <- ggplot(age, aes(year, new_sp_100k, color=age)) + geom_line() + facet_grid(sh.name~sex, scales='free_y') + theme_report() + scale_x_continuous("", breaks = pretty_breaks()) + scale_color_brewer("Age group", type="seq", palette=4)
+p1 <- ggplot(age, aes(year, newrel_100k, color=age)) + geom_line() + facet_grid(sh.name~sex, scales='free_y') + theme_report() + scale_x_continuous("", breaks = pretty_breaks()) + scale_color_brewer("Age group", type="seq", palette=4)
 
-p1 + scale_y_continuous("New smear-positive cases per 100 000")
-# p1 + scale_y_log10("New smear-positive cases per 100 000")                                                                                                                                                        
-                                                                                                                                                      #function (x) floor(x)); function(n) n[floor(length(n)/5)*1:5+1]
+p1 + scale_y_continuous("New and relapse cases per 100 000")
+# p1 + scale_y_log10("New laboratory-confirmed cases per 100 000")                                                                                                                                                        
+#function (x) floor(x)); function(n) n[floor(length(n)/5)*1:5+1]
 ```
 
+^a^ Rates prior to 2013 include new cases only.
 
+--------------------------------------------------------
 
 ### Treatment outcomes
 
@@ -458,25 +527,39 @@ p1 + scale_y_continuous("New smear-positive cases per 100 000")
 
 figCount <- incCount(figCount, "f-txout-bar")
 
-tra <- subset(tb, year %in% 2000:(yr-1) & g_whoregion=="WPR", select=c(year, new_sp_coh, new_sp_cur, new_sp_cmplt, new_sp_died, new_sp_fail, new_sp_def))
+tra <- subset(tb, year %in% 2000:(yr-1) & g_whoregion=="WPR", select=c(year, new_sp_coh, new_sp_cur, new_sp_cmplt, new_sp_died, new_sp_fail, new_sp_def, newrel_coh, newrel_succ, newrel_died, newrel_fail, newrel_lost))
 
 trb <- aggregate(tra[2:ncol(tra)], by=list(year=tra$year), FUN=sum, na.rm=TRUE)
 
-trb$Success <- (trb$new_sp_cur + trb$new_sp_cmplt) / trb$new_sp_coh * 100
-trb$Died <- trb$new_sp_died / trb$new_sp_coh * 100
-trb$Failed <- trb$new_sp_fail / trb$new_sp_coh * 100
-trb$Defaulted <- trb$new_sp_def / trb$new_sp_coh * 100
-trb$`Not evaluated` <- (trb$new_sp_coh - (trb$new_sp_cur + trb$new_sp_cmplt + trb$new_sp_died + trb$new_sp_fail + trb$new_sp_def)) / trb$new_sp_coh * 100
+trb$Success <- (trb$new_sp_cur + trb$new_sp_cmplt + trb$newrel_succ) / (trb$new_sp_coh + trb$newrel_coh) * 100
+trb$Died <- (trb$new_sp_died + trb$newrel_died) / (trb$new_sp_coh + trb$newrel_coh) * 100
+trb$Failed <- (trb$new_sp_fail + trb$newrel_fail) / (trb$new_sp_coh + trb$newrel_coh) * 100
+trb$Defaulted <- (trb$new_sp_def + trb$newrel_lost) / (trb$new_sp_coh + trb$newrel_coh) * 100
+trb$`Not evaluated` <- ((trb$new_sp_coh + trb$newrel_coh) - (trb$new_sp_cur + trb$new_sp_cmplt + trb$new_sp_died + trb$new_sp_fail + trb$new_sp_def)) / (trb$new_sp_coh + trb$newrel_coh) * 100
 
 trc <- melt(trb[c("year", "Success", "Died", "Failed", "Defaulted", "Not evaluated")], id=1)
 
-write.csv(trc, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-txout-bar", insLink=FALSE), ".csv"), row.names=FALSE)
+write.csv(trc, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-txout-bar", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
+
+# for paragraph 
+
+# This can be replaced when the new data file is here (~2015)
+tb2 <- tb
+if(is.null(head(tb2$c_tsr))) tb2$c_tsr <- NA
+
+n30 <- tb2 %>% filter(year==yr-1, g_whoregion=="WPR") %>% .WPSARnames(the=TRUE) %>% mutate(tsr=ifelse(!is.na(c_tsr), c_tsr, ifelse(!is.na(c_newrel_tsr), c_newrel_tsr, c_new_tsr))) %>% arrange(desc(tsr)) %>% select(country, iso3, tsr, newrel_coh, newrel_succ, newrel_fail, newrel_died, newrel_lost) %>% filter(tsr>0)
+n31 <- n30 %>% filter(tsr >=85) %>% nrow()
+n32 <- n30 %>% filter(iso3 %in% whbc) %>% mutate(tsr=signif(tsr,2))
+n33 <- n32 %>% filter(tsr==last(tsr)) %>% mutate(neval=newrel_coh - sum(newrel_succ, newrel_fail, newrel_died, newrel_lost), l=signif(sum(newrel_lost, neval) / newrel_coh * 100, 2)) %>% select(l) %>% mutate(l=ifelse(l %in% 22:25, "approximately a quarter", ifelse(l %in% 25:29, "over a quarter", paste0(l, "%"))))
+
 ```
 
-The Region continued observing treatment success rates beyond the target of 85% (`r I(pasteLabel("Figure", figCount, "f-txout-bar"))`), and the rate has been at 85% or higher over the past several years. Across the Region, 15 countries and areas reached or maintained the 85% treatment success target. Among the countries with a high burden of TB, the treatment success rate was highest in China (96%) followed by Cambodia (94%), Viet Nam (93%), the Lao People's Democratic Republic (92%), the Philippines (90%) and Mongolia (85%). The treatment success rate of Papua New Guinea was the lowest at 69% with approximately a quarter of the 2011 cohort either defaulted or un-evaluated.
+The Region continued observing treatment success rates beyond the target of 85% (`r I(pasteLabel("Figure", figCount, "f-txout-bar"))`), and the rate has been at 85% or higher over the past several years. Across the Region, `r n31` countries and areas reached or maintained the 85% treatment success target. Among the countries with a high burden of TB, the treatment success rate was highest in `r n32[1,1]` (`r n32[1,3]`%) followed by `r n32[2,1]` (`r n32[2,3]`%), `r n32[3,1]` (`r n32[3,3]`%), `r n32[4,1]` (`r n32[4,3]`%), `r n32[5,1]` (`r n32[5,3]`%) and `r n32[6,1]` (`r n32[6,3]`%). The treatment success rate of `r n32[7,1]` was the lowest at `r n32[7,3]`% with `r n33` of the `r yr-1` cohort either lost to follow-up or un-evaluated.
+
+--------------------------------------------------------
 
 <a id="f-txout-bar"></a> 
-#### `r I(pasteLabel("Figure", figCount, "f-txout-bar", insLink=FALSE))` Trend of treatment outcome expressed as a proportion among new pulmonary smear-positive cases in the Western Pacific Region, 2000--2011
+**`r I(pasteLabel("Figure", figCount, "f-txout-bar", insLink=FALSE))` Trend of treatment outcome expressed as a proportion among new laboratory-confirmed cases in the Western Pacific Region, 2000--`r yr-1`**  
 ``` {r f-txout-bar, fig.width=9}
 
 ggplot(trc, aes(year, value, fill=variable)) + geom_bar(stat="identity", position="stack") + theme_report() + scale_fill_brewer('Outcome', type="qual", palette=6) + scale_x_continuous("", breaks=min(trc$year):max(trc$year)) + scale_y_continuous("Percent of cohort") + coord_cartesian(ylim=c(60,100)) + guides(fill = guide_legend(reverse = TRUE))
@@ -484,6 +567,8 @@ ggplot(trc, aes(year, value, fill=variable)) + geom_bar(stat="identity", positio
 
 
 ```
+
+--------------------------------------------------------
 
 ### TB/HIV co-infection and collaborative activities
 
@@ -509,20 +594,23 @@ thb$variable <- factor(thb$variable, levels=c("test", "pos", "cpt", "art"), labe
 
 thb$country <- factor(thb$iso3, c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM", "WPR"), c("Cambodia", "China", "Lao \nPeople’s \nDemocratic \nRepublic", "Mongolia", "Papua \nNew \nGuinea", "Philippines", "Viet Nam", "Western \nPacific \nRegion"))
 
-write.csv(thb, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-tbhiv", insLink=FALSE), ".csv"), row.names=FALSE)
+write.csv(thb, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-tbhiv", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
 ```
 
 There has been some progress in reporting of information on TB/HIV co-infection and collaborative activities in the last several years. `r I(pasteLabel("Figure", figCount, "f-tbhiv"))` summarizes four basic indicators (HIV testing, HIV positivity rate, co-trimoxazole preventive therapy (CPT) coverage and  antiretroviral 
 therapy (ART) coverage) for the seven countries with a high burden of TB. Cambodia reported the most comprehensive data completeness and programmatic progress. The coverage of HIV testing, CPT and ART progressively increased with a steady decrease in the proportion of HIV positive individuals among TB patients.
 
+--------------------------------------------------------
+
 <a id="f-tbhiv"></a> 
-#### `r I(pasteLabel("Figure", figCount, "f-tbhiv", insLink=FALSE))` Progress in TB/HIV activities in seven countries in the Western Pacific Region with a high burden of TB, 2005--2012
-``` {r f-tbhiv, fig.width=7, warning=FALSE}
+**`r I(pasteLabel("Figure", figCount, "f-tbhiv", insLink=FALSE))` Progress in TB/HIV activities in seven countries in the Western Pacific Region with a high burden of TB, 2005--`r yr`**  
+``` {r f-tbhiv, fig.width=7, fig.height=9, warning=FALSE}
 
 ggplot(thb, aes(year, value)) + geom_line(size=1) + facet_grid(country~variable) + theme_report() + labs(y="Percent", x="")
 
 ```
 
+--------------------------------------------------------
 
 
 Discussion
@@ -535,12 +623,12 @@ figCount <- incCount(figCount, "f-est")
 eget <- c("year", "e_pop_num", "e_inc_100k", "e_inc_100k_lo", "e_inc_100k_hi", "e_prev_100k", "e_prev_100k_lo", "e_prev_100k_hi", "e_mort_exc_tbhiv_100k", "e_mort_exc_tbhiv_100k_lo", "e_mort_exc_tbhiv_100k_hi")
 
 # esta <- subset(estimates, year >=1990 & group_name=="WPR", select=eget)
-estb <- tb[tb$year>=1990 & tb$g_whoregion=="WPR", c("year", "tot_newrel")]
-estc <- aggregate(estb["tot_newrel"], by=list(year=estb$year), FUN=sum, na.rm=TRUE)
+estb <- tb[tb$year>=1990 & tb$g_whoregion=="WPR", c("year", "c_newinc")]
+estc <- aggregate(estb["c_newinc"], by=list(year=estb$year), FUN=sum, na.rm=TRUE)
 
 estd <- merge(esta, estc)
 
-estd$c_tot_newrel_100k <- estd$tot_newrel / estd$e_pop_num * 1e5
+estd$c_newinc_100k <- estd$c_newinc / estd$e_pop_num * 1e5
 
 estf <- NULL
 for(var in c("inc", "prev", "mort_exc_tbhiv")){
@@ -548,67 +636,79 @@ for(var in c("inc", "prev", "mort_exc_tbhiv")){
   names(df) <- c("year", "best", "lo", "hi")
   df$var <- var
   estf <- rbind(estf, df)
-}
+  }
 
-estg <- estd[c("year", "c_tot_newrel_100k")]
+estg <- estd[c("year", "c_newinc_100k")]
 estg$var <- "inc"
 
 esth <- merge(estf, estg, all.x=TRUE)
 esth$var <- factor(esth$var, levels=c("inc", "prev", "mort_exc_tbhiv"), labels=c("Incidence and notification", "Prevalence", "Mortality (excluding HIV)"))
 
-write.csv(esth, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-est", insLink=FALSE), ".csv"), row.names=FALSE)
+write.csv(esth, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-est", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
+
+# for paragraph
+d1 <- estd %>% filter(year==yr) %>% mutate(c=signif(c_newinc / 1e6, 2), r=signif(c_newinc_100k,2)) %>% select(c, r)
+
+  
 ```
 
-Overall, in 2012, countries and areas of the Western Pacific Region reported 1.4 million TB cases (all forms) and a case notification rate of 75 per 100 000 population, a level similar to the past several years.
+Overall, in `r yr`, countries and areas of the Western Pacific Region reported `r d1$c` million new and relapse TB cases (all forms) and a case notification rate of `r d1$r` per 100 000 population, a level similar to the past several years.
 
-It has been known that the rapid increase in case notification between 2002 and 2007 was due to several positive programmatic developments in many countries in the Region such as completion and consolidation of the WHO DOTS strategy expansion; improvement in case reporting, including electronic reporting systems; and efforts to engage all health care providers.^7 Particularly, renewal of infectious disease-related legislation and the establishment of an internet-based disease notification system in China made a substantial contribution to the progress.^8
+It has been known that the rapid increase in case notification between 2002 and 2007 was due to several positive programmatic developments in many countries in the Region such as completion and consolidation of the WHO DOTS strategy expansion; improvement in case reporting, including electronic reporting systems; and efforts to engage all health care providers.[@VanMaaren2007] Particularly, renewal of infectious disease-related legislation and the establishment of an internet-based disease notification system in China made a substantial contribution to the progress.[@Wang2007]
 
-Although the case notification for all forms of TB appears to be flat since 2007, it is important to note that the new smear-positive case notification rates demonstrate a clear declining trend (`r I(pasteLabel("Figure", figCount, "f-notif-trend"))`). A possible interpretation is that the true TB incidence has been declining while overall case detection is static because intensified programmatic efforts by national TB programmes for early and increased case detection include smear-negative and extra pulmonary TB. The latest WHO estimates support this explanation with estimated incidence rates showing a consistent, rapidly-declining trend^1 (`r I(pasteLabel("Figure", figCount, "f-est"))`). 
+Although the case notification for all forms of TB appears to be flat since 2007, it is important to note that the new laboratory-confirmed case notification rates demonstrate a clear declining trend (`r I(pasteLabel("Figure", figCount, "f-notif-trend"))`). A possible interpretation is that the true TB incidence has been declining while overall case detection is static because intensified programmatic efforts by national TB programmes for early and increased case detection include smear-negative and extra pulmonary TB. The latest WHO estimates support this explanation with estimated incidence rates showing a consistent, rapidly-declining trend[@WorldHealthOrganization2014] (`r I(pasteLabel("Figure", figCount, "f-est"))`). 
 
+--------------------------------------------------------
 
 <a id="f-est"></a> 
-#### `r I(pasteLabel("Figure", figCount, "f-est", insLink=FALSE))` Tuberculosis case notification rate per 100 000 population, estimated incidence, prevalence and mortality in the Western Pacific Region, 1990--2012
+**`r I(pasteLabel("Figure", figCount, "f-est", insLink=FALSE))` Tuberculosis case notification rate per 100 000 population, estimated incidence^a^, prevalence and mortality in the Western Pacific Region, 1990--`r yr`**  
 ``` {r f-est, fig.height=3.5}
 
-ggplot(esth, aes(year, best, fill=var, ymin=0)) + geom_line(size=1, aes(color=var)) + geom_ribbon(aes (year, best, ymin=lo, ymax=hi), alpha=0.2) + geom_line(aes(year, c_tot_newrel_100k), color="black", size=1) + theme_report() + facet_wrap(~var, scales="free_y") + theme(legend.position="none") + scale_x_continuous("", minor_breaks=seq(1990, yr, 1)) + scale_y_continuous(breaks=pretty_breaks()) + ylab("Rate per 100 000 population")
+ggplot(esth, aes(year, best, fill=var, ymin=0)) + geom_line(size=1, aes(color=var)) + geom_ribbon(aes (year, best, ymin=lo, ymax=hi), alpha=0.2) + geom_line(aes(year, c_newinc_100k), color="black", size=1) + theme_report() + facet_wrap(~var, scales="free_y") + theme(legend.position="none") + scale_x_continuous("", minor_breaks=seq(1990, yr, 1)) + scale_y_continuous(breaks=pretty_breaks()) + ylab("Rate per 100 000 population")
 
 #breaks=c(seq(1990, 2010, 5), yr), labels=c(seq(1990, 2005, 5),"", yr)
 ```
-> Red line with certainty band: incidence, black line: case notification rate
 
-In any country where a rapid demographic change is underway, overall notification rates may not reflect a true disease trend in the communities. For instance, an overall case notification trend may appear to be stable because decreasing incidences can be cancelled out by a rapidly increasing proportion of an older population. For this reason, the examination of age- and sex- specific case notification rates is more informative and provides insights for understanding the underlying epidemiological process in a given setting.
+^a^ Red line with uncertainty band: incidence, black line: notified new and relapse cases.
 
-The typical pattern of linear increase of notification towards the older populations (such as shown in some countries in `r I(pasteLabel("Figure", figCount, "f-agesex-bar"))`) has been explained as a widely observed phenomena under a stable TB control situation,^9 reflecting a high annual risk of TB infection in the past when the older population was young. Atypical patterns shown for Papua New Guinea and Mongolia, particularly relatively high notification rates among young and female groups, warrant further investigation. Time trend analysis for age- and sex- notification rates (`r I(pasteLabel("Figure", figCount, "f-agesex"))`) is useful to detect any specific subgroups among which TB transmission and/or disease progression is particularly active.
+--------------------------------------------------------
 
-One of the critical shortcomings of these analyses is a gross lack of morbidity information among small children because the data is limited to smear-positive cases only. Since the 2006 revision of WHO recording and reporting forms,^10 the number of countries reporting age- and sex-disaggregated data for smear-negative and extra pulmonary cases is increasing and will enable a better assessment of the TB burden among children in future analysis.
+In any country where a rapid demographic change is underway, overall notification rates may not reflect the true disease trend in communities. For instance, an overall case notification trend may appear to be stable because decreasing incidences can be cancelled out by a rapidly increasing proportion of the older population. For this reason, the examination of age- and sex- specific case notification rates is more informative and provides insights for understanding the underlying epidemiological process in a given setting.
+
+The typical pattern of linear increase of notification towards the older populations (such as shown in some countries in `r I(pasteLabel("Figure", figCount, "f-agesex-bar"))`) has been explained as a widely observed phenomena under a stable TB control situation,[@Rieder1999] reflecting a high annual risk of TB infection in the past when the older population was young. Atypical patterns shown for Papua New Guinea and Mongolia, particularly relatively high notification rates among young and female groups, warrant further investigation. Time trend analysis for age- and sex- notification rates (`r I(pasteLabel("Figure", figCount, "f-agesex"))`) is useful to detect any specific subgroups among which TB transmission and/or disease progression is particularly active.
+
+One of the critical shortcomings of these analyses is a gross lack of morbidity information among small children because the data is limited to laboratory-confirmed cases only. Since the 2006 revision of WHO recording and reporting forms,[@WorldHealthOrganization2006] the number of countries reporting age- and sex-disaggregated data for smear-negative and extra pulmonary cases is increasing and will enable a better assessment of the TB burden among children in future analysis.
 
 HIV infection fuels the TB epidemic, particularly in countries and areas with a high burden of TB. The overall percentage of TB patients tested for HIV in the Region still remained low. However, the figure has substantially increased in the last several years particularly in Cambodia, Viet Nam and the Lao People's Democratic Republic. Essential services such as co-trimoxazole prophylaxis and isoniazid preventive therapy have also expanded in many countries in the Region.
 
-This report provides a snapshot of the epidemiological and programmatic situation of TB in the Western Pacific Region based on the case notification data in 2012. As for any disease surveillance system, the analysis of surveillance data has inherent limitations. TB surveillance covers populations served by care providers linked with the national TB programme. Ideally this would include all known cases in the country; in practice the proportion of cases diagnosed outside of the TB programme and included in national reporting varies depending on the legal framework in the country. The WHO TB Impact Measurement Task Force recommends that countries continuously improve surveillance systems until reported cases can be considered a reliable proxy for incidence.^11 A careful assessment is needed of programmatic progress in the country and the quality of surveillance data when interpreting these findings.
+This report provides a snapshot of the epidemiological and programmatic situation of TB in the Western Pacific Region based on the case notification data in `r yr`. As for any disease surveillance system, the analysis of surveillance data has inherent limitations. TB surveillance covers populations served by care providers linked with the national TB programme. Ideally this would include all known cases in the country; in practice the proportion of cases diagnosed outside of the TB programme and included in national reporting varies depending on the legal framework in the country. The WHO TB Impact Measurement Task Force recommends that countries continuously improve surveillance systems until reported cases can be considered a reliable proxy for incidence.[@WorldHealthOrganization2009; @WorldHealthOrganization2014b] A careful assessment is needed of programmatic progress in the country and the quality of surveillance data when interpreting these findings.
 
-TB surveillance continues to be an important source of information for assessing the situation and measuring the progress for decision-making. WHO Regional Office for the Western Pacific will continue to conduct regional analysis on various topics related to TB epidemiology and programmatic progress, as well as provide support to countries to conduct epidemiological and programmatic assessment at national and subnational levels.
+TB surveillance continues to be an important source of information for assessing the situation and measuring the progress for decision-making. WHO Regional Office for the Western Pacific will continue to conduct regional analyses on various topics related to TB epidemiology and programmatic progress, as well as provide support to countries to conduct epidemiological and programmatic assessment at national and subnational levels.
 
-Conflicts of interest
 --------------------------------------------------------
-None declared.
 
-Funding
---------------------------------------------------------
+**<em>Funding</em>**
+
 None.
 
-References
 --------------------------------------------------------
 
-1. Global Tuberculosis Report 2013. Geneva, World Health Organization, 2013 (http://www.who.int/tb/publications/global_report/en/, accessed 15 March 2014). 
-2. Regional Strategy to Stop Tuberculosis in the Western Pacific 2011–2015. Manila, World Health Organization Regional Office for the Western Pacific, 2011 (http://www.wpro.who.int/tb/documents/policy/2010/regional_strategy/en/, accessed 15 March 2014). 
-3. Global strategy and targets for tuberculosis prevention, care and control after 2015. Geneva, World Health Organization, 2013 Nov. Report No.: EB134/12 (http://www.who.int/tb/post2015_tbstrategy.pdf?ua=1, accessed 15 March 2014). 
-4. Treatment of Tuberculosis. Guidelines. 4th edition. Geneva, World Health Organization; 2010 http://whqlibdoc.who.int/publications/2010/9789241547833_eng.pdf, accessed 15 March 2014). 
-5. Peng RD, Dominici F, Zeger SL. Reproducible epidemiologic research. American Journal of Epidemiology, 2006, 163:783–9. doi:10.1093/aje/kwj093 PMID:16510544
-6. Groves T, Godlee F. Open science and reproducible research. BMJ (Clinical Research Ed.), 2012, •••:344. 
-7. van-Maaren P et al. Reaching the global tuberculosis control targets in the Western Pacific Region. Bull World Health Organ. SciELO Public Health, 2007, 85:360–3. 
-8. Wang L, Liu J, Chin DP. Progress in tuberculosis control and the evolving public-health system in China. Lancet, 2007, 369:691–6. doi:10.1016/S0140-6736(07)60316-X PMID:17321314
-9. Rieder HL. Epidemiologic basis of tuberculosis control. International Union Against Tuberculosis and Lung Disease (IUATLD); 1999. 162 p. 
-10. Revised TB recording and reporting forms and registers-version 2006. Geneva: World Health Organization; 2006 (http://www.who.int/tb/dots/r_and_r_forms/en/, accessed 15 March 2014). 
-11. TB Impact Measurement. Geneva, World Health Organization, 2009.
- 
+**<em>Conflict of interest</em>**
+
+None declared.
+
+--------------------------------------------------------
+
+**<em>Acknowledgement</em>**
+
+The authors are very grateful to the national tuberculosis control programmes of the countries of the Western Pacific Region.
+
+--------------------------------------------------------
+
+**<em>References:</em>**
+
+```{r, include=FALSE, echo=FALSE}
+# Bit to copy html file over
+# file.copy("D:/Users/hiattt/Dropbox/Code/Surveillance reports/RegTBfigsTables.html", "D:/Users/hiattt/Dropbox/STB-WPRO/WPSAR surveillance paper/WPRupdate.html", overwrite = TRUE)
+```
 
