@@ -1111,4 +1111,3 @@ The authors are very grateful to the national tuberculosis control programmes of
 # Bit to copy html file over
 # file.copy("D:/Users/hiattt/Dropbox/Code/Surveillance reports/RegTBfigsTables.html", "D:/Users/hiattt/Dropbox/STB-WPRO/WPSAR surveillance paper/WPRupdate.html", overwrite = TRUE)
 ```
-

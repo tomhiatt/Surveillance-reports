@@ -1,8 +1,8 @@
 ---
 title: "Global TB Report Tables and Figures Preview"
-author: ""
-date: ""
-output: word_document
+author: ''
+date: ''
+output: html_document
 ---
 
 ```{r, echo=FALSE, include=FALSE}

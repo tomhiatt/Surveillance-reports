@@ -10,12 +10,13 @@
 #  (4) Zia Ahmed        			 #
 ##################################################
 
+
 ## Loading the required libraries ##
 library(xlsx)
 library(maptools)
 library(raster)
 
-if(!any(grep("subnational maps", getwd()))) setwd("./subnational maps")
+if(!any(grep("subnational maps", getwd()))) setwd("./subnational_maps")
 ##############################################
 ## Create Directories for Different Datasets##
 ##############################################
@@ -332,10 +333,10 @@ rgtm<-rgtm+theme(axis.text.x =element_blank(),axis.text.y= element_blank(), axis
 
 keep(rgtm, sure=T) # Free R memory keeping only rgtm object for plotting later
 
-dir.create(paste("~/TBSubnational"))
+# dir.create(paste("~/TBSubnational"))
 outfolder<-file.path(paste("~/TBSubnational"))
 figurefolder<-file.path(outfolder,"Figures")
-dir.create(file.path(outfolder,"Shapefiles"))
+# dir.create(file.path(outfolder,"Shapefiles"))
 
 jpeg(file=file.path(figurefolder, paste("regionalns2",".jpeg", sep="")),w=2115,h=2000,res=300)
 print(rgtm)

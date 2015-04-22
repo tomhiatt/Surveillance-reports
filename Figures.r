@@ -252,7 +252,7 @@ mort_hbc <- arrangeGrob(mort_hbc1, sub = textGrob(paste("(a) The width of an unc
 
 figsave(mort_hbc, hbc.ff3, "2_14_mort_hbc")
 
-
+ 
 # *********************************************************************
   
   # country and reg profiles -------------------------------------------------
