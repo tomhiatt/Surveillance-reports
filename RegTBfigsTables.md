@@ -104,7 +104,7 @@ In 2013, countries and areas in the Region reported 1.4 million people with TB d
 <a id="t-notif"></a> 
 **Table 1. Tuberculosis case notification from countries and areas of the Western Pacific Region, 2013**  
 <!-- html table generated in R 3.1.2 by xtable 1.7-4 package -->
-<!-- Wed Apr 22 15:42:10 2015 -->
+<!-- Wed Apr 22 16:21:29 2015 -->
 <table border=0 rules=rows width=900 cellpadding=5>
   <TR> 
   <TD colspan='4' style='border-right: solid 2px black;'></TD> 
