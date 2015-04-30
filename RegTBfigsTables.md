@@ -1,4 +1,4 @@
-# Epidemiology and control of tuberculosis in the Western Pacific Region: analysis of case notification data in `r yr <- 2013; yr`
+# Epidemiology and control of tuberculosis in the Western Pacific Region: update with `r yr <- 2013; yr` case notification data
 Tom Hiatt<sup>&dagger;</sup> and Nobuyuki Nishikiori<sup>&dagger;</sup>  
 
 
@@ -22,7 +22,7 @@ Abstract
 --------------------------------------------------------
 
 
-Tuberculosis (TB) control in the World Health Organization (WHO) Western Pacific Region has seen substantial progress in the last decade with a 36 reduction in prevalent TB cases since 2000. The burden remains immense however, and national TB programmes must evolve and adapt to build upon these gains. Through routine surveillance, countries and areas in the Region reported 1.4 million TB cases in 2013. The case notification rate increased in the early 2000s, appears to have stabilized in recent years and is in decline for all forms and laboratory-confirmed cases. The age and sex breakdown for laboratory-confirmed TB case rates by country shows generally higher rates with increased age and declining rates over time for all age groups. Treatment success remains high in the Region with 16 countries reaching or maintaining an 85% success rate. HIV testing among TB patients has increased gradually along with a slow decline in the number of HIV-positive patients found.
+Tuberculosis (TB) control in the World Health Organization (WHO) Western Pacific Region has seen substantial progress in recent years with a 36 reduction in prevalent TB cases since 2000. The burden remains immense however, and national TB programmes must evolve and adapt to build upon these gains. Through routine surveillance, countries and areas in the Region reported 1.4 million TB cases in 2013. The case notification rate increased in the early 2000s, appears to have stabilized in recent years and is in decline for all forms and laboratory-confirmed cases. The age and sex breakdown for laboratory-confirmed TB case rates by country shows generally higher rates with increased age and declining rates over time for all age groups. Treatment success remains high in the Region with 16 countries reaching or maintaining an 85% success rate. HIV testing among TB patients has increased gradually along with a slow decline in the number of HIV-positive patients found.
 
 The trend of TB notification is heavily influenced by programmatic improvements in many countries and rapidly changing demographics. It appears that cases are being found earlier as reflected in declining rates of laboratory-confirmed TB with steady rates of TB in all forms. WHO estimates depict a decline in TB incidence in the Region. HIV testing, while still low, has increased substantially in recent years with essential TB/HIV services expanding in many countries.
 
@@ -34,16 +34,18 @@ Introduction
 --------------------------------------------------------
 
 
-Significant progress has been made in tuberculosis (TB) control in the World Health Organization (WHO) Western Pacific Region especially in since 2000. The number of prevalent TB patients in the Region fell from 3.5 million in 2000 to 2.3 million in 2013.[@WorldHealthOrganization2014] During the same period, 16.7 million patients were diagnosed and treated, and an estimated 800 000 deaths were averted between 2000 and 2010.[@WorldHealthOrganization2011] According to the latest WHO estimates, the Region is on track for achieving the TB-related Millennium Development Goals (MDGs) and other international targets by 2015. However, with 1.4 million TB patients notified annually in the Region and several countries with a persistent substantial disease burden, TB control policies and strategies require continuous evolution to adopt new tools and approaches as well as to address emerging challenges faced by national TB control programmes. In light of the MDG target date approaching, WHO has developed a new Global TB Strategy for after 2015.[@WorldHealthOrganization2014a] Particularly at this critical period of strategy renewal, thorough analysis of surveillance data provides valuable information on the current epidemiological situation, programmatic progress and future directions.
+Significant progress has been made in tuberculosis (TB) control in the World Health Organization (WHO) Western Pacific Region especially in since 2000. The number of prevalent TB patients in the Region fell from 3.5 million in 2000 to 2.3 million in 2013.[@WorldHealthOrganization2014] During the same period, 16.7 million patients were diagnosed and treated, and an estimated 800 000 deaths were averted between 2000 and 2010.[@WorldHealthOrganization2011] According to the latest WHO estimates, the Region has achieved the TB-related Millennium Development Goals (MDGs) and other international targets in advance of 2015. However, with 1.4 million TB patients notified annually in the Region and several countries with a persistent substantial disease burden, TB control policies and strategies require continuous evolution to adopt new tools and approaches as well as to address emerging challenges faced by national TB control programmes. The World Health Assembly recently endorsed the End TB Strategy with ambitous targets.[@WorldHealthOrganization2014a] Effective monitoring and evaluation is a critical component of the new strategy. Thorough analysis of surveillance data provides valuable information on the current epidemiological situation, programmatic progress and future directions.
 
-This article represents our second regional analysis of TB notification data as an article in the Western Pacific Surveillance and Response Journal. We plan to continue reporting an annual regional analysis in this way punctuated by complementary reports focused on various topics such as subnational data analysis and utilization, the situation of drug-resistant TB, contact investigation and other forms of TB screening activities to stimulate the utilization of surveillance data for informed programme decision-making.
+This update represents our second regional analysis of TB notification data as an article in the Western Pacific Surveillance and Response Journal. We plan to continue reporting an annual regional analysis in this way punctuated by complementary reports focused on various topics such as the situation of drug-resistant TB, subnational data analysis and utilization, TB in low- and intermediate-burden countries, contact investigation and other forms of TB screening activities to stimulate the utilization of surveillance data for informed programme decision-making.
 
 Methods
 --------------------------------------------------------
 
 
 ### Data
-Every year, 36 countries and areas in the Region are requested to report TB surveillance data to WHO using a standardized data collection form. Since 2009, a web-based online system has been used for data submission and validation. Collected data covers the following areas: TB case notifications and treatment outcomes, diagnostic and treatment services, drug management, surveillance and surveys of drug-resistance, information on TB/HIV co-infection, infection control, engagement of all care providers and budgets and expenditures for TB control. The full description of methods is available in the Global Tuberculosis Report 2014[@WorldHealthOrganization2014] and the data sets are available from the WHO global TB database (www.who.int/tb/data). Case definitions for TB can be found in the 4th edition of the TB treatment guidelines.[@WorldHealthOrganization2006] For 2013, 32 countries and areas of the Western Pacific Region reported data representing more than 99.9% of the total population. This report describes the epidemiological situation and progress in programmatic response with a focus on seven countries with a high burden of TB: Cambodia, China, the Lao People's Democratic Republic, Mongolia, Papua New Guinea, the Philippines and Viet Nam. (Globally, WHO designates 22 countries with a high burden of TB that include Cambodia, China, the Philippines and Viet Nam. The other three countries: the Lao People's Democratic Republic, Mongolia and Papua New Guinea are considered priority countries with a high burden of TB in the Western Pacific Region).
+Every year, 36 countries and areas in the Region are requested to report TB surveillance data to WHO using a standardized data collection form. Since 2009, a web-based online system has been used for data submission and validation. Collected data covers the following areas: TB case notifications and treatment outcomes, diagnostic and treatment services, drug management, surveillance and surveys of drug-resistance, information on TB/HIV co-infection, infection control, engagement of all care providers and budgets and expenditures for TB control. The full description of methods is available in the Global Tuberculosis Report[@WorldHealthOrganization2014] and the data sets are available from the WHO global TB database (www.who.int/tb/data). Case definitions for TB were revised in 2013[@WorldHealthOrganization2013] and cases previously known as smear-positive are now included in laboratory-confirmed cases. The revised case definitions combine smear-negative cases with all clinically diagnosed cases and therefore obscure the number of cases where smear was not done or results are unknown. Between 2008 and 2012 regionally, no more than 1.4% of cases did not have a smear done, however at the country level, the proportion was as high as 35, 25 and 23 percent  in Papua New Guinea, Guam and Republic of Korea, respectively.
+
+For 2013, 32 countries and areas of the Western Pacific Region reported data representing more than 99.9% of the total population. This report describes the epidemiological situation and progress in programmatic response with a focus on seven countries with a high burden of TB: Cambodia, China, the Lao People's Democratic Republic, Mongolia, Papua New Guinea, the Philippines and Viet Nam. (Globally, WHO designates 22 countries with a high burden of TB that include Cambodia, China, the Philippines and Viet Nam. The other three countries: the Lao People's Democratic Republic, Mongolia and Papua New Guinea are considered priority countries with a high burden of TB in the Western Pacific Region).
 
 ### Analysis and reproducibility
 Analysis was conducted by the statistical package R (ver. 3.1.2, R Core Team, 2014, Vienna, Austria, www.R-project.org). Due to calls for transparent and reproducible research,[@Peng2006; @Groves2012] we have published programme code to generate the entire contents of this article including all figures and tables by using R with the knitr package (ver. 1.9, Yihui Xie, 2015). Readers can download the code (see supplement material) and reproduce all figures and tables under an appropriate personal computing environment. For non-commercial purposes, readers may modify the code to produce figures and tables that are not presented in this article. For instance, readers may wish to produce tables and figures for countries or regions other than the WHO Western Pacific Region.
@@ -60,14 +62,14 @@ Results
 
 
 
-In 2013, countries and areas in the Region reported 1 375 213 people with TB disease ([Table 1](#t-notif)) making up 23% of the global burden. Of these cases, 97.6% (1 342 404) were new episodes of TB disease (either new or relapse cases). Within the Region China accounts for 62% (855 241) of the caseload with the Philippines and Viet Nam following with 18% (244 392) and 7.4% (102 196), respectively. TB notification rates, expressed as cases per 100 000 population, vary substantially in the Region with the highest rates found in Kiribati, Papua New Guinea, Marshall Islands, Cambodia and the Philippines  with 398, 309, 283, 249 and 234 per 100 000 population, respectively ([Table 1](#t-notif), [Figure 1](#m-notif)). 
+In 2013, countries and areas in the Region reported 1 375 213 people with TB disease ([Table 1](#t-notif)) making up 23% of the global burden. Of these cases, 97.6% (1 342 404) were new episodes of TB disease (either new or relapse cases). Within the Region China accounts for 62% (855 241) of the caseload with the Philippines and Viet Nam following with 18% (244 392) and 7.4% (102 196), respectively. TB notification rates, expressed as cases per 100 000 population, vary substantially in the Region with the highest rates found in Kiribati, Papua New Guinea, Marshall Islands, Cambodia and the Philippines  with 398, 309, 283, 249 and 234 per 100 000 population, respectively ([Figure 1](#m-notif)). 
 
 --------------------------------------------------------
 
 <a id="t-notif"></a> 
 **Table 1. Tuberculosis case notification from countries and areas of the Western Pacific Region, 2013**  
 <!-- html table generated in R 3.1.2 by xtable 1.7-4 package -->
-<!-- Thu Apr 23 12:16:44 2015 -->
+<!-- Thu Apr 30 10:34:26 2015 -->
 <table border=0 rules=rows width=900 cellpadding=5>
   <TR> 
   <TD colspan='4' style='border-right: solid 2px black;'></TD> 
@@ -157,7 +159,7 @@ Between 2002 and 2007, case notification rates in the Region increased from 47 t
 
 
 
-[Figure 3](#f-agesex-bar) shows age group and sex-specific case notification rates of new laboratory-confirmed cases for the countries with a high burden of TB in the Region with available data (note that the scale of the vertical axis is different for each country). Many countries follow a typical pattern for cross-sectional observations with increasing notification rates towards older populations except in Mongolia. In general, males are more affected than females with male-to-female TB ratios as high as three as seen in Viet Nam.
+[Figure 3](#f-agesex-bar) shows age group and sex-specific case notification rates of new laboratory-confirmed cases for the countries with a high burden of TB in the Region with available data (note that the scale of the vertical axis is different for each country). Many countries follow a typical pattern for cross-sectional observations with increasing notification rates towards older populations except in Mongolia. In general, males are more affected than females with male-to-female TB ratios as high as 2.7 as seen in Viet Nam.
 
 --------------------------------------------------------
 
@@ -183,13 +185,15 @@ Between 2002 and 2007, case notification rates in the Region increased from 47 t
 
 
 
-The Region continued observing treatment success rates beyond the target of 85% ([Figure 5](#f-txout-bar)), and the rate has been at 85% or higher over the past several years. Across the Region, 16 countries and areas reached or maintained the 85% treatment success target. Among the countries with a high burden of TB, the treatment success rate was highest in China (95%) followed by Cambodia (94%), Viet Nam (91%), the Lao People's Democratic Republic (90%), Mongolia (88%) and the Philippines (88%). The treatment success rate of Papua New Guinea was the lowest at 68% with approximately a quarter of the 2012 cohort either lost to follow-up or un-evaluated.
+Treatment success in the Region continues at a high level ([Figure 5](#f-txout-line)), over 85%, a trend observed since  1997. Across the Region, 16 countries and areas reached or maintained 85% treatment success. Among the countries with a high burden of TB, treatment success was highest in China (95%) followed by Cambodia (94%), Viet Nam (91%), the Lao People's Democratic Republic (90%), Mongolia (88%) and the Philippines (88%). The treatment success rate of Papua New Guinea was the lowest at 68% with approximately a quarter of the 2012 cohort either lost to follow-up or un-evaluated. The proportion of notified cases who were not reported as being put on treatment was over 2% in Papua New Guinea, Lao People's Democratic Republic and Cambodia with 85, 5.4 and 4.7 percent, respectively. 
 
 --------------------------------------------------------
 
-<a id="f-txout-bar"></a> 
-**Figure 5 Trend of treatment outcome expressed as a proportion among new laboratory-confirmed cases in the Western Pacific Region, 2000--2012**  
-![](RegTBfigsTables_files/figure-html/f-txout-bar-1.png) 
+<a id="f-txout-line"></a> 
+**Figure 5 Trend of treatment success among new laboratory-confirmed cases in select countries of the Western Pacific Region, 2000--2012**  
+![](RegTBfigsTables_files/figure-html/f-txout-line-1.png) 
+
+CHN=China, KHM=Cambodia, LAO=Lao People’s Democratic Republic, MNG=Mongolia, PNG=Papua New Guinea, PHL=Philippines, VNM=Viet Nam, WPR=Western Pacific Region.
 
 --------------------------------------------------------
 
@@ -198,7 +202,7 @@ The Region continued observing treatment success rates beyond the target of 85% 
 
 
 There has been some progress in reporting of information on TB/HIV co-infection and collaborative activities in the last several years. [Figure 6](#f-tbhiv) summarizes four basic indicators (HIV testing, HIV positivity rate, co-trimoxazole preventive therapy (CPT) coverage and  antiretroviral 
-therapy (ART) coverage) for the seven countries with a high burden of TB. Cambodia reported the most comprehensive data completeness and programmatic progress. The coverage of HIV testing, CPT and ART progressively increased with a steady decrease in the proportion of HIV positive individuals among TB patients.
+therapy (ART) coverage) for the seven countries with a high burden of TB. Cambodia reported the most comprehensive data completeness and programmatic progress. The coverage of HIV testing, CPT and ART progressively increased until 2012, with a steady decrease in the proportion of HIV positive individuals among TB patients.
 
 --------------------------------------------------------
 
@@ -213,12 +217,16 @@ Discussion
 --------------------------------------------------------
 
 
+```
+## Warning in formatC(round(x, 0), big.mark = " ", format = "d"): class of
+## 'x' was discarded
+```
 
 Overall, in 2013, countries and areas of the Western Pacific Region reported 1.3 million new and relapse TB cases (all forms) and a case notification rate of 72 per 100 000 population, a level similar to the past several years.
 
 It has been known that the rapid increase in case notification between 2002 and 2007 was due to several positive programmatic developments in many countries in the Region such as completion and consolidation of the WHO DOTS strategy expansion; improvement in case reporting, including electronic reporting systems; and efforts to engage all health care providers.[@VanMaaren2007] Particularly, renewal of infectious disease-related legislation and the establishment of an internet-based disease notification system in China made a substantial contribution to the progress.[@Wang2007]
 
-Although the case notification for all forms of TB appears to be flat since 2007, it is important to note that the new laboratory-confirmed case notification rates demonstrate a clear declining trend ([Figure 2](#f-notif-trend)). A possible interpretation is that the true TB incidence has been declining while overall case detection is static because intensified programmatic efforts by national TB programmes for early and increased case detection include smear-negative and extra pulmonary TB. The latest WHO estimates support this explanation with estimated incidence rates showing a consistent, rapidly-declining trend[@WorldHealthOrganization2014] ([Figure 7](#f-est)). 
+Although the case notification for all forms of TB appears to be flat since 2007, it is important to note that the new laboratory-confirmed case notification rates demonstrate a clear declining trend even with the changed case definition including more sensitive diagnostics ([Figure 2](#f-notif-trend)). A possible interpretation is that the true TB incidence has been declining while overall case detection is static because intensified programmatic efforts by national TB programmes for early and increased case detection include smear-negative and extra pulmonary TB. The latest WHO estimates support this explanation with estimated incidence rates showing a consistent, rapidly-declining trend[@WorldHealthOrganization2014] ([Figure 7](#f-est)). 
 
 --------------------------------------------------------
 
@@ -230,17 +238,17 @@ Although the case notification for all forms of TB appears to be flat since 2007
 
 --------------------------------------------------------
 
-In any country where a rapid demographic change is underway, overall notification rates may not reflect the true disease trend in communities. For instance, an overall case notification trend may appear to be stable because decreasing incidences can be cancelled out by a rapidly increasing proportion of the older population. For this reason, the examination of age- and sex- specific case notification rates is more informative and provides insights for understanding the underlying epidemiological process in a given setting.
+In any country where a rapid demographic change is underway, overall notification rates may not reflect the true disease trend in communities. For instance, an overall case notification trend may appear to be stable because decreasing incidence can be cancelled out by a rapidly increasing proportion of the older population. For this reason, the examination of age- and sex- specific case notification rates is more informative and provides insights for understanding the underlying epidemiological process in a given setting.
 
-The typical pattern of linear increase of notification towards the older populations (such as shown in some countries in [Figure 3](#f-agesex-bar)) has been explained as a widely observed phenomena under a stable TB control situation,[@Rieder1999] reflecting a high annual risk of TB infection in the past when the older population was young. Atypical patterns shown for Papua New Guinea and Mongolia, particularly relatively high notification rates among young and female groups, warrant further investigation. Time trend analysis for age- and sex- notification rates ([Figure 4](#f-agesex)) is useful to detect any specific subgroups among which TB transmission and/or disease progression is particularly active.
+The typical pattern of linear increase of notification towards the older populations (such as shown in some countries in [Figure 3](#f-agesex-bar)) has been explained as a widely observed phenomena under a stable TB control situation,[@Rieder1999] reflecting a high annual risk of TB infection in the past when the older population was young. Atypical patterns shown for Papua Mongolia, particularly relatively high notification rates among young and female groups, warrant further investigation. Time trend analysis for age- and sex- notification rates ([Figure 4](#f-agesex)) is useful to detect any specific subgroups among which TB transmission and/or disease progression is particularly active.
 
 One of the critical shortcomings of these analyses is a gross lack of morbidity information among small children because the data is limited to laboratory-confirmed cases only. Since the 2006 revision of WHO recording and reporting forms,[@WorldHealthOrganization2006] the number of countries reporting age- and sex-disaggregated data for smear-negative and extra pulmonary cases is increasing and will enable a better assessment of the TB burden among children in future analysis.
 
-HIV infection fuels the TB epidemic, particularly in countries and areas with a high burden of TB. The overall percentage of TB patients tested for HIV in the Region still remained low. However, the figure has substantially increased in the last several years particularly in Cambodia, Viet Nam and the Lao People's Democratic Republic. Essential services such as co-trimoxazole prophylaxis and isoniazid preventive therapy have also expanded in many countries in the Region.
+HIV infection fuels the TB epidemic, particularly in countries and areas with a high burden of TB. There are an estimated 23 000 (range: 19 000--26 000) HIV-positive TB patients in the Region every year. The overall percentage of TB patients tested for HIV in the Region still remains below 50%. However, the figure has substantially increased in the last several years particularly in China, Viet Nam and the Lao People's Democratic Republic. Essential services such as CPT and isoniazid preventive therapy (IPT) have also expanded in many countries in the Region.
 
 This report provides a snapshot of the epidemiological and programmatic situation of TB in the Western Pacific Region based on the case notification data in 2013. As for any disease surveillance system, the analysis of surveillance data has inherent limitations. TB surveillance covers populations served by care providers linked with the national TB programme. Ideally this would include all known cases in the country; in practice the proportion of cases diagnosed outside of the TB programme and included in national reporting varies depending on the legal framework in the country. The WHO TB Impact Measurement Task Force recommends that countries continuously improve surveillance systems until reported cases can be considered a reliable proxy for incidence.[@WorldHealthOrganization2009; @WorldHealthOrganization2014b] A careful assessment is needed of programmatic progress in the country and the quality of surveillance data when interpreting these findings.
 
-TB surveillance continues to be an important source of information for assessing the situation and measuring the progress for decision-making. WHO Regional Office for the Western Pacific will continue to conduct regional analyses on various topics related to TB epidemiology and programmatic progress, as well as provide support to countries to conduct epidemiological and programmatic assessment at national and subnational levels.
+TB surveillance continues to be an important source of information for assessing the TB situation and measuring progress to inform decision-making. WHO Regional Office for the Western Pacific will continue to conduct regional analyses on various topics related to TB epidemiology and programmatic progress, as well as provide support to countries to conduct epidemiological and programmatic assessments at national and subnational levels.
 
 --------------------------------------------------------
 
