@@ -1,5 +1,5 @@
 ---
-title: 'Epidemiological Situation of Tuberculosis in the Western Pacific towards the End TB Strategy Targets: analysis of case notification data in `r yr <- 2013; yr`'
+title: 'Epidemiological Situation of Tuberculosis in countries of the Western Pacific with a low or intermediate disease burden using `r yr <- 2013; yr`case notification data'
 author: "Tom Hiatt<sup>&dagger;</sup> and Nobuyuki Nishikiori<sup>&dagger;</sup>"
 csl: vancouver-imperial-college-london.csl
 output:
@@ -18,10 +18,10 @@ bibliography: WPRupdate.bib
 
 ```{r setup, echo=FALSE, include=FALSE}
 
-###################################################
+################################################### 
 # Tom Hiatt
-# Updated: 12 November 2014
-# Regional TB annual analysis
+# Updated: 30 April 2015
+# Low Incidence countries analysis
 ###################################################
 
 ## Change this information to customize for your own data.
@@ -49,12 +49,16 @@ opts_chunk$set(
   echo=FALSE
   )
 
-whbc <- c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM")
+lic <- c("AUS", "BRN", "HKG", "JPN", "KOR", "MAC", "MYS", "NZL", "SGP")
+
+# WPRO countries not included (HBC or Pacific)
+# "ASM" "CHN" "COK" "FJI" "FSM" "GUM" "KHM" "KIR" "LAO" "MHL" "MNG" "MNP" "NCL" "NIU" "NRU"
+# "PHL" "PLW" "PNG" "PYF" "SLB" "TKL" "TON" "TUV" "VNM" "VUT" "WLF" "WSM"
 
 # Create regional report folder if needed.
-# dir.create("./Regional_report") # run this if error below
+# dir.create("./LowInc_report") # run this if error below
 # dir.create("./figure_data") # run this if error below
-if(!any(grep("Regional_report", getwd()))) setwd("./Regional_report")
+if(!any(grep("LowInc_report", getwd()))) setwd("./LowInc_report")
 
 
 # Theme for plots
@@ -130,8 +134,8 @@ lister <- function(x){
 # Functions for maps
 ########################################################
 
-source("./MapFunctions.r")
-load("gparts.Rdata")
+# source("./MapFunctions.r")
+# load("gparts.Rdata")
 
 ########################################################
 # Functions to assist with tables and figure in markdown document (from here: http://rmflight.github.io/posts/2012/10/papersinRmd.html)
@@ -189,7 +193,7 @@ tb$g_hbc22 <- ifelse(tb$iso3 %in% c("AFG", "BGD", "BRA", "CHN", "COD", "ETH", "I
 
 pacific <- c("ASM", "COK", "FJI", "PYF", "GUM", "KIR", "MHL", "FSM", "NRU",   "NCL", "NIU", "MNP", "PLW", "WSM", "SLB", "TKL", "TON", "TUV", "VUT", "WLF")
 
-tb$g_wpr <- ifelse(tb$iso3 %in% whbc, "High-burden", ifelse(tb$iso3 %in% pacific, "Pacific", "Other"))
+tb$g_wpr <- ifelse(tb$iso3 %in% lic, "High-burden", ifelse(tb$iso3 %in% pacific, "Pacific", "Other"))
 tb$g_wpr <- factor(tb$g_wpr, levels=c("High-burden", "Pacific", "Other", "WPR"))
 
 # tb$c_new <- .rowsums(tb[c("new_sp", "new_sn", "new_su", "new_ep", "new_oth")])
@@ -199,6 +203,9 @@ tb$c_newunk <- ifelse(tb$year < 2013, .rowsums(tb[c("new_sp", "new_sn", "new_su"
 tb$c_notified <- ifelse(tb$year < 2013, .rowsums(tb[c("new_sp", "new_sn", "new_su", "new_ep", "new_oth", "ret_rel", "ret_taf", "ret_tad", "ret_oth", "newret_oth")]), .rowsums(tb[c("c_newinc", "ret_nrel")]))
 tb$c_newrel_tsr <- tb$newrel_succ / tb$newrel_coh * 100
 
+# replace e_pop_num with p version which has back to 1980
+tb <- merge(tb[names(tb)[names(tb)!="e_pop_num"]], p[c("iso3", "year", "e_pop_num")]) # Hmmm, missing 4. I'm going to assume those are the countries with changed political boundaries not seen in WPR.
+
 tb$c_newinc_100k <- tb$c_newinc / tb$e_pop_num * 1e5
 
 # Get population data (available from UN population division. http://esa.un.org/unpd/wpp/unpp/panel_population.htm) and formatted TB/HIV data and estimates for the WHO Western Pacific Region.
@@ -207,17 +214,445 @@ if(FALSE){
   runprofile()
   esta <- subset(araw, group_name=="WPR", select=c("year", "e_pop_num", "e_inc_100k", "e_inc_100k_lo", "e_inc_100k_hi", "e_prev_100k", "e_prev_100k_lo", "e_prev_100k_hi", "e_mort_exc_tbhiv_100k", "e_mort_exc_tbhiv_100k_lo", "e_mort_exc_tbhiv_100k_hi", "e_prev_num", "e_prev_num_lo", "e_prev_num_hi"))
   tb2 <- subset(tb, select=c(iso3, year, notif_foreign))
-  save(esta, p, tbhiv, tb2, file="./addata.Rdata")
+  # Get GDP and migrant stock from world bank data
+  require(WDI)
+  
+  gb <- WDI(indicator='NY.GDP.PCAP.KD', start=2000, end=2013, extra=FALSE)
+  oba <- WDI(indicator='SM.POP.TOTL.ZS', start=1980, end=2013, extra=FALSE)
+  
+  save(esta, p, tbhiv, tb2, gb, oba, file="./laddata.Rdata")
 }
 
-load("./addata.Rdata")
+load("./laddata.Rdata")
 
 tb <- merge(tb, tbhiv[c(3,4,13:ncol(tbhiv))], all=TRUE)
 tb <- merge(tb, tb2, all.x=TRUE)
 
+tbl <- tb %>% filter(iso3 %in% lic) %>% arrange(country) 
+  
+
+
+# Questions this analysis is trying to answer
+# How much TB still exists in WPR?
+# Is the amount of TB going up, coming down, or staying stable?
+# Where is TB clustering in the region?
+# Is the clustering staying the same or changing, if changing how?
+# where is the amount of TB coming down and at what rate? Is it going up anywhere?
+# Are child cases being found? What about among women? How is the disease progressing with aging countries?
+# What do we know about these populations and how is TB reflecting or being affected?
+# Where is TB still spreading and where is it only reactivation? Where are chunks of the population likely not infected?
+# What is the relationship between wealth (GDP) and TB motality at the national level? What are the macro associations (causes) for TB?
+# What is the relationship between Migrant stock and TB?
+# Which programmes are ahead of the game in finding cases?
+# Which programmes treat the best? If you get TB, which country do you hope you live in?
+# 
+# Structure
+# table of latest year
+# map of latest year
+# trend by group
+# 
+# HIGH BURDEN
+# relationship between GDP and mort
+# aging plot
+# notif trend panel plot
+# treatment success
+# financing?
+# HIV?
+# 
+# PACIFIC
+# scatter of notif rate by abs num 
+# MDR in the pacific
+# 
+# OTHER
+# scatter of rate and abs num
+# scatter of rate and migrant stock, maybe include foreign born var
+# aging plot
+  
+# since revised, here's the structure for the LIC analysis
+# Table with total cases, rates, % lab-confirmed, % pulmonary, % foreign
+# raw trend of total cases with age-sex analysis. Maybe only age?
+# GDP and case rates analysis
+# Migrant and case rates analysis
+# Treatment success
+# TB/HIV
+
 ```
 
-[TH: targets in the title is maybe not the best idea, since we have no baseline and catastrophic expenditure hasn't even been concluded how to measure.]
+```{r tabsnfigs, include=FALSE}
+
+########################################################
+# All data preparation ----------------------------------
+########################################################
+
+```
+
+```{r t-notif-data, warning=FALSE}
+tableCount <- incCount(tableCount, "t-notif")
+
+# Notification table
+
+tbb <- tbl %>% filter(year==yr) %>% mutate(area=country) %>% select(area, g_whoregion, c_notified, c_newinc, new_labconf, new_clindx, new_ep, ret_rel_labconf, ret_rel_clindx, ret_rel_ep, ret_nrel)
+
+# make aggregate rows
+tbbr <- aggregate(tbb[3:ncol(tbb)], by=list(area=tbb$g_whoregion), FUN=sum, na.rm=TRUE)
+
+# combine together
+tbc <- rbind(tbb[c(1, 3:ncol(tbb))], tbbr) # tbbh, , tbbga
+
+# calculate and format vars
+
+tbc$nrpulm_lab_pct <- .rowsums(tbc[c("new_labconf", "ret_rel_labconf")] )* 100 / .rowsums(tbc[c("new_labconf", "new_clindx", "ret_rel_labconf", "ret_rel_clindx")])
+
+for(var in 2:ncol(tbc)){
+  tbc[var] <- rounder(tbc[[var]])
+  }
+
+tbc[is.na(tbc$nrpulm_lab_pct), 'nrpulm_lab_pct'] <- "\u2013"
+
+# rename
+tbc <- .WPSARnames(tbc, col='area')
+
+# Add to file
+
+tbm <- xtable(tbc[c("area", "c_notified", 'c_newinc', "ret_nrel", "new_labconf", "new_clindx", "new_ep", "ret_rel_labconf", "ret_rel_clindx", "ret_rel_ep", "nrpulm_lab_pct")])
+
+digits(tbm) <- 0
+
+write.csv(tbm, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-notif", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
+
+# for paragraph
+n1 <- paste(signif(tbbr$c_notified / 1e6, 2), "million")
+n2 <- signif(tbbr$c_notified / sum(subset(tb, year==yr, c_notified), na.rm=TRUE) * 100, 2)
+n3 <- signif(tbbr$c_newinc / tbbr$c_notified * 100, 3)
+n4 <- tbc[nrow(tbc),"c_newinc"]
+n5 <- signif(tbb[tbb$area == "China","c_notified"] / tbbr$c_notified * 100, 2)
+n6 <- tbc[tbc$area == "China","c_notified"]
+n7 <- signif(tbb[tbb$area == "Philippines","c_notified"] / tbbr$c_notified * 100, 2)
+n8 <- tbc[tbc$area == "Philippines","c_notified"]
+n9 <- signif(tbb[tbb$area == "Viet Nam","c_notified"] / tbbr$c_notified * 100, 2)
+n10 <- tbc[tbc$area == "Viet Nam","c_notified"]
+
+```
+
+```{r f-spread-data, include=FALSE}
+figCount <- incCount(figCount, "f-spread")
+
+tbl %>% filter(year==yr) %>% ggplot(aes(c_newinc_100k, c_newinc, group=iso3, size=e_pop_num/1e6)) + geom_text(aes(label=iso3), size=4, hjust=-.3, vjust=-.5) + geom_point() + theme_report() + labs(x="New and relapse cases per 100 000 (log scale)", y="Total new and relapse cases", size="Population \n(millions)") + scale_x_log10(limits=c(5,100), breaks=c(5, 10, pretty(20:100)))
+
+# tbl %>% filter(year==yr) %>% ggplot(aes(c_newinc_100k, c_newinc, group=iso3)) + geom_text(aes(label=iso3)) + theme_report() + theme(legend.position="none") + labs(x="New and relapse cases per 100 000", y="Total new and relapse cases") + xlim(c(0,100))
+
+```
+
+```{r f-trend-data, include=FALSE}
+figCount <- incCount(figCount, "f-trend")
+
+tbl %>% ggplot(aes(year, c_newinc_100k, ymin=0)) + geom_line(size=1) + theme_report() + labs(x="", y="Total new and relapse cases per 100 000") + facet_wrap(~iso3, scales="free_y") + geom_smooth() 
+
+
+
+```
+
+
+```{r agesex-data,  echo=FALSE}
+# figCount <- incCount(figCount, "f-agesex-bar")
+figCount <- incCount(figCount, "f-agesex")
+
+aga <- merge(subset(tbl, select=c("iso3", "country", "year", "g_whoregion", "g_hbc22", "newrel_m04", "newrel_m514", "newrel_m014", "newrel_m1524", "newrel_m2534", "newrel_m3544", "newrel_m4554", "newrel_m5564", "newrel_m65", "newrel_mu", "newrel_f04", "newrel_f514", "newrel_f014", "newrel_f1524",  "newrel_f2534", "newrel_f3544", "newrel_f4554", "newrel_f5564", "newrel_f65", "newrel_fu",
+                                              "new_sp_m04", "new_sp_m514", "new_sp_m014", "new_sp_m1524", "new_sp_m2534", "new_sp_m3544", "new_sp_m4554", "new_sp_m5564", "new_sp_m65", "new_sp_mu", "new_sp_f04", "new_sp_f514", "new_sp_f014", "new_sp_f1524",  "new_sp_f2534", "new_sp_f3544", "new_sp_f4554", "new_sp_f5564", "new_sp_f65", "new_sp_fu",
+                                              "new_sn_m04", "new_sn_m514", "new_sn_m014", "new_sn_m1524", "new_sn_m2534", "new_sn_m3544", "new_sn_m4554", "new_sn_m5564", "new_sn_m65", "new_sn_mu", "new_sn_f04", "new_sn_f514", "new_sn_f014", "new_sn_f1524",  "new_sn_f2534", "new_sn_f3544", "new_sn_f4554", "new_sn_f5564", "new_sn_f65", "new_sn_fu", 
+                                              "new_ep_m04", "new_ep_m514", "new_ep_m014", "new_ep_m1524", "new_ep_m2534", "new_ep_m3544", "new_ep_m4554", "new_ep_m5564", "new_ep_m65", "new_ep_mu", "new_ep_f04", "new_ep_f514", "new_ep_f014", "new_ep_f1524",  "new_ep_f2534", "new_ep_f3544", "new_ep_f4554", "new_ep_f5564", "new_ep_f65", "new_ep_fu")), subset(p, select=c("iso3", "country", "year", "e_pop_m04", "e_pop_m514", "e_pop_m014", "e_pop_m1524", "e_pop_m2534", "e_pop_m3544", "e_pop_m4554", "e_pop_m5564", "e_pop_m65", "e_pop_f04", "e_pop_f514", "e_pop_f014", "e_pop_f1524", "e_pop_f2534", "e_pop_f3544", "e_pop_f4554", "e_pop_f5564", "e_pop_f65")))
+
+# Aggregate for region
+agb1 <- aggregate(aga[6:ncol(aga)], by=list(year=aga$year, area=aga$g_whoregion), FUN=sum, na.rm=TRUE)
+
+agb1[c('iso3', 'g_hbc22', "area")] <- "LIC"
+agb1$iso3 <- agb1$area
+agb1$g_whoregion <- agb1$area
+aga1 <- reshape::rename(aga,c('country'='area'))
+agb <- rbind(aga1, agb1)
+
+# Calculate rates
+
+agc <- melt(agb, id=1:5)
+# agc[c('new', 'type', 'group')] <- str_split_fixed(agc$variable, '_', n=3) # This takes me 25 seconds...it's the '_all' or '_fixed' that's the killer.
+agc$type1 <- str_extract(agc$variable, 'newrel|pop|new_sp|new_sn|new_ep')
+agc$age <- str_replace(agc$variable, "newrel_|e_pop_|new_sp_|new_sn_|new_ep_", "")
+agc$sex <- str_replace(agc$age, '[u]|[0-9]+', "")
+agc$age <- str_replace(agc$age, '[f]|[m]', "")
+
+# aggregate all types for previous years
+agc$type <- ifelse(agc$type1=="pop", "pop", "newrel")
+agc$value <- as.numeric(agc$value) # avoid integer overflow
+agd1 <- agc %>%
+  group_by(iso3, area, year, g_whoregion, g_hbc22, type, age, sex) %>%
+  summarise(value=sum0(value)) # %>%
+agd <- cast(agd1, ...~type, value = "value")
+
+agd$newrel_100k <- agd$newrel / agd$pop * 1e5
+
+# Subset for WPRO
+age <- subset(agd, (iso3 %in% lic | area=="LIC") & age!="u" & !age %in% c("04", "514"))
+age$sex <- factor(age$sex, levels=c("m", "f"), labels=c("Male", "Female"))
+
+age$age <- factor(age$age, c("014", "1524", "2534", "3544", "4554", "5564", "65"), c("0–14", "15–24", "25–34", "35–44", "45–54", "55–64", "\u2265 <65"))
+
+p1 <- ggplot(subset(age, year>=1995 & iso3 %in% lic[1:3]), aes(year, newrel_100k, color=age)) + geom_line(size=1) + facet_grid(iso3~sex, scales='free_y') + theme_report() + scale_x_continuous("", breaks = pretty_breaks()) + scale_color_brewer("Age group", type="seq", palette=4)
+
+p1 + scale_y_continuous("New and relapse cases per 100 000") + geom_vline(aes(xintercept=c(2006, 2000)), color="red", alpha=.1)
+
+# age only
+
+agd1 <- agc %>%
+  group_by(iso3, area, year, g_whoregion, g_hbc22, type, age) %>%
+  summarise(value=sum0(value)) # %>%
+
+agd <- cast(agd1, ...~type, value = "value")
+
+agd$newrel_100k <- agd$newrel / agd$pop * 1e5
+
+# Subset for WPRO
+age <- subset(agd, (iso3 %in% lic | area=="LIC") & age!="u" & !age %in% c("04", "514"))
+# age$sex <- factor(age$sex, levels=c("m", "f"), labels=c("Male", "Female"))
+
+age$age <- factor(age$age, c("014", "1524", "2534", "3544", "4554", "5564", "65"), c("0–14", "15–24", "25–34", "35–44", "45–54", "55–64", ">\u2265 65"))
+
+ggplot(subset(age, year>=1995 & iso3 %in% lic[1:9]), aes(year, newrel_100k, color=age)) + geom_line(size=1) + facet_wrap(~iso3, scales='free_y', nrow=2) + theme_report() + scale_x_continuous("", breaks = pretty_breaks()) + scale_color_brewer("Age group", type="seq", palette=4) + scale_y_continuous("New and relapse cases per 100 000") + guides(color = guide_legend(reverse = TRUE)) + theme(legend.text.align=1)
+
+
+write.csv(age, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-agesex-bar", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
+
+write.csv(age, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-agesex", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
+```
+
+```{r agesex-oth-data,  echo=FALSE}
+figCount <- incCount(figCount, "f-agesex-oth-bar")
+figCount <- incCount(figCount, "f-agesex-oth")
+
+aga <- merge(subset(tb, year > 1999, select=c("iso3", "country", "year", "g_whoregion", "g_wpr", "newrel_m04", "newrel_m514", "newrel_m014", "newrel_m1524", "newrel_m2534", "newrel_m3544", "newrel_m4554", "newrel_m5564", "newrel_m65", "newrel_mu", "newrel_f04", "newrel_f514", "newrel_f014", "newrel_f1524",  "newrel_f2534", "newrel_f3544", "newrel_f4554", "newrel_f5564", "newrel_f65", "newrel_fu",
+                                              "new_sp_m04", "new_sp_m514", "new_sp_m014", "new_sp_m1524", "new_sp_m2534", "new_sp_m3544", "new_sp_m4554", "new_sp_m5564", "new_sp_m65", "new_sp_mu", "new_sp_f04", "new_sp_f514", "new_sp_f014", "new_sp_f1524",  "new_sp_f2534", "new_sp_f3544", "new_sp_f4554", "new_sp_f5564", "new_sp_f65", "new_sp_fu",
+                                              "new_sn_m04", "new_sn_m514", "new_sn_m014", "new_sn_m1524", "new_sn_m2534", "new_sn_m3544", "new_sn_m4554", "new_sn_m5564", "new_sn_m65", "new_sn_mu", "new_sn_f04", "new_sn_f514", "new_sn_f014", "new_sn_f1524",  "new_sn_f2534", "new_sn_f3544", "new_sn_f4554", "new_sn_f5564", "new_sn_f65", "new_sn_fu", 
+                                              "new_ep_m04", "new_ep_m514", "new_ep_m014", "new_ep_m1524", "new_ep_m2534", "new_ep_m3544", "new_ep_m4554", "new_ep_m5564", "new_ep_m65", "new_ep_mu", "new_ep_f04", "new_ep_f514", "new_ep_f014", "new_ep_f1524",  "new_ep_f2534", "new_ep_f3544", "new_ep_f4554", "new_ep_f5564", "new_ep_f65", "new_ep_fu")), subset(p, year>1999, select=c("iso3", "country", "year", "e_pop_m04", "e_pop_m514", "e_pop_m014", "e_pop_m1524", "e_pop_m2534", "e_pop_m3544", "e_pop_m4554", "e_pop_m5564", "e_pop_m65", "e_pop_f04", "e_pop_f514", "e_pop_f014", "e_pop_f1524", "e_pop_f2534", "e_pop_f3544", "e_pop_f4554", "e_pop_f5564", "e_pop_f65")))
+
+# Aggregate for region
+agb1 <- aggregate(aga[6:ncol(aga)], by=list(year=aga$year, area=aga$g_whoregion), FUN=sum, na.rm=TRUE)
+
+agb1[c('iso3', 'g_wpr')] <- NA
+agb1$iso3 <- agb1$area
+agb1$g_whoregion <- agb1$area
+aga1 <- reshape::rename(aga,c('country'='area'))
+agb <- rbind(aga1, agb1)
+
+# Calculate rates
+
+agc <- melt(agb, id=1:5)
+# agc[c('new', 'type', 'group')] <- str_split_fixed(agc$variable, '_', n=3) # This takes me 25 seconds...it's the '_all' or '_fixed' that's the killer.
+agc$type1 <- str_extract(agc$variable, 'newrel|pop|new_sp|new_sn|new_ep')
+agc$age <- str_replace(agc$variable, "newrel_|e_pop_|new_sp_|new_sn_|new_ep_", "")
+agc$sex <- str_replace(agc$age, '[u]|[0-9]+', "")
+agc$age <- str_replace(agc$age, '[f]|[m]', "")
+
+# aggregate all types for previous years
+agc$type <- ifelse(agc$type1=="pop", "pop", "newrel")
+agc$value <- as.numeric(agc$value) # avoid integer overflow
+agd1 <- agc %>%
+  group_by(iso3, area, year, g_whoregion, g_wpr, type, age, sex) %>%
+  summarise(value=sum0(value)) # %>%
+agd <- cast(agd1, ...~type, value = "value")
+
+agd$newrel_100k <- agd$newrel / agd$pop * 1e5
+
+# Subset for WPRO
+age <- agd %>% filter(g_wpr=="Other", g_whoregion=="WPR", age!="u", !age %in% c("04", "514"))
+age$sex <- factor(age$sex, levels=c("m", "f"), labels=c("Male", "Female"))
+# age$sh.name <- factor(age$iso3, c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM", "WPR"), c("Cambodia", "China", "Lao People’s \nDemocratic Republic", "Mongolia", "Papua New Guinea", "Philippines", "Viet Nam", "WPR"))
+# age[is.na(age$sh.name), 'sh.name'] <- "WPR"
+age$age <- factor(age$age, c("014", "1524", "2534", "3544", "4554", "5564", "65"), c("0–14", "15–24", "25–34", "35–44", "45–54", "55–64", "\u2265 <65"))
+
+write.csv(age, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-agesex-oth-bar", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
+
+write.csv(age, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-agesex-oth", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
+
+p1 <- ggplot(age, aes(year, newrel_100k, color=age)) + geom_line() + facet_grid(iso3~sex, scales='free_y') + theme_report() + scale_x_continuous("", breaks = pretty_breaks()) + scale_color_brewer("Age group", type="seq", palette=4)
+
+p1 + scale_y_continuous("New and relapse cases per 100 000")
+# p1 + scale_y_log10("New laboratory-confirmed cases per 100 000")                                                                                                                                                        
+#function (x) floor(x)); function(n) n[floor(length(n)/5)*1:5+1]
+
+
+
+p1 <- ggplot(age, aes(year, newrel_100k, color=age)) + geom_line() + facet_grid(sex~iso3, scales='free_y') + theme_report() + scale_x_continuous("", breaks = pretty_breaks()) + scale_color_brewer("Age group", type="seq", palette=4)
+
+p1 + scale_y_continuous("New and relapse cases per 100 000")
+# p1 + scale_y_log10("New laboratory-confirmed cases per 100 000")                                                                                                                                                        
+#function (x) floor(x)); function(n) n[floor(length(n)/5)*1:5+1]
+
+
+```
+
+```{r f-migrant-other-data, include=FALSE}
+
+figCount <- incCount(figCount, "f-migrant-other")
+
+# Get migrant stock from world bank data
+
+obc <- merge(tb, oba, by.x = c("iso2", "year"), by.y=c("iso2c", "year"))
+
+obb <- obc %>%
+  filter(iso3 %in% lic) %>% 
+  mutate(migtb_pct=ifelse(year<2013, new_foreign, notif_foreign) / c_notified * 100) %>% # despite it's name "new_foreign" is among all notified cases.
+  select(iso3, year, mig=SM.POP.TOTL.ZS, c_newinc_100k, migtb_pct) 
+obd <- obb %>%
+  filter(!is.na(mig), !is.na(c_newinc_100k))
+
+# obe <- obc %>%
+#   filter(g_wpr=="Other", g_whoregion=="WPR") %>% 
+#   summarize(mig_ave=sum0(new_foreign) / c_notified * 100) %>% # despite it's name "new_foreign" is among all notified cases.
+#   select(iso3, year, mig=SM.POP.TOTL.ZS, c_newinc_100k, migtb_pct) 
+
+ggplot(obb, aes(year, migtb_pct, ymin=0)) + geom_point(aes(size=mig)) + geom_line() + theme_report() + scale_x_continuous("", limits=c(2007,2013)) + scale_y_continuous("Foreign-born TB cases (% of total notified)") + facet_wrap(~iso3, scales = "free_y") + scale_size("International migrant stock 2010 (% of population)") + theme(legend.position="bottom")
+
+obq <- obb %>%
+  mutate(mig=ifelse(year==2010, mig, NA), migtb_pct=ifelse(year==2013, migtb_pct, NA)) %>%
+  group_by(iso3) %>%
+  summarize(mig=sum0(mig), migtb_pct=sum0(migtb_pct)) %>%
+ggplot(aes(mig, migtb_pct)) + geom_point(aes(color=iso3)) + geom_line(aes(x,y), data.frame(x=c(0,75), y=c(0,75))) + theme_report() + scale_x_continuous("International migrant stock 2010 (% of population)") + scale_y_continuous("Foreign-born TB cases 2013 (% of total notified)")
+  direct.label(obq)
+
+
+obq <- obb %>%
+  mutate(mig=ifelse(year==2010, mig, NA), c_newinc_100k=ifelse(year==2013, c_newinc_100k, NA)) %>%
+  group_by(iso3) %>%
+  summarize(mig=sum0(mig), c_newinc_100k=sum0(c_newinc_100k)) %>%
+ggplot(aes(mig, c_newinc_100k)) + geom_point(aes(color=iso3)) + geom_line(aes(x,y), data.frame(x=c(0,75), y=c(0,75))) + theme_report() + scale_x_continuous("International migrant stock 2010 (% of population)") + scale_y_continuous("New and relapse TB cases per 100 000")
+  direct.label(obq)
+
+
+# Notes:
+# 3 groups: AUS and NZL have a high proportion of TB from migrants, but very low migrant stock. So most of their migrants come from HBCs? If the receiving country had the same TB burden as the sending countries, we would expect ... It's TB and not all. The proportion of migrants in the all population is higher than in the TB population
+
+
+
+write.csv(obb, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-migrant-other", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
+
+
+# for paragraph
+h1 <- tb %>% filter(year==yr, g_whoregion=="WPR") %>% group_by(g_wpr) %>% summarize(prev=sum0(e_prev_num))
+h2 <- round(h1[1,2] / h1 %>% summarize(prev=sum(prev)) * 100)
+  
+  
+
+```
+
+```{r f-txout-line-data}
+
+figCount <- incCount(figCount, "f-txout-line")
+
+tra <- subset(tb, year %in% 2000:(yr-1) & iso3 %in% lic, select=c(iso3, year, new_sp_coh, new_sp_cur, new_sp_cmplt, new_sp_died, new_sp_fail, new_sp_def, newrel_coh, newrel_succ, newrel_died, newrel_fail, newrel_lost))
+
+# trb <- aggregate(tra[3:ncol(tra)], by=list(year=tra$year), FUN=sum, na.rm=TRUE)
+# trb$iso3 <- "WPR"
+
+# trc <- rbind(tra, trb)
+
+# trc$area <- factor(trc$iso3, c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM", "WPR"), c("Cambodia", "China", "Lao People’s \nDemocratic Republic", "Mongolia", "Papua New Guinea", "Philippines", "Viet Nam", "WPR"))
+
+trd <- tra %>% rowSumsNA2("succ", c("new_sp_cur", "new_sp_cmplt", "newrel_succ")) %>% rowSumsNA2("coh", c("new_sp_coh", "newrel_coh")) %>% mutate(success=succ/coh*100) %>% select(iso3, year, success) 
+
+
+
+
+
+
+# trb$Success <- (trb$new_sp_cur + trb$new_sp_cmplt + trb$newrel_succ) / (trb$new_sp_coh + trb$newrel_coh) * 100
+# trb$Died <- (trb$new_sp_died + trb$newrel_died) / (trb$new_sp_coh + trb$newrel_coh) * 100
+# trb$Failed <- (trb$new_sp_fail + trb$newrel_fail) / (trb$new_sp_coh + trb$newrel_coh) * 100
+# trb$Defaulted <- (trb$new_sp_def + trb$newrel_lost) / (trb$new_sp_coh + trb$newrel_coh) * 100
+# trb$`Not evaluated` <- ((trb$new_sp_coh + trb$newrel_coh) - (trb$new_sp_cur + trb$new_sp_cmplt + trb$new_sp_died + trb$new_sp_fail + trb$new_sp_def)) / (trb$new_sp_coh + trb$newrel_coh) * 100
+# 
+# trc <- melt(trb[c("year", "Success", "Died", "Failed", "Defaulted", "Not evaluated")], id=1)
+
+
+
+ggplot(trd, aes(year, success, color=iso3)) + geom_line(size=1) + theme_report() + geom_text(data=end.labels(trd, "year", "success", min.spread=2.1), aes(label=iso3), hjust=-0.2, vjust=0, size=4)  + scale_y_continuous("Percent of cohort successfully treated") + scale_x_continuous("", limits=c(2000,2012.7)) + coord_cartesian(ylim=c(0,100)) + scale_size_discrete(range = c(1,1.5)) + theme(legend.position="none") + scale_color_brewer(type="qual", palette=6)  + guides(fill = guide_legend(reverse = TRUE))
+
+# old school
+
+trb <- subset(tb, year %in% 2000:(yr-1) & iso3 %in% lic, select=c(year, iso3, new_sp_coh, new_sp_cur, new_sp_cmplt, new_sp_died, new_sp_fail, new_sp_def, newrel_coh, newrel_succ, newrel_died, newrel_fail, newrel_lost))
+
+# trb <- aggregate(tra[2:ncol(tra)], by=list(year=tra$year), FUN=sum, na.rm=TRUE)
+
+trb$coh <- rowSumsNA(trb[c("new_sp_coh", "newrel_coh")])
+
+trb$Success <- rowSumsNA(trb[c("new_sp_cur", "new_sp_cmplt", "newrel_succ")]) / trb$coh * 100
+trb$Died <- rowSumsNA(trb[c("new_sp_died", "newrel_died")]) / trb$coh * 100
+trb$Failed <- rowSumsNA(trb[c("new_sp_fail", "newrel_fail")]) / trb$coh * 100
+trb$Defaulted <- rowSumsNA(trb[c("new_sp_def", "newrel_lost")]) / trb$coh * 100
+trb$`Not evaluated` <- (trb$coh - rowSumsNA(trb[c("new_sp_cur", "new_sp_cmplt", "newrel_succ", "new_sp_died", "newrel_died", "new_sp_fail", "newrel_fail", "new_sp_def", "newrel_lost")])) / trb$coh * 100
+
+
+trc <- melt(trb[c("year", "iso3", "Success", "Died", "Failed", "Defaulted", "Not evaluated")], id=1:2)
+
+# trc <- trc %>% group_by(country, year) %>% mutate(value2=ifelse(is)) 
+
+trc$value <- ifelse(is.na(trc$value) & ((trc$iso3=="NZL" & trc$year==2010) | (trc$iso3=="MYS" & trc$year==2002)), 0, trc$value)
+
+ggplot(trc, aes(year, value, fill=variable)) + geom_bar(stat="identity", position="stack") + facet_wrap(~iso3, scales="free_y") + theme_report() + scale_fill_brewer('Outcome', type="qual", palette=6) + scale_x_continuous("") + scale_y_continuous("Percent of cohort") + coord_cartesian(ylim=c(0,100)) + guides(fill = guide_legend(reverse = TRUE))
+
+
+ggplot(trc, aes(year, value, fill=variable)) + geom_area(stat="identity", position="stack") + facet_wrap(~iso3, scales="fixed") + theme_report() + scale_fill_brewer('Outcome', type="qual", palette=6) + scale_x_continuous("", breaks=c(2000,2005,2010)) + scale_y_continuous("Percent of cohort") + coord_cartesian() + guides(fill = guide_legend(reverse = TRUE))
+
+# ylim=c(0,100)
+
+write.csv(trd, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-txout-line", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
+
+# for paragraph 
+
+# This can be replaced when the new data file is here (~2015)
+tb2 <- tb
+if(is.null(head(tb2$c_tsr))) tb2$c_tsr <- NA
+
+n30 <- tb2 %>% filter(year==yr-1, g_whoregion=="WPR") %>% .WPSARnames(the=TRUE) %>% mutate(tsr=ifelse(!is.na(c_tsr), c_tsr, ifelse(!is.na(c_newrel_tsr), c_newrel_tsr, c_new_tsr))) %>% arrange(desc(tsr)) %>% select(country, iso3, tsr, newrel_coh, newrel_succ, newrel_fail, newrel_died, newrel_lost) %>% filter(tsr>0)
+n31 <- n30 %>% filter(tsr >=85) %>% nrow()
+n32 <- n30 %>% filter(iso3 %in% whbc) %>% mutate(tsr=signif(tsr,2))
+n33 <- n32 %>% filter(tsr==last(tsr)) %>% mutate(neval=newrel_coh - sum(newrel_succ, newrel_fail, newrel_died, newrel_lost), l=signif(sum(newrel_lost, neval) / newrel_coh * 100, 2)) %>% select(l) %>% mutate(l=ifelse(l %in% 22:25, "approximately a quarter", ifelse(l %in% 25:29, "over a quarter", paste0(l, "%"))))
+n34 <- tb %>% mutate(idef=signif((c_newinc-newrel_coh)/c_newinc * 100, 2)) %>% filter(year==yr-1, iso3 %in% whbc, idef > 2) %>% select(country, idef) %>% arrange(desc(idef)) 
+n35c <- paste(paste(n34[1:(nrow(n34)-1),"country"], collapse=", "), n34[nrow(n34),"country"], sep=" and ")
+n35n <- paste(paste(n34[1:(nrow(n34)-1),"idef"], collapse=", "), n34[nrow(n34),"idef"], sep=" and ")
+
+```
+
+```{r f-tbhiv-data}
+
+figCount <- incCount(figCount, "f-tbhiv")
+
+tha <- subset(tb, year >= 2005 & g_whoregion=="WPR" & iso3 %in% lic, select=c("country", "year", "iso3", "g_hbc22", "c_notified", "hivtest", "hivtest_pos", "hiv_cpt", "hiv_art", "hivtest_pct_numerator", "hivtest_pct_denominator", "hivtest_pos_pct_numerator", "hivtest_pos_pct_denominator", "hiv_cpt_pct_numerator", "hiv_cpt_pct_denominator", "hiv_art_pct_numerator", "hiv_art_pct_denominator"))
+
+# tha2 <- aggregate(tha1[5:ncol(tha1)], by=list(year=tha1$year), FUN=sum, na.rm=TRUE)
+# tha2[c("country", "iso3")] <- "WPR"
+# tha2[c("g_hbc22")] <- NA
+# tha <- rbind(tha1, tha2)
+
+tha$test <- tha$hivtest_pct_numerator / tha$hivtest_pct_denominator * 100
+tha$pos <- tha$hivtest_pos_pct_numerator / tha$hivtest_pos_pct_denominator * 100
+tha$cpt <- tha$hiv_cpt_pct_numerator / tha$hiv_cpt_pct_denominator * 100
+tha$art <- tha$hiv_art_pct_numerator / tha$hiv_art_pct_denominator * 100
+
+thb <- melt(tha[c("iso3", "year", "test", "pos", "cpt", "art")], id=1:2)
+
+thb$variable <- factor(thb$variable, levels=c("test", "pos", "cpt", "art"), labels=c("HIV testing \namong TB patients", "HIV-positive among \nTB patients tested", "CPT coverage \namong co-infected", "ART coverage \namong co-infected"))
+
+# thb$country <- factor(thb$iso3, c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM", "WPR"), c("Cambodia", "China", "Lao \nPeople’s \nDemocratic \nRepublic", "Mongolia", "Papua \nNew \nGuinea", "Philippines", "Viet Nam", "Western \nPacific \nRegion"))
+
+
+ggplot(thb, aes(year, value)) + geom_line(size=1) + facet_grid(variable~iso3, scales="free") + theme_report() + labs(y="Percent", x="") + scale_x_continuous(breaks=c(2005, 2010))
+
+
+
+write.csv(thb, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-tbhiv", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
+```
+
+
+
 
 <sup>&dagger;</sup> Stop TB and Leprosy Elimination, Division of Communicable Diseases, World Health Organization Regional Office for the Western Pacific, Manila, Philippines.
 
@@ -279,41 +714,6 @@ Every year, 36 countries and areas in the Region are requested to report TB surv
 ### Analysis and reproducibility
 Analysis was conducted by the statistical package R (ver. `r r_ver`, R Core Team, `r info$R.version$year`, Vienna, Austria, www.R-project.org). Due to calls for transparent and reproducible research,[@Peng2006; @Groves2012] we have published programme code to generate the entire contents of this article including all figures and tables by using R with the knitr package (ver. `r info$otherPkgs$knitr$Version`, Yihui Xie, `r format.Date(info$otherPkgs$knitr$Date, "%Y")`). Readers can download the code (see supplement material) and reproduce all figures and tables under an appropriate personal computing environment. For non-commercial purposes, readers may modify the code to produce figures and tables that are not presented in this article. For instance, readers may wish to produce tables and figures for countries or regions other than the WHO Western Pacific Region.
 
-# Questions this analysis is trying to answer
-How much TB still exists in WPR?
-Is the amount of TB going up, coming down, or staying stable?
-Where is TB clustering in the region?
-Is the clustering staying the same or changing, if changing how?
-where is the amount of TB coming down and at what rate? Is it going up anywhere?
-Are child cases being found? What about among women? How is the disease progressing with aging countries?
-What do we know about these populations and how is TB reflecting or being affected?
-Where is TB still spreading and where is it only reactivation? Where are chunks of the population likely not infected?
-What is the relationship between wealth (GDP) and TB motality at the national level? What are the macro associations (causes) for TB?
-What is the relationship between Migrant stock and TB?
-Which programmes are ahead of the game in finding cases?
-Which programmes treat the best? If you get TB, which country do you hope you live in?
-
-Structure
-table of latest year
-map of latest year
-trend by group
-
-HIGH BURDEN
-relationship between GDP and mort
-aging plot
-notif trend panel plot
-treatment success
-financing?
-HIV?
-
-PACIFIC
-scatter of notif rate by abs num 
-MDR in the pacific
-
-OTHER
-scatter of rate and abs num
-scatter of rate and migrant stock, maybe include foreign born var
-aging plot
 
 
 Results
@@ -322,75 +722,25 @@ Results
 
 ### Case notification
 
-```{r t-notif-data, warning=FALSE}
-tableCount <- incCount(tableCount, "t-notif")
-
-# Notification table
-
-tbb <- subset(tb, year==yr & g_whoregion=="WPR", select=c('country', 'g_whoregion', 'g_hbc22', 'c_notified', 'c_newinc', "new_labconf", "new_clindx", "new_ep", "ret_rel_labconf", "ret_rel_clindx", "ret_rel_ep", "ret_nrel"))
-
-tbb <- tbb[order(tbb$country),]
-names(tbb)[names(tbb)=='country'] <- 'area'
-
-# make aggregate rows
-tbbr <- aggregate(tbb[4:ncol(tbb)], by=list(area=tbb$g_whoregion), FUN=sum, na.rm=TRUE)
-
-# combine together
-tbc <- rbind(tbb[c(1, 4:ncol(tbb))], tbbr) # tbbh, , tbbga
-
-# calculate and format vars
-
-tbc$nrpulm_lab_pct <- .rowsums(tbc[c("new_labconf", "ret_rel_labconf")] )* 100 / .rowsums(tbc[c("new_labconf", "new_clindx", "ret_rel_labconf", "ret_rel_clindx")])
-
-for(var in 2:ncol(tbc)){
-  tbc[var] <- rounder(tbc[[var]])
-  }
-
-tbc[is.na(tbc$nrpulm_lab_pct), 'nrpulm_lab_pct'] <- "\u2013"
-
-# rename
-tbc <- .WPSARnames(tbc, col='area')
-
-# Add to file
-
-tbm <- xtable(tbc[c("area", "c_notified", 'c_newinc', "ret_nrel", "new_labconf", "new_clindx", "new_ep", "ret_rel_labconf", "ret_rel_clindx", "ret_rel_ep", "nrpulm_lab_pct")])
-
-digits(tbm) <- 0
-
-write.csv(tbm, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-notif", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
-
-# for paragraph
-n1 <- paste(signif(tbbr$c_notified / 1e6, 2), "million")
-n2 <- signif(tbbr$c_notified / sum(subset(tb, year==yr, c_notified), na.rm=TRUE) * 100, 2)
-n3 <- signif(tbbr$c_newinc / tbbr$c_notified * 100, 3)
-n4 <- tbc[nrow(tbc),"c_newinc"]
-n5 <- signif(tbb[tbb$area == "China","c_notified"] / tbbr$c_notified * 100, 2)
-n6 <- tbc[tbc$area == "China","c_notified"]
-n7 <- signif(tbb[tbb$area == "Philippines","c_notified"] / tbbr$c_notified * 100, 2)
-n8 <- tbc[tbc$area == "Philippines","c_notified"]
-n9 <- signif(tbb[tbb$area == "Viet Nam","c_notified"] / tbbr$c_notified * 100, 2)
-n10 <- tbc[tbc$area == "Viet Nam","c_notified"]
-
-```
 
 ```{r m-notif-data, include=FALSE}
 
-figCount <- incCount(figCount, "m-notif")
-
-mc <- subset(tb, year==yr & g_whoregion=="WPR", select=c(country, iso2, iso3, g_whoregion, c_newinc, e_pop_num))
-
-mc$c_newinc_100k <- mc$c_newinc / mc$e_pop_num *1e5
-
-mc$cat <- cut(round(mc$c_newinc_100k,0), c(0, 10, 50, 100, 200, Inf), c('0–9', '10–49', '50–99', '100–199', '>199'), right=FALSE)
-
-mc1 <- WHOmap.print(mc, legend.title= "TB cases per \n100 000 population", copyright=FALSE, show=FALSE, zoom="WPR")
-
-write.csv(mc, file=paste0(pasteLabel("./figure_data/figure", figCount, "m-notif", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
-
-# for paragraph
-n11 <- mc %>% filter(cat==">199") %>% arrange(desc(c_newinc_100k)) %>% .WPSARnames(the=TRUE) %>% mutate(c=country, r=signif(c_newinc_100k,3)) %>% select(c,r) 
-n12 <- paste(paste(n11[1:(nrow(n11)-1),"c"], collapse=", "), n11[nrow(n11),"c"], sep=" and ")
-n13 <- paste(paste(n11[1:(nrow(n11)-1),"r"], collapse=", "), n11[nrow(n11),"r"], sep=" and ")
+# figCount <- incCount(figCount, "m-notif")
+# 
+# mc <- subset(tb, year==yr & g_whoregion=="WPR", select=c(country, iso2, iso3, g_whoregion, c_newinc, e_pop_num))
+# 
+# mc$c_newinc_100k <- mc$c_newinc / mc$e_pop_num *1e5
+# 
+# mc$cat <- cut(round(mc$c_newinc_100k,0), c(0, 10, 50, 100, 200, Inf), c('0–9', '10–49', '50–99', '100–199', '>199'), right=FALSE)
+# 
+# mc1 <- WHOmap.print(mc, legend.title= "TB cases per \n100 000 population", copyright=FALSE, show=FALSE, zoom="WPR")
+# 
+# write.csv(mc, file=paste0(pasteLabel("./figure_data/figure", figCount, "m-notif", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
+# 
+# # for paragraph
+# n11 <- mc %>% filter(cat==">199") %>% arrange(desc(c_newinc_100k)) %>% .WPSARnames(the=TRUE) %>% mutate(c=country, r=signif(c_newinc_100k,3)) %>% select(c,r) 
+# n12 <- paste(paste(n11[1:(nrow(n11)-1),"c"], collapse=", "), n11[nrow(n11),"c"], sep=" and ")
+# n13 <- paste(paste(n11[1:(nrow(n11)-1),"r"], collapse=", "), n11[nrow(n11),"r"], sep=" and ")
 
 ```
 
@@ -436,7 +786,7 @@ print(tbm, type="html", include.rownames=F, include.colnames=F, html.table.attri
 **`r I(pasteLabel("Figure", figCount, "m-notif", insLink=FALSE))` Tuberculosis case notification rate (new and relapse) per 100 000 population in countries and areas of the Western Pacific Region, `r yr`**  
 ```{r m-notif, fig.height=5}
 
-mc1
+# mc1
 ```  
 
 <font size="1">The boundaries shown and the designations used on this map do not imply the expression of any opinion whatsoever on the part of the World Health Organization concerning the legal status of any country, territory, city or area or of its authorities, or concerning the delimitation of its frontiers or boundaries. White lines on maps represent approximate border lines for which there may not yet be full agreement.</font>
@@ -507,14 +857,20 @@ figCount <- incCount(figCount, "f-gdp-hb")
 # Get GDP from world bank data
 require(WDI)
 
-gb <- WDI(indicator='NY.GDP.PCAP.KD', start=2000, end=2013, extra=FALSE)
+# gb <- WDI(indicator='NY.GDP.PCAP.KD', start=2000, end=2013, extra=FALSE)
 
 gc <- merge(tb, gb, by.x = c("iso2", "year"), by.y=c("iso2c", "year"))
 
 ga <- gc %>%
-  filter(g_wpr=="High-burden") %>% 
-  select(iso3, year, gdp=NY.GDP.PCAP.KD, mort=e_mort_exc_tbhiv_100k, mort.lo=e_mort_exc_tbhiv_100k_lo, mort.hi=e_mort_exc_tbhiv_100k_hi)
+  filter(iso3 %in% lic) %>% 
+  select(iso3, year, gdp=NY.GDP.PCAP.KD, mort=e_mort_exc_tbhiv_100k, mort.lo=e_mort_exc_tbhiv_100k_lo, mort.hi=e_mort_exc_tbhiv_100k_hi, c_newinc_100k)
 
+
+ggplot(ga, aes(gdp, c_newinc_100k, color=iso3)) + geom_path(size=1, arrow=arrow(length=unit(0.3, "cm"))) + theme_report() + scale_x_log10("GDP per capita (constant 2000 US$)") + scale_y_log10("Estimated TB mortality per 100 000 per year") + scale_color_brewer("", type="qual", palette=6) + geom_text(data=subset(ga, year==yr), aes(label=iso3), hjust=1, vjust=1.5) + theme(legend.position="none")
+
+
+, limits=c(300, 4000), breaks=c(300, 1e3, 2e3, 3e3, 4e3)
+, limits=c(1, 200), breaks=c(1, 10, 50, 100, 200)
 
 write.csv(ga, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-gdp-hb", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
 
@@ -553,54 +909,6 @@ ggplot(ga, aes(gdp, mort, color=iso3)) + geom_path(size=1, arrow=arrow(length=un
 ### Distribution by age and sex
 
 
-```{r agesex-data,  echo=FALSE}
-figCount <- incCount(figCount, "f-agesex-bar")
-figCount <- incCount(figCount, "f-agesex")
-
-aga <- merge(subset(tb, year > 1999, select=c("iso3", "country", "year", "g_whoregion", "g_hbc22", "newrel_m04", "newrel_m514", "newrel_m014", "newrel_m1524", "newrel_m2534", "newrel_m3544", "newrel_m4554", "newrel_m5564", "newrel_m65", "newrel_mu", "newrel_f04", "newrel_f514", "newrel_f014", "newrel_f1524",  "newrel_f2534", "newrel_f3544", "newrel_f4554", "newrel_f5564", "newrel_f65", "newrel_fu",
-                                              "new_sp_m04", "new_sp_m514", "new_sp_m014", "new_sp_m1524", "new_sp_m2534", "new_sp_m3544", "new_sp_m4554", "new_sp_m5564", "new_sp_m65", "new_sp_mu", "new_sp_f04", "new_sp_f514", "new_sp_f014", "new_sp_f1524",  "new_sp_f2534", "new_sp_f3544", "new_sp_f4554", "new_sp_f5564", "new_sp_f65", "new_sp_fu",
-                                              "new_sn_m04", "new_sn_m514", "new_sn_m014", "new_sn_m1524", "new_sn_m2534", "new_sn_m3544", "new_sn_m4554", "new_sn_m5564", "new_sn_m65", "new_sn_mu", "new_sn_f04", "new_sn_f514", "new_sn_f014", "new_sn_f1524",  "new_sn_f2534", "new_sn_f3544", "new_sn_f4554", "new_sn_f5564", "new_sn_f65", "new_sn_fu", 
-                                              "new_ep_m04", "new_ep_m514", "new_ep_m014", "new_ep_m1524", "new_ep_m2534", "new_ep_m3544", "new_ep_m4554", "new_ep_m5564", "new_ep_m65", "new_ep_mu", "new_ep_f04", "new_ep_f514", "new_ep_f014", "new_ep_f1524",  "new_ep_f2534", "new_ep_f3544", "new_ep_f4554", "new_ep_f5564", "new_ep_f65", "new_ep_fu")), subset(p, year>1999, select=c("iso3", "country", "year", "e_pop_m04", "e_pop_m514", "e_pop_m014", "e_pop_m1524", "e_pop_m2534", "e_pop_m3544", "e_pop_m4554", "e_pop_m5564", "e_pop_m65", "e_pop_f04", "e_pop_f514", "e_pop_f014", "e_pop_f1524", "e_pop_f2534", "e_pop_f3544", "e_pop_f4554", "e_pop_f5564", "e_pop_f65")))
-
-# Aggregate for region
-agb1 <- aggregate(aga[6:ncol(aga)], by=list(year=aga$year, area=aga$g_whoregion), FUN=sum, na.rm=TRUE)
-
-agb1[c('iso3', 'g_hbc22')] <- NA
-agb1$iso3 <- agb1$area
-agb1$g_whoregion <- agb1$area
-aga1 <- reshape::rename(aga,c('country'='area'))
-agb <- rbind(aga1, agb1)
-
-# Calculate rates
-
-agc <- melt(agb, id=1:5)
-# agc[c('new', 'type', 'group')] <- str_split_fixed(agc$variable, '_', n=3) # This takes me 25 seconds...it's the '_all' or '_fixed' that's the killer.
-agc$type1 <- str_extract(agc$variable, 'newrel|pop|new_sp|new_sn|new_ep')
-agc$age <- str_replace(agc$variable, "newrel_|e_pop_|new_sp_|new_sn_|new_ep_", "")
-agc$sex <- str_replace(agc$age, '[u]|[0-9]+', "")
-agc$age <- str_replace(agc$age, '[f]|[m]', "")
-
-# aggregate all types for previous years
-agc$type <- ifelse(agc$type1=="pop", "pop", "newrel")
-agc$value <- as.numeric(agc$value) # avoid integer overflow
-agd1 <- agc %>%
-  group_by(iso3, area, year, g_whoregion, g_hbc22, type, age, sex) %>%
-  summarise(value=sum0(value)) # %>%
-agd <- cast(agd1, ...~type, value = "value")
-
-agd$newrel_100k <- agd$newrel / agd$pop * 1e5
-
-# Subset for WPRO
-age <- subset(agd, (iso3 %in% whbc | area=="WPR") & age!="u" & !age %in% c("04", "514"))
-age$sex <- factor(age$sex, levels=c("m", "f"), labels=c("Male", "Female"))
-age$sh.name <- factor(age$iso3, c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM", "WPR"), c("Cambodia", "China", "Lao People’s \nDemocratic Republic", "Mongolia", "Papua New Guinea", "Philippines", "Viet Nam", "WPR"))
-age[is.na(age$sh.name), 'sh.name'] <- "WPR"
-age$age <- factor(age$age, c("014", "1524", "2534", "3544", "4554", "5564", "65"), c("0–14", "15–24", "25–34", "35–44", "45–54", "55–64", "\u2265 <65"))
-
-write.csv(age, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-agesex-bar", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
-
-write.csv(age, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-agesex", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
-```
 
 `r I(pasteLabel("Figure", figCount, "f-agesex-bar"))` shows age group and sex-specific case notification rates of new laboratory-confirmed cases for the countries with a high burden of TB in the Region with available data (note that the scale of the vertical axis is different for each country). Many countries follow a typical pattern for cross-sectional observations with increasing notification rates towards older populations except in Mongolia. In general, males are more affected than females with male-to-female TB ratios as high as three as seen in Viet Nam.
 
@@ -673,7 +981,7 @@ if(is.null(head(tb2$c_tsr))) tb2$c_tsr <- NA
 
 n30 <- tb2 %>% filter(year==yr-1, g_whoregion=="WPR") %>% .WPSARnames(the=TRUE) %>% mutate(tsr=ifelse(!is.na(c_tsr), c_tsr, ifelse(!is.na(c_newrel_tsr), c_newrel_tsr, c_new_tsr))) %>% arrange(desc(tsr)) %>% select(country, iso3, tsr, newrel_coh, newrel_succ, newrel_fail, newrel_died, newrel_lost) %>% filter(tsr>0)
 n31 <- n30 %>% filter(tsr >=85) %>% nrow()
-n32 <- n30 %>% filter(iso3 %in% whbc) %>% mutate(tsr=signif(tsr,2))
+n32 <- n30 %>% filter(iso3 %in% lic) %>% mutate(tsr=signif(tsr,2))
 n33 <- n32 %>% filter(tsr==last(tsr)) %>% mutate(neval=newrel_coh - sum(newrel_succ, newrel_fail, newrel_died, newrel_lost), l=signif(sum(newrel_lost, neval) / newrel_coh * 100, 2)) %>% select(l) %>% mutate(l=ifelse(l %in% 22:25, "approximately a quarter", ifelse(l %in% 25:29, "over a quarter", paste0(l, "%"))))
 
 ```
@@ -700,7 +1008,7 @@ ggplot(trc, aes(year, value, fill=variable)) + geom_bar(stat="identity", positio
 
 figCount <- incCount(figCount, "f-tbhiv")
 
-tha1 <- subset(tb, year >= 2005 & g_whoregion=="WPR" & iso3 %in% whbc, select=c("country", "year", "iso3", "g_hbc22", "c_notified", "hivtest", "hivtest_pos", "hiv_cpt", "hiv_art", "hivtest_pct_numerator", "hivtest_pct_denominator", "hivtest_pos_pct_numerator", "hivtest_pos_pct_denominator", "hiv_cpt_pct_numerator", "hiv_cpt_pct_denominator", "hiv_art_pct_numerator", "hiv_art_pct_denominator"))
+tha1 <- subset(tb, year >= 2005 & g_whoregion=="WPR" & iso3 %in% lic, select=c("country", "year", "iso3", "g_hbc22", "c_notified", "hivtest", "hivtest_pos", "hiv_cpt", "hiv_art", "hivtest_pct_numerator", "hivtest_pct_denominator", "hivtest_pos_pct_numerator", "hivtest_pos_pct_denominator", "hiv_cpt_pct_numerator", "hiv_cpt_pct_denominator", "hiv_art_pct_numerator", "hiv_art_pct_denominator"))
 
 tha2 <- aggregate(tha1[5:ncol(tha1)], by=list(year=tha1$year), FUN=sum, na.rm=TRUE)
 tha2[c("country", "iso3")] <- "WPR"
@@ -844,41 +1152,6 @@ ggplot(subset(oa, year %in% c(2000, 2013)), aes(c_newinc, c_newinc_100k, color=i
 
 --------------------------------------------------------
 
-```{r f-migrant-other-data, include=FALSE}
-
-figCount <- incCount(figCount, "f-migrant-other")
-
-# Get GDP from world bank data
-require(WDI)
-
-oba <- WDI(indicator='SM.POP.TOTL.ZS', start=1990, end=2013, extra=FALSE)
-
-obc <- merge(tb, oba, by.x = c("iso2", "year"), by.y=c("iso2c", "year"))
-
-obb <- obc %>%
-  filter(g_wpr=="Other", g_whoregion=="WPR") %>% 
-  mutate(mig_pct=ifelse(year<2013, new_foreign, notif_foreign) / c_notified * 100) %>% # despite it's name "new_foreign" is among all notified cases.
-  select(iso3, year, mig=SM.POP.TOTL.ZS, c_newinc_100k, mig_pct) 
-obd <- obb %>%
-  filter(!is.na(mig), !is.na(c_newinc_100k))
-
-# obe <- obc %>%
-#   filter(g_wpr=="Other", g_whoregion=="WPR") %>% 
-#   summarize(mig_ave=sum0(new_foreign) / c_notified * 100) %>% # despite it's name "new_foreign" is among all notified cases.
-#   select(iso3, year, mig=SM.POP.TOTL.ZS, c_newinc_100k, mig_pct) 
-
-
-
-write.csv(obb, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-migrant-other", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
-
-
-# for paragraph
-h1 <- tb %>% filter(year==yr, g_whoregion=="WPR") %>% group_by(g_wpr) %>% summarize(prev=sum0(e_prev_num))
-h2 <- round(h1[1,2] / h1 %>% summarize(prev=sum(prev)) * 100)
-  
-  
-
-```
 
 
 The seven high-burden countries of the Region account for `r h2`% of the estimated caseload. All seven countries have experienced a decrease in TB mortality since 2000 as well as an overall increasing trend in gross domestic product (GDP) (`r I(pasteLabel("Figure", figCount, "f-migrant-other"))`).
@@ -915,54 +1188,6 @@ International migrant stock data from World Development Indicators, World Bank.
 
 
 
-```{r agesex-oth-data,  echo=FALSE}
-figCount <- incCount(figCount, "f-agesex-oth-bar")
-figCount <- incCount(figCount, "f-agesex-oth")
-
-aga <- merge(subset(tb, year > 1999, select=c("iso3", "country", "year", "g_whoregion", "g_wpr", "newrel_m04", "newrel_m514", "newrel_m014", "newrel_m1524", "newrel_m2534", "newrel_m3544", "newrel_m4554", "newrel_m5564", "newrel_m65", "newrel_mu", "newrel_f04", "newrel_f514", "newrel_f014", "newrel_f1524",  "newrel_f2534", "newrel_f3544", "newrel_f4554", "newrel_f5564", "newrel_f65", "newrel_fu",
-                                              "new_sp_m04", "new_sp_m514", "new_sp_m014", "new_sp_m1524", "new_sp_m2534", "new_sp_m3544", "new_sp_m4554", "new_sp_m5564", "new_sp_m65", "new_sp_mu", "new_sp_f04", "new_sp_f514", "new_sp_f014", "new_sp_f1524",  "new_sp_f2534", "new_sp_f3544", "new_sp_f4554", "new_sp_f5564", "new_sp_f65", "new_sp_fu",
-                                              "new_sn_m04", "new_sn_m514", "new_sn_m014", "new_sn_m1524", "new_sn_m2534", "new_sn_m3544", "new_sn_m4554", "new_sn_m5564", "new_sn_m65", "new_sn_mu", "new_sn_f04", "new_sn_f514", "new_sn_f014", "new_sn_f1524",  "new_sn_f2534", "new_sn_f3544", "new_sn_f4554", "new_sn_f5564", "new_sn_f65", "new_sn_fu", 
-                                              "new_ep_m04", "new_ep_m514", "new_ep_m014", "new_ep_m1524", "new_ep_m2534", "new_ep_m3544", "new_ep_m4554", "new_ep_m5564", "new_ep_m65", "new_ep_mu", "new_ep_f04", "new_ep_f514", "new_ep_f014", "new_ep_f1524",  "new_ep_f2534", "new_ep_f3544", "new_ep_f4554", "new_ep_f5564", "new_ep_f65", "new_ep_fu")), subset(p, year>1999, select=c("iso3", "country", "year", "e_pop_m04", "e_pop_m514", "e_pop_m014", "e_pop_m1524", "e_pop_m2534", "e_pop_m3544", "e_pop_m4554", "e_pop_m5564", "e_pop_m65", "e_pop_f04", "e_pop_f514", "e_pop_f014", "e_pop_f1524", "e_pop_f2534", "e_pop_f3544", "e_pop_f4554", "e_pop_f5564", "e_pop_f65")))
-
-# Aggregate for region
-agb1 <- aggregate(aga[6:ncol(aga)], by=list(year=aga$year, area=aga$g_whoregion), FUN=sum, na.rm=TRUE)
-
-agb1[c('iso3', 'g_wpr')] <- NA
-agb1$iso3 <- agb1$area
-agb1$g_whoregion <- agb1$area
-aga1 <- reshape::rename(aga,c('country'='area'))
-agb <- rbind(aga1, agb1)
-
-# Calculate rates
-
-agc <- melt(agb, id=1:5)
-# agc[c('new', 'type', 'group')] <- str_split_fixed(agc$variable, '_', n=3) # This takes me 25 seconds...it's the '_all' or '_fixed' that's the killer.
-agc$type1 <- str_extract(agc$variable, 'newrel|pop|new_sp|new_sn|new_ep')
-agc$age <- str_replace(agc$variable, "newrel_|e_pop_|new_sp_|new_sn_|new_ep_", "")
-agc$sex <- str_replace(agc$age, '[u]|[0-9]+', "")
-agc$age <- str_replace(agc$age, '[f]|[m]', "")
-
-# aggregate all types for previous years
-agc$type <- ifelse(agc$type1=="pop", "pop", "newrel")
-agc$value <- as.numeric(agc$value) # avoid integer overflow
-agd1 <- agc %>%
-  group_by(iso3, area, year, g_whoregion, g_wpr, type, age, sex) %>%
-  summarise(value=sum0(value)) # %>%
-agd <- cast(agd1, ...~type, value = "value")
-
-agd$newrel_100k <- agd$newrel / agd$pop * 1e5
-
-# Subset for WPRO
-age <- agd %>% filter(g_wpr=="Other", g_whoregion=="WPR", age!="u", !age %in% c("04", "514"))
-age$sex <- factor(age$sex, levels=c("m", "f"), labels=c("Male", "Female"))
-# age$sh.name <- factor(age$iso3, c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM", "WPR"), c("Cambodia", "China", "Lao People’s \nDemocratic Republic", "Mongolia", "Papua New Guinea", "Philippines", "Viet Nam", "WPR"))
-# age[is.na(age$sh.name), 'sh.name'] <- "WPR"
-age$age <- factor(age$age, c("014", "1524", "2534", "3544", "4554", "5564", "65"), c("0–14", "15–24", "25–34", "35–44", "45–54", "55–64", "\u2265 <65"))
-
-write.csv(age, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-agesex-oth-bar", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
-
-write.csv(age, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-agesex-oth", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
-```
 
 `r I(pasteLabel("Figure", figCount, "f-agesex-oth-bar"))` shows age group and sex-specific case notification rates of new laboratory-confirmed cases for the countries with a high burden of TB in the Region with available data (note that the scale of the vertical axis is different for each country). Many countries follow a typical pattern for cross-sectional observations with increasing notification rates towards older populations except in Mongolia. In general, males are more affected than females with male-to-female TB ratios as high as three as seen in Viet Nam.
 
