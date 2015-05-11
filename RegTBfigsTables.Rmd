@@ -196,6 +196,51 @@ num.adverb <- function(x, direction=c("none", "up", "down"), sigfigs=2){
   
 }
 
+numbers2words <- function(x){
+  ## Function by John Fox found here: 
+  ## http://tolstoy.newcastle.edu.au/R/help/05/04/2715.html
+  
+  helper <- function(x){
+    
+    digits <- rev(strsplit(as.character(x), "")[[1]])
+    nDigits <- length(digits)
+    if (nDigits == 1) as.vector(ones[digits])
+    else if (nDigits == 2)
+      if (x <= 19) as.vector(teens[digits[1]])
+    else trim(paste(tens[digits[2]],
+                    Recall(as.numeric(digits[1]))))
+    else if (nDigits == 3) trim(paste(ones[digits[3]], "hundred", 
+                                      Recall(makeNumber(digits[2:1]))))
+    else {
+      nSuffix <- ((nDigits + 2) %/% 3) - 1
+      if (nSuffix > length(suffixes)) stop(paste(x, "is too large!"))
+      trim(paste(Recall(makeNumber(digits[
+        nDigits:(3*nSuffix + 1)])),
+                 suffixes[nSuffix],  
+                 Recall(makeNumber(digits[(3*nSuffix):1]))))
+    }
+  }
+  trim <- function(text){
+    gsub("^\ ", "", gsub("\ *$", "", text))
+  }  
+  makeNumber <- function(...) as.numeric(paste(..., collapse=""))     
+  opts <- options(scipen=100) 
+  on.exit(options(opts)) 
+  ones <- c("", "one", "two", "three", "four", "five", "six", "seven",
+            "eight", "nine") 
+  names(ones) <- 0:9 
+  teens <- c("ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen",
+             "sixteen", " seventeen", "eighteen", "nineteen")
+  names(teens) <- 0:9 
+  tens <- c("twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty",
+            "ninety") 
+  names(tens) <- 2:9 
+  x <- round(x)
+  suffixes <- c("thousand", "million", "billion", "trillion")     
+  if (length(x) > 1) return(sapply(x, helper))     
+  helper(x) 
+}
+
 ########################################################
 # Functions for maps
 ########################################################
@@ -328,8 +373,8 @@ This update represents our `r i4` regional analysis of TB notification data as a
 Methods
 --------------------------------------------------------
 ```{r methods, echo=FALSE}
-m1 <- tb %>% filter(year==yr-1, g_whoregion=="WPR", !is.na(c_newinc)) %>% nrow()
-m2 <- floor(tb %>% filter(year==yr-1, g_whoregion=="WPR", !is.na(c_newinc)) %>% summarize(pop=sum(e_pop_num)) / tb %>% filter(year==yr-1, g_whoregion=="WPR") %>% summarize(pop=sum(e_pop_num)) * 100 / 0.1) * 0.1 # rounding to increment
+m1 <- tb %>% filter(year==yr, g_whoregion=="WPR", !is.na(c_newinc)) %>% nrow()
+m2 <- floor(tb %>% filter(year==yr, g_whoregion=="WPR", !is.na(c_newinc)) %>% summarize(pop=sum(e_pop_num)) / tb %>% filter(year==yr, g_whoregion=="WPR") %>% summarize(pop=sum(e_pop_num)) * 100 / 0.1) * 0.1 # rounding to increment
 m3 <- tb %>% filter(year %in% 2008:2012, g_whoregion=="WPR") %>% mutate(nd=new_su / c_newinc * 100) %>% group_by(country) %>% summarize(ndo=round(max(nd),0)) %>% arrange(desc(ndo)) %>% head(3) %>% as.data.frame() 
 m4 <- paste(paste(m3[1:(nrow(m3)-1),"country"], collapse=", "), m3[nrow(m3),"country"], sep=" and ")
 m5 <- paste(paste(m3[1:(nrow(m3)-1),"ndo"], collapse=", "), m3[nrow(m3),"ndo"], sep=" and ")
@@ -341,7 +386,7 @@ r_ver <- paste(info$R.version$major, info$R.version$minor, sep=".")
 ```
 
 ### Data
-Every year, 36 countries and areas in the Region are requested to report TB surveillance data to WHO using a standardized data collection form. Since 2009, a web-based online system has been used for data submission and validation. Collected data covers the following areas: TB case notifications and treatment outcomes, diagnostic and treatment services, drug management, surveillance and surveys of drug-resistance, information on TB/HIV co-infection, infection control, engagement of all care providers and budgets and expenditures for TB control. The full description of methods is available in the Global Tuberculosis Report[@WorldHealthOrganization2014] and the data sets are available from the WHO global TB database (www.who.int/tb/data). Case definitions for TB were revised in 2013[@WorldHealthOrganization2013] and cases previously known as smear-positive are now included in laboratory-confirmed cases. The revised case definitions combine smear-negative cases with all clinically diagnosed cases and therefore obscure the number of cases where smear was not done or results are unknown. Between 2008 and 2012 regionally, no more than `r m6`% of cases did not have a smear done, however at the country level, the proportion was as high as `r m5` percent  in `r m4`, respectively.
+Every year, 36 countries and areas in the Region are requested to report TB surveillance data to WHO using a standardized data collection form. Since 2009, a web-based online system has been used for data submission and validation. Collected data covers the following areas: TB case notifications and treatment outcomes, diagnostic and treatment services, drug management, surveillance and surveys of drug-resistance, information on TB/HIV co-infection, infection control, engagement of all care providers and budgets and expenditures for TB control. The full description of methods is available in the Global Tuberculosis Report[@WorldHealthOrganization2014] and the data sets are available from the WHO global TB database (www.who.int/tb/data). Case definitions for TB were revised in 2013[@WorldHealthOrganization2013] and cases previously known as smear-positive are now included in laboratory-confirmed cases. The revised case definitions combine smear-negative cases with all clinically diagnosed cases and therefore obscure the number of cases where smear was not done or results are unknown. Between 2008 and 2012 regionally, no more than `r m6`% of cases did not have a smear result in any given year, however at the country level, the proportion was as high as `r m5` percent  in `r m4`, respectively.
 
 For `r yr`, `r m1` countries and areas of the Western Pacific Region reported data representing more than `r m2`% of the total population. This report describes the epidemiological situation and progress in programmatic response with a focus on seven countries with a high burden of TB: Cambodia, China, the Lao People's Democratic Republic, Mongolia, Papua New Guinea, the Philippines and Viet Nam. (Globally, WHO designates 22 countries with a high burden of TB that include Cambodia, China, the Philippines and Viet Nam. The other three countries: the Lao People's Democratic Republic, Mongolia and Papua New Guinea are considered priority countries with a high burden of TB in the Western Pacific Region).
 
@@ -438,22 +483,22 @@ In `r yr`, countries and areas in the Region reported `r n1` people with TB dise
 
 print(tbm, type="html", include.rownames=F, include.colnames=F, html.table.attributes="border=0 rules=rows width=900 cellpadding=5", add.to.row=list(pos=list(0, nrow(tbm)), command=c(
   "<TR> 
-  <TD colspan='4' style='border-right: solid 2px black;'></TD> 
-  <TH colspan='3' style='border-right: solid 2px black;'>NEW OR PREVIOUS TREATMENT HISTORY UNKNOWN</TH> 
-  <TH colspan='3' style='border-right: solid 2px black;'>RELAPSE</TH> 
+  <TD colspan='4' style='border-right: solid 1px black;'></TD> 
+  <TH colspan='3' style='border-right: solid 1px black;'>NEW OR PREVIOUS TREATMENT HISTORY UNKNOWN</TH> 
+  <TH colspan='3' style='border-right: solid 1px black;'>RELAPSE</TH> 
   <TD></TD> 
   </TR> 
   <TR> 
   <TD></TD> 
   <TD>TOTAL NOTIFIED</TD> 
   <TD>NEW AND RELAPSE <sup>a</sup></TD> 
-  <TD style='border-right: solid 2px black;'>RETREATMENT EXCLUDING RELAPSE</TD> 
+  <TD style='border-right: solid 1px black;'>RETREATMENT EXCLUDING RELAPSE</TD> 
   <TD>PULMONARY BACTERIOLOGICALLY CONFIRMED</TD>
   <TD>PULMONARY CLINICALLY DIAGNOSED</TD> 
-  <TD style='border-right: solid 2px black;'>EXTRAPULMONARY</TD> 
+  <TD style='border-right: solid 1px black;'>EXTRAPULMONARY</TD> 
   <TD>PULMONARY BACTERIOLOGICALLY CONFIRMED</TD>
   <TD>PULMONARY CLINICALLY DIAGNOSED</TD> 
-  <TD style='border-right: solid 2px black;'>EXTRAPULMONARY</TD> 
+  <TD style='border-right: solid 1px black;'>EXTRAPULMONARY</TD> 
   <TD>PERCENTAGE OF PULMONARY CASES BACTERIOLOGICALLY CONFIRMED</TD> 
   </TR> 
   <TR>", 
@@ -651,13 +696,14 @@ n30 <- tb2 %>% filter(year==yr-1, g_whoregion=="WPR") %>% .WPSARnames(the=TRUE) 
 n31 <- n30 %>% filter(tsr >=85) %>% nrow()
 n32 <- n30 %>% filter(iso3 %in% whbc) %>% mutate(tsr=signif(tsr,2))
 n33 <- n32 %>% filter(tsr==last(tsr)) %>% mutate(neval=newrel_coh - sum(newrel_succ, newrel_fail, newrel_died, newrel_lost), l=signif(sum(newrel_lost, neval) / newrel_coh * 100, 2)) %>% select(l) %>% mutate(l=ifelse(l %in% 22:25, "approximately a quarter", ifelse(l %in% 25:29, "over a quarter", paste0(l, "%"))))
-n34 <- tb %>% mutate(idef=signif((c_newinc-newrel_coh)/c_newinc * 100, 2)) %>% filter(year==yr-1, iso3 %in% whbc, idef > 2) %>% select(country, idef) %>% arrange(desc(idef)) 
+n34 <- tb %>% mutate(idef=signif((c_newinc-newrel_coh)/c_newinc * 100, 2)) %>% filter(year==yr-1, iso3 %in% whbc, idef > 2) %>% select(country, idef) %>% arrange(desc(idef))
+n35 <- numbers2words(nrow(n34))
 n35c <- paste(paste(n34[1:(nrow(n34)-1),"country"], collapse=", "), n34[nrow(n34),"country"], sep=" and ")
 n35n <- paste(paste(n34[1:(nrow(n34)-1),"idef"], collapse=", "), n34[nrow(n34),"idef"], sep=" and ")
 
 ```
 
-Treatment success in the Region continues at a high level (`r I(pasteLabel("Figure", figCount, "f-txout-line"))`), over 85%, a trend observed since  1997. Across the Region, `r n31` countries and areas reached or maintained 85% treatment success. Among the countries with a high burden of TB, treatment success was highest in `r n32[1,1]` (`r n32[1,3]`%) followed by `r n32[2,1]` (`r n32[2,3]`%), `r n32[3,1]` (`r n32[3,3]`%), `r n32[4,1]` (`r n32[4,3]`%), `r n32[5,1]` (`r n32[5,3]`%) and `r n32[6,1]` (`r n32[6,3]`%). The treatment success rate of `r n32[7,1]` was the lowest at `r n32[7,3]`% with `r n33` of the `r yr-1` cohort either lost to follow-up or un-evaluated. The proportion of notified cases who were not reported as being put on treatment was over 2% in `r n35c` with `r n35n` percent, respectively. 
+Treatment success in the Region continues at a high level (`r I(pasteLabel("Figure", figCount, "f-txout-line"))`), over 85%, a trend observed since  1997. Across the Region, `r n31` countries and areas reached or maintained 85% treatment success. Among the countries with a high burden of TB, treatment success was highest in `r n32[1,1]` (`r n32[1,3]`%) followed by `r n32[2,1]` (`r n32[2,3]`%), `r n32[3,1]` (`r n32[3,3]`%), `r n32[4,1]` (`r n32[4,3]`%), `r n32[5,1]` (`r n32[5,3]`%) and `r n32[6,1]` (`r n32[6,3]`%). The treatment success rate of `r n32[7,1]` was the lowest at `r n32[7,3]`% with `r n33` of the `r yr-1` cohort either lost to follow-up or un-evaluated. The proportion of notified cases who were not reported as being put on treatment was over two percent in `r n35` countries, namely `r n35c` with `r n35n` percent, respectively. 
 
 --------------------------------------------------------
 
@@ -721,7 +767,7 @@ ggplot(thb, aes(year, value)) + geom_line(size=1) + facet_grid(country~variable)
 Discussion
 --------------------------------------------------------
 
-```{r f-est-data}
+```{r f-est-data, include=FALSE}
 
 figCount <- incCount(figCount, "f-est")
 
@@ -774,6 +820,7 @@ ggplot(esth, aes(year, best, fill=var, ymin=0)) + geom_line(size=1, aes(color=va
 
 #breaks=c(seq(1990, 2010, 5), yr), labels=c(seq(1990, 2005, 5),"", yr)
 ```
+
 
 ^a^ Red line with uncertainty band: incidence, black line: notified new and relapse cases.
 

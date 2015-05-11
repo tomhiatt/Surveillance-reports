@@ -1,5 +1,5 @@
 ---
-title: 'Epidemiological Situation of Tuberculosis in countries of the Western Pacific with a low or intermediate disease burden using `r yr <- 2013; yr`case notification data'
+title: 'Epidemiological Situation of Tuberculosis in countries of the Western Pacific with a low or intermediate disease burden using `r yr <- 2013; yr` case notification data'
 author: "Tom Hiatt<sup>&dagger;</sup> and Nobuyuki Nishikiori<sup>&dagger;</sup>"
 csl: vancouver-imperial-college-london.csl
 output:
@@ -569,11 +569,11 @@ test <- data.frame(x=rep(1:10,3), y=abs(rnorm(30)), z=rep(LETTERS[1:3],10)) %>% 
 
 test[test$x==4,"y"] <- NA
 
-ggplot(test, aes(x, y, fill=z)) + geom_area(stat="identity", position="stack", na.rm=TRUE) 
+# ggplot(test, aes(x, y, fill=z)) + geom_area(stat="identity", position="stack", na.rm=TRUE) 
 
-ggplot(test, aes(x, y, fill=z)) + geom_area(stat="identity", position="stack", na.rm=FALSE) 
+# ggplot(test, aes(x, y, fill=z)) + geom_area(stat="identity", position="stack", na.rm=FALSE) 
 
-ggplot(test, aes(x, y, fill=z)) + geom_bar(stat="identity", position="stack") 
+# ggplot(test, aes(x, y, fill=z)) + geom_bar(stat="identity", position="stack") 
 
 # ylim=c(0,100)
 
@@ -648,9 +648,7 @@ a3 <- tb %>% filter(year==yr-1, g_whoregion=="WPR", c_newrel_tsr >= 85) %>% nrow
 
 ```
 
-Tuberculosis (TB) control in the World Health Organization (WHO) Western Pacific Region has seen substantial progress in the last decade with a `r a1` reduction in prevalent TB cases since 2000. The burden remains immense however, and national TB programmes must evolve and adapt to build upon these gains. Through routine surveillance, countries and areas in the Region reported `r a2` million TB cases in `r yr`. The case notification rate increased in the early 2000s, appears to have stabilized in recent years and is in decline for all forms and laboratory-confirmed cases. The age and sex breakdown for laboratory-confirmed TB case rates by country shows generally higher rates with increased age and declining rates over time for all age groups. Treatment success remains high in the Region with `r a3` countries reaching or maintaining an 85% success rate. HIV testing among TB patients has increased gradually along with a slow decline in the number of HIV-positive patients found.
-
-The trend of TB notification is heavily influenced by programmatic improvements in many countries and rapidly changing demographics. It appears that cases are being found earlier as reflected in declining rates of laboratory-confirmed TB with steady rates of TB in all forms. WHO estimates depict a decline in TB incidence in the Region. HIV testing, while still low, has increased substantially in recent years with essential TB/HIV services expanding in many countries.
+[To be written after the rest of the text.]
 
 TB surveillance data, within inherent limitations, is an important source of programmatic and epidemiological information. Careful interpretation of these findings can provide useful insight for programmatic decision-making.
 
@@ -665,16 +663,11 @@ i2a <- signif(sum0(subset(tb, g_whoregion=="WPR" & year >= 2000, c_newinc)) / 1e
 i3 <- tb %>% filter(year==yr, g_whoregion=="WPR") %>% summarize(cases=sum0(c_notified / 1e6)) %>% signif(2)
 ```
 
-The End TB Strategy, adopted by the World Health Assembly in 2014,[cite] expands the scope of TB control beyond countries with a high burden of TB to also include countries and areas with a low and intermediate burden of the disease. The challenges faced by these countries are diverse and often require innovative solutions. WHO released guidelines toward TB elimination in countries that have a low burden of disease,[cite] which requires concerted efforts on marginalized and vulnerable populations. In the World Health Organization (WHO) Western Pacific Region, significant progress has been made in the past few decades including among LICs. Analysis of TB data from these countries provides an opportuntity to assess progress and inform future directions.
+The End TB Strategy, adopted by the World Health Assembly in 2014,[cite] expands the scope of TB control beyond countries with a high burden of TB to also include countries and areas with a low and intermediate burden of the disease. The challenges faced by these countries are diverse and often require innovative solutions. WHO released guidelines toward TB elimination in countries that have a low burden of disease,[cite] which requires concerted efforts on marginalized and vulnerable populations. In the World Health Organization (WHO) Western Pacific Region, significant progress has been made in the past few decades including among higher-income countries with a lower disease burden. Analysis of TB data from these countries provides an opportuntity to assess progress and inform future directions.
 
 This article is part of complementary analyses conducted in conjunction with the regional analysis of 2013 TB case notification data.[cite] 
 
-------------------------------------------------------
 
-
-Significant progress has been made in tuberculosis (TB) control in the World Health Organization (WHO) Western Pacific Region especially in since 2000. The number of prevalent TB patients in the Region fell from `r i1` million in 2000 to `r i2` million in `r yr`.[@WorldHealthOrganization2014] During the same period, `r i2a` million patients were diagnosed and treated, and an estimated 800 000 deaths were averted between 2000 and 2010.[@WorldHealthOrganization2011] According to the latest WHO estimates, the Region is on track for achieving the TB-related Millennium Development Goals (MDGs) and other international targets by 2015. However, with `r i3` million TB patients notified annually in the Region and several countries with a persistent substantial disease burden, TB control policies and strategies require continuous evolution to adopt new tools and approaches as well as to address emerging challenges faced by national TB control programmes. In light of the MDG target date approaching, WHO has developed a new Global TB Strategy for after 2015.[@WorldHealthOrganization2014a] Particularly at this critical period of strategy renewal, thorough analysis of surveillance data provides valuable information on the current epidemiological situation, programmatic progress and future directions.
-
-This article represents our second regional analysis of TB notification data as an article in the Western Pacific Surveillance and Response Journal. We plan to continue reporting an annual regional analysis in this way punctuated by complementary reports focused on various topics such as subnational data analysis and utilization, the situation of drug-resistant TB, contact investigation and other forms of TB screening activities to stimulate the utilization of surveillance data for informed programme decision-making.
 
 Methods
 --------------------------------------------------------
@@ -683,10 +676,10 @@ m1 <- lister(unique(tbl$country), ";")
 m2 <- signif(tbl %>% filter(year==yr) %>% summarize(pop=sum(e_pop_num)) / tb %>% filter(year==yr, g_whoregion=="WPR") %>% summarize(pop=sum(e_pop_num)) * 100,3)
 m2b <- signif(tbl %>% filter(year==yr) %>% summarize(notif=sum0(c_notified)) / tb %>% filter(year==yr, g_whoregion=="WPR") %>% summarize(pop=sum0(c_notified)) * 100,3)
 
-m3 <- tbl %>% filter(year %in% 2008:2012) %>% mutate(nd=new_su / c_newinc * 100) %>% group_by(country) %>% summarize(ndo=round(max(nd),0)) %>% arrange(desc(ndo)) %>% head(3) %>% as.data.frame() 
+m3 <- tbl %>% filter(year %in% 2012) %>% mutate(nd=new_su / c_newinc * 100) %>% group_by(country) %>% summarize(ndo=round(max(nd),0)) %>% arrange(desc(ndo)) %>% head(3) %>% as.data.frame() 
 m4 <- paste(paste(m3[1:(nrow(m3)-1),"country"], collapse=", "), m3[nrow(m3),"country"], sep=" and ")
 m5 <- paste(paste(m3[1:(nrow(m3)-1),"ndo"], collapse=", "), m3[nrow(m3),"ndo"], sep=" and ")
-m6 <- tb %>% filter(year %in% 2008:2012, g_whoregion=="WPR") %>% group_by(year) %>% summarize(nd=signif(sum0(new_su) / sum0(c_newinc) * 100,2)) %>% arrange(desc(nd)) %>% head(1) %>% select(nd) 
+m6 <- tbl %>% filter(year %in% 2012, g_whoregion=="WPR") %>% group_by(year) %>% summarize(new_su=sum0(new_su), c_newinc=sum0(c_newinc), nd=signif(new_su/c_newinc  * 100,2)) %>% arrange(desc(nd)) %>% head(1) %>% select(nd) 
 
 
 info <- sessionInfo()
@@ -696,9 +689,9 @@ r_ver <- paste(info$R.version$major, info$R.version$minor, sep=".")
 Of the 36 countries and areas in the Region which are requested to submit annual reports of TB surveillance data, seven are considered high-burden countries for TB and an additional 20 are Pacific islands. The remaining nine low- and intermediate-burden countries and areas in the Region (LICs) are the focus of this analysis, namely: `r m1`.
 
 ### Data
-Methods of data collection have evolved since WHO began routinely collecting TB data. Since 2009, a web-based online system has been used for data submission and validation. Collected data covers the following areas: TB case notifications and treatment outcomes, diagnostic and treatment services, drug management, surveillance and surveys of drug-resistance, information on TB/HIV co-infection, infection control, engagement of all care providers and budgets and expenditures for TB control. The full description of methods is available in the Global Tuberculosis Report[@WorldHealthOrganization2014] and the data sets are available from the WHO global TB database (www.who.int/tb/data). Case definitions for TB were revised in 2013[@WorldHealthOrganization2013] and cases previously known as smear-positive are now included in laboratory-confirmed cases. The revised case definitions combine smear-negative cases with all clinically diagnosed cases and therefore obscure the number of cases where smear was not done or results are unknown. Between 2008 and 2012 regionally, no more than `r m6`% of cases did not have a smear result in any given year, however at the country level, the proportion was as high as `r m5` percent  in `r m4`, respectively.
+Methods of data collection have evolved since WHO began routinely collecting TB data. Since 2009, a web-based online system has been used for data submission and validation. Collected data covers the following areas: TB case notifications and treatment outcomes, diagnostic and treatment services, drug management, surveillance and surveys of drug-resistance, information on TB/HIV co-infection, infection control, engagement of all care providers and budgets and expenditures for TB control. The full description of methods is available in the Global Tuberculosis Report[@WorldHealthOrganization2014] and the data sets are available from the WHO global TB database (www.who.int/tb/data). Case definitions for TB were revised in 2013[@WorldHealthOrganization2013] and cases previously known as smear-positive are now included in laboratory-confirmed cases. The revised case definitions combine smear-negative cases with all clinically diagnosed cases and therefore obscure the number of cases where smear was not done or results are unknown. In 2012 for these LICs, `r m6`% of cases did not have a smear result. At the country level, the proportion was as high as `r m5` percent  in `r m4`, respectively.
 
-For `r yr`, all nine LICs of the Western Pacific Region reported some data representing `r m2`% of the Regional population. 
+For `r yr`, all nine LICs of the Western Pacific Region reported data representing `r m2`% of the Regional population. 
 
 ### Analysis and reproducibility
 Analysis was conducted by the statistical package R (ver. `r r_ver`, R Core Team, `r info$R.version$year`, Vienna, Austria, www.R-project.org). Due to calls for transparent and reproducible research,[@Peng2006; @Groves2012] we have published programme code to generate the entire contents of this article including all figures and tables by using R with the knitr package (ver. `r info$otherPkgs$knitr$Version`, Yihui Xie, `r format.Date(info$otherPkgs$knitr$Date, "%Y")`). Readers can download the code (see supplement material) and reproduce all figures and tables under an appropriate personal computing environment. For non-commercial purposes, readers may modify the code to produce figures and tables that are not presented in this article. For instance, readers may wish to produce tables and figures for countries or regions other than the WHO Western Pacific Region.
@@ -876,34 +869,15 @@ The epidemiological situation amongst the LICs is varied and suggests diverse st
 
 Where active transmission has been mostly removed, the highest TB rates are seen in the elderly due to reactivation and in migrants due to infection occuring in their country of departure. The majority of migrants are younger and `r I(pasteLabel("Figure", figCount, "f.agesex"))` provides a clue as to when the burden of TB shifts to migrants from the native elderly population. The gap in many LICs between the oldest and the younger age groups also hints at the remains of a peak in transmission during the mid-twentieth century. The gap between the youngest age group and the rest may be a result of underdiagnosis in this age group. [is there any epidemiological explanation for this?]
 
-Migration continues to be a key issue for TB control, although with the exception of Australia and New Zealand, the majority of TB cases are not in migrant populations. As the proportion of infected individuals amongst the elderly decreases in Singapore and Brunei Darussalam, effective TB services for migrant populations will become more important. In Japan, Malaysia and the Republic of Korea, the vast majority of TB cases are in the native-born population. 
+Migration continues to be a key issue for TB control, although with the exception of Australia and New Zealand, the majority of TB cases are not in migrant populations (`r I(pasteLabel("Figure", figCount, "f.migrant"))`). As the proportion of infected individuals amongst the elderly decreases in Singapore and Brunei Darussalam, effective TB services for migrant populations will become more important. In Japan, Malaysia and the Republic of Korea, the vast majority of TB cases are in the native-born population. 
 
-Treatment failure is considerably low in recent years and the number of unevaluated cases is reducing. Treatment success is still low in most LICs, which may be attributable to complications surrounding TB treatment for the elderly. Patients lost to follow-up is still a problem, especially in Japan, Malaysia and the Republic of Korea. HIV testing is mostly over 50% and rising. The proportion of TB/HIV cases found is low indicating a good level of testing coverage. CPT and ART coverage, however, should receive more attention as proportions are well below the 100% target.
+Treatment failure is considerably low in recent years and the number of unevaluated cases is reducing (`r I(pasteLabel("Figure", figCount, "f.txout"))`). Treatment success is still low in most LICs, which may be attributable to complications surrounding TB treatment for the elderly. Patients lost to follow-up is still a problem, especially in Japan, Malaysia and the Republic of Korea. HIV testing is mostly over 50% and rising (`r I(pasteLabel("Figure", figCount, "f.tbhiv"))`). The proportion of TB/HIV cases found is low indicating a good level of testing coverage. CPT and ART coverage, however, should receive more attention as proportions are well below 100%.
 
 This analysis provides a snapshot of the epidemiological and programmatic situation of TB in these select countries and areas based on the case notification data in `r yr`. As for any disease surveillance system, the analysis of surveillance data has inherent limitations. TB surveillance covers populations served by care providers linked with the national TB programme. Ideally this would include all known cases in the country; in practice the proportion of cases diagnosed outside of the TB programme and included in national reporting varies depending on the legal framework in the country. The WHO TB Impact Measurement Task Force recommends that countries continuously improve surveillance systems until reported cases can be considered a reliable proxy for incidence.[@WorldHealthOrganization2009; @WorldHealthOrganization2014b] A careful assessment is needed of programmatic progress in the country and the quality of surveillance data when interpreting these findings.
 
 TB surveillance continues to be an important source of information for assessing the situation and measuring the progress for decision-making. WHO Regional Office for the Western Pacific will continue to conduct regional analyses on various topics related to TB epidemiology and programmatic progress. WHO continues to provide open access to the global TB database for additional analysis.
 
 
---------------------------------------------
-
-Overall, in `r yr`, countries and areas of the Western Pacific Region reported `r ` million new and relapse TB cases (all forms) and a case notification rate of `r ` per 100 000 population, a level similar to the past several years.
-
-It has been known that the rapid increase in case notification between 2002 and 2007 was due to several positive programmatic developments in many countries in the Region such as completion and consolidation of the WHO DOTS strategy expansion; improvement in case reporting, including electronic reporting systems; and efforts to engage all health care providers.[@VanMaaren2007] Particularly, renewal of infectious disease-related legislation and the establishment of an internet-based disease notification system in China made a substantial contribution to the progress.[@Wang2007]
-
-Although the case notification for all forms of TB appears to be flat since 2007, it is important to note that the new laboratory-confirmed case notification rates demonstrate a clear declining trend (`r I(pasteLabel("Figure", figCount, "f-notif-trend"))`). A possible interpretation is that the true TB incidence has been declining while overall case detection is static because intensified programmatic efforts by national TB programmes for early and increased case detection include smear-negative and extra pulmonary TB. The latest WHO estimates support this explanation with estimated incidence rates showing a consistent, rapidly-declining trend[@WorldHealthOrganization2014] (`r I(pasteLabel("Figure", figCount, "f-est"))`). 
-
-In any country where a rapid demographic change is underway, overall notification rates may not reflect the true disease trend in communities. For instance, an overall case notification trend may appear to be stable because decreasing incidences can be cancelled out by a rapidly increasing proportion of the older population. For this reason, the examination of age- and sex- specific case notification rates is more informative and provides insights for understanding the underlying epidemiological process in a given setting.
-
-The typical pattern of linear increase of notification towards the older populations (such as shown in some countries in `r I(pasteLabel("Figure", figCount, "f-agesex-bar"))`) has been explained as a widely observed phenomena under a stable TB control situation,[@Rieder1999] reflecting a high annual risk of TB infection in the past when the older population was young. Atypical patterns shown for Papua New Guinea and Mongolia, particularly relatively high notification rates among young and female groups, warrant further investigation. Time trend analysis for age- and sex- notification rates (`r I(pasteLabel("Figure", figCount, "f-agesex"))`) is useful to detect any specific subgroups among which TB transmission and/or disease progression is particularly active.
-
-One of the critical shortcomings of these analyses is a gross lack of morbidity information among small children because the data is limited to laboratory-confirmed cases only. Since the 2006 revision of WHO recording and reporting forms,[@WorldHealthOrganization2006] the number of countries reporting age- and sex-disaggregated data for smear-negative and extra pulmonary cases is increasing and will enable a better assessment of the TB burden among children in future analysis.
-
-HIV infection fuels the TB epidemic, particularly in countries and areas with a high burden of TB. The overall percentage of TB patients tested for HIV in the Region still remained low. However, the figure has substantially increased in the last several years particularly in Cambodia, Viet Nam and the Lao People's Democratic Republic. Essential services such as co-trimoxazole prophylaxis and isoniazid preventive therapy have also expanded in many countries in the Region.
-
-This report provides a snapshot of the epidemiological and programmatic situation of TB in the Western Pacific Region based on the case notification data in `r yr`. As for any disease surveillance system, the analysis of surveillance data has inherent limitations. TB surveillance covers populations served by care providers linked with the national TB programme. Ideally this would include all known cases in the country; in practice the proportion of cases diagnosed outside of the TB programme and included in national reporting varies depending on the legal framework in the country. The WHO TB Impact Measurement Task Force recommends that countries continuously improve surveillance systems until reported cases can be considered a reliable proxy for incidence.[@WorldHealthOrganization2009; @WorldHealthOrganization2014b] A careful assessment is needed of programmatic progress in the country and the quality of surveillance data when interpreting these findings.
-
-TB surveillance continues to be an important source of information for assessing the situation and measuring the progress for decision-making. WHO Regional Office for the Western Pacific will continue to conduct regional analyses on various topics related to TB epidemiology and programmatic progress, as well as provide support to countries to conduct epidemiological and programmatic assessment at national and subnational levels.
 
 --------------------------------------------------------
 

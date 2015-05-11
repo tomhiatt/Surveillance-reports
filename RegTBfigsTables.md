@@ -43,7 +43,7 @@ Methods
 
 
 ### Data
-Every year, 36 countries and areas in the Region are requested to report TB surveillance data to WHO using a standardized data collection form. Since 2009, a web-based online system has been used for data submission and validation. Collected data covers the following areas: TB case notifications and treatment outcomes, diagnostic and treatment services, drug management, surveillance and surveys of drug-resistance, information on TB/HIV co-infection, infection control, engagement of all care providers and budgets and expenditures for TB control. The full description of methods is available in the Global Tuberculosis Report[@WorldHealthOrganization2014] and the data sets are available from the WHO global TB database (www.who.int/tb/data). Case definitions for TB were revised in 2013[@WorldHealthOrganization2013] and cases previously known as smear-positive are now included in laboratory-confirmed cases. The revised case definitions combine smear-negative cases with all clinically diagnosed cases and therefore obscure the number of cases where smear was not done or results are unknown. Between 2008 and 2012 regionally, no more than 1.4% of cases did not have a smear done, however at the country level, the proportion was as high as 35, 25 and 23 percent  in Papua New Guinea, Guam and Republic of Korea, respectively.
+Every year, 36 countries and areas in the Region are requested to report TB surveillance data to WHO using a standardized data collection form. Since 2009, a web-based online system has been used for data submission and validation. Collected data covers the following areas: TB case notifications and treatment outcomes, diagnostic and treatment services, drug management, surveillance and surveys of drug-resistance, information on TB/HIV co-infection, infection control, engagement of all care providers and budgets and expenditures for TB control. The full description of methods is available in the Global Tuberculosis Report[@WorldHealthOrganization2014] and the data sets are available from the WHO global TB database (www.who.int/tb/data). Case definitions for TB were revised in 2013[@WorldHealthOrganization2013] and cases previously known as smear-positive are now included in laboratory-confirmed cases. The revised case definitions combine smear-negative cases with all clinically diagnosed cases and therefore obscure the number of cases where smear was not done or results are unknown. Between 2008 and 2012 regionally, no more than 1.4% of cases did not have a smear result in any given year, however at the country level, the proportion was as high as 35, 25 and 23 percent  in Papua New Guinea, Guam and Republic of Korea, respectively.
 
 For 2013, 32 countries and areas of the Western Pacific Region reported data representing more than 99.9% of the total population. This report describes the epidemiological situation and progress in programmatic response with a focus on seven countries with a high burden of TB: Cambodia, China, the Lao People's Democratic Republic, Mongolia, Papua New Guinea, the Philippines and Viet Nam. (Globally, WHO designates 22 countries with a high burden of TB that include Cambodia, China, the Philippines and Viet Nam. The other three countries: the Lao People's Democratic Republic, Mongolia and Papua New Guinea are considered priority countries with a high burden of TB in the Western Pacific Region).
 
@@ -69,25 +69,25 @@ In 2013, countries and areas in the Region reported 1 375 213 people with TB dis
 <a id="t-notif"></a> 
 **Table 1. Tuberculosis case notification from countries and areas of the Western Pacific Region, 2013**  
 <!-- html table generated in R 3.1.2 by xtable 1.7-4 package -->
-<!-- Thu Apr 30 10:34:26 2015 -->
+<!-- Thu May 07 11:06:29 2015 -->
 <table border=0 rules=rows width=900 cellpadding=5>
   <TR> 
-  <TD colspan='4' style='border-right: solid 2px black;'></TD> 
-  <TH colspan='3' style='border-right: solid 2px black;'>NEW OR PREVIOUS TREATMENT HISTORY UNKNOWN</TH> 
-  <TH colspan='3' style='border-right: solid 2px black;'>RELAPSE</TH> 
+  <TD colspan='4' style='border-right: solid 1px black;'></TD> 
+  <TH colspan='3' style='border-right: solid 1px black;'>NEW OR PREVIOUS TREATMENT HISTORY UNKNOWN</TH> 
+  <TH colspan='3' style='border-right: solid 1px black;'>RELAPSE</TH> 
   <TD></TD> 
   </TR> 
   <TR> 
   <TD></TD> 
   <TD>TOTAL NOTIFIED</TD> 
   <TD>NEW AND RELAPSE <sup>a</sup></TD> 
-  <TD style='border-right: solid 2px black;'>RETREATMENT EXCLUDING RELAPSE</TD> 
+  <TD style='border-right: solid 1px black;'>RETREATMENT EXCLUDING RELAPSE</TD> 
   <TD>PULMONARY BACTERIOLOGICALLY CONFIRMED</TD>
   <TD>PULMONARY CLINICALLY DIAGNOSED</TD> 
-  <TD style='border-right: solid 2px black;'>EXTRAPULMONARY</TD> 
+  <TD style='border-right: solid 1px black;'>EXTRAPULMONARY</TD> 
   <TD>PULMONARY BACTERIOLOGICALLY CONFIRMED</TD>
   <TD>PULMONARY CLINICALLY DIAGNOSED</TD> 
-  <TD style='border-right: solid 2px black;'>EXTRAPULMONARY</TD> 
+  <TD style='border-right: solid 1px black;'>EXTRAPULMONARY</TD> 
   <TD>PERCENTAGE OF PULMONARY CASES BACTERIOLOGICALLY CONFIRMED</TD> 
   </TR> 
   <TR> <tr> <td> American Samoa </td> <td>  </td> <td>  </td> <td>  </td> <td>  </td> <td>  </td> <td>  </td> <td>  </td> <td>  </td> <td>  </td> <td> – </td> </tr>
@@ -185,7 +185,7 @@ Between 2002 and 2007, case notification rates in the Region increased from 47 t
 
 
 
-Treatment success in the Region continues at a high level ([Figure 5](#f-txout-line)), over 85%, a trend observed since  1997. Across the Region, 16 countries and areas reached or maintained 85% treatment success. Among the countries with a high burden of TB, treatment success was highest in China (95%) followed by Cambodia (94%), Viet Nam (91%), the Lao People's Democratic Republic (90%), Mongolia (88%) and the Philippines (88%). The treatment success rate of Papua New Guinea was the lowest at 68% with approximately a quarter of the 2012 cohort either lost to follow-up or un-evaluated. The proportion of notified cases who were not reported as being put on treatment was over 2% in Papua New Guinea, Lao People's Democratic Republic and Cambodia with 85, 5.4 and 4.7 percent, respectively. 
+Treatment success in the Region continues at a high level ([Figure 5](#f-txout-line)), over 85%, a trend observed since  1997. Across the Region, 16 countries and areas reached or maintained 85% treatment success. Among the countries with a high burden of TB, treatment success was highest in China (95%) followed by Cambodia (94%), Viet Nam (91%), the Lao People's Democratic Republic (90%), Mongolia (88%) and the Philippines (88%). The treatment success rate of Papua New Guinea was the lowest at 68% with approximately a quarter of the 2012 cohort either lost to follow-up or un-evaluated. The proportion of notified cases who were not reported as being put on treatment was over two percent in three countries, namely Papua New Guinea, Lao People's Democratic Republic and Cambodia with 85, 5.4 and 4.7 percent, respectively. 
 
 --------------------------------------------------------
 
@@ -217,10 +217,6 @@ Discussion
 --------------------------------------------------------
 
 
-```
-## Warning in formatC(round(x, 0), big.mark = " ", format = "d"): class of
-## 'x' was discarded
-```
 
 Overall, in 2013, countries and areas of the Western Pacific Region reported 1.3 million new and relapse TB cases (all forms) and a case notification rate of 72 per 100 000 population, a level similar to the past several years.
 
@@ -233,6 +229,7 @@ Although the case notification for all forms of TB appears to be flat since 2007
 <a id="f-est"></a> 
 **Figure 7 Tuberculosis case notification rate per 100 000 population, estimated incidence^a^, prevalence and mortality in the Western Pacific Region, 1990--2013**  
 ![](RegTBfigsTables_files/figure-html/f-est-1.png) 
+
 
 ^a^ Red line with uncertainty band: incidence, black line: notified new and relapse cases.
 
