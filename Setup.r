@@ -1,7 +1,7 @@
 # -------------------------------------------------
 # Initial set up script for tables and figures
 # Tom Hiatt
-# 6 July 2012, revised 28 June 2013
+# 6 July 2012, revised 25 June 2015
 # -------------------------------------------------
 
 # bits to change if another dude is running this.
@@ -27,6 +27,8 @@ if(whoami=="Hazim"){
 start <- Sys.time()
 source(Rprofile)
 runprofile()
+library(plyr) # The next function uses dplyr and plyr must be loaded first.
+getforecastestimates()
 
 # -------------------------------------------------
 
@@ -397,3 +399,5 @@ tableCat <- function(inFrame) {
 source(file.path(scriptsfolder, "Figures.r"))
 source(file.path(scriptsfolder, "Tables.r")) 
 source(file.path(scriptsfolder, "Maps.r"))
+
+cat("\nThat took", signif(Sys.time() - start, 3), units(Sys.time() - start), "to run.\n")

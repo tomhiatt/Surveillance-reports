@@ -1,7 +1,7 @@
 # -------------------------------------------------
 # Tables in the global report 
 # Tom Hiatt
-# 6 July 2012, updated 23 June 2014
+# 6 July 2012, updated 25 June 2015
 # -------------------------------------------------
 
 # HT: run the setup manually... but then change this with a whoami !!!!!
@@ -36,7 +36,7 @@
 
 
 #flag for whether or not to produce estimates tables
-flg_show_estimates <- TRUE
+flg_show_estimates <- FALSE
 
 if(flg_show_estimates){
 

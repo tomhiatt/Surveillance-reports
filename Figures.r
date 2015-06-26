@@ -1,7 +1,7 @@
 # -------------------------------------------------
 # Figures in the global report
 # Tom Hiatt
-# 10 July 2012, revised 23 June 2014
+# 10 July 2012, revised 25 June 2015
 # -------------------------------------------------
 
 # Probably I need to change this to a R markdown document so the whole thing produces a PDF with all the tables and figures one after the other and individual PDFs, PNGs, etc. in a folder. UPDATE: Rmarkdown can't make a decent table in word or HTML to print. Someday I will learn LaTex or something and make it work.
@@ -221,6 +221,7 @@ hbc.ff2 <- ddply(as.data.frame(moa), .(iso3), transform, target.prev=e_prev_100k
 
 hbc.ff3 <- .shortnames(hbc.ff2, col="country")
 
+Bangladesh.note <- ""
 if(thisyear==2014){
   Bangladesh.note <- "Estimates of TB disease burden have not been approved by the national TB programme in Bangladesh and a joint reassessment 
   will be undertaken following the completion of the prevalence survey planned for 2015."
@@ -486,7 +487,7 @@ figsave(hiv_ts_d, hmg, "B4_6_hiv_ts_d")
 
 # 5_9_txout_mdr --------------------------------------------------------
 
-tma <- subset(tb, year %in% 2007:(yr-2), c(g_whoregion, year, mdr_coh, mdr_cur, mdr_cmplt, mdr_succ, mdr_fail, mdr_died, mdr_def, c_mdr_neval))
+tma <- subset(tb, year %in% 2007:(yr-2), c(g_whoregion, year, mdr_coh, mdr_cur, mdr_cmplt, mdr_succ, mdr_fail, mdr_died, mdr_lost, c_mdr_neval))
 
 
 # Fill in 0s for NAs
@@ -506,12 +507,12 @@ trb$mdr_succ <- ifelse(trb$year>=2011, trb$mdr_succ, trb$mdr_cur + trb$mdr_cmplt
 trb$Success <- trb$mdr_succ / trb$mdr_coh * 100
 trb$Died <- trb$mdr_died / trb$mdr_coh * 100
 trb$Failed <- trb$mdr_fail / trb$mdr_coh * 100
-trb$Defaulted <- trb$mdr_def / trb$mdr_coh * 100
-trb$`Not evaluated` <- (trb$mdr_coh - (trb$mdr_succ + trb$mdr_died + trb$mdr_fail + trb$mdr_def)) / trb$mdr_coh * 100
+trb$`Lost to follow-up` <- trb$mdr_lost / trb$mdr_coh * 100
+trb$`Not evaluated` <- (trb$mdr_coh - (trb$mdr_succ + trb$mdr_died + trb$mdr_fail + trb$mdr_lost)) / trb$mdr_coh * 100
 
 trb$cohort.size <- rounder(trb$mdr_coh)
 
-trc <- melt(trb[c("g_whoregion", "year", "Success", "Died", "Failed", "Defaulted", "Not evaluated")], id=1:2)
+trc <- melt(trb[c("g_whoregion", "year", "Success", "Died", "Failed", "Lost to follow-up", "Not evaluated")], id=1:2)
 
 txout_mdr <- ggplot(trc, aes(year, value, fill=variable)) + geom_bar(stat="identity", position="stack") + facet_wrap(~g_whoregion, ncol=2) + geom_text(data=trb, aes(x=year, y=0,label=cohort.size, fill=NA), hjust=-.1, size=2.5, color="white") + theme_glb.rpt() + coord_flip() + scale_fill_brewer("", type = "qual", palette = 8) + labs(x="", y="Percentage of cohort") + theme(legend.position="bottom", panel.grid=element_blank()) + expand_limits(c(0,0)) + ggtitle(paste0("Treatment outcomes for patients diagnosed with MDR-TB by WHO Region, 2007\u2013", thisyear-3, " cohorts. \nTotal cases with outcome data is shown beside each bar.")) + scale_x_reverse() 
 
@@ -702,6 +703,11 @@ hiv_ipt_graph <- ggplot(gfc, aes(year, value, color=area)) + geom_line(size=1) +
 
 # windows (10,7); gfd; dev.off()
 figsave(hiv_ipt_graph, gfc, "7_6_hiv_ipt_graph")
+
+# Highly experimental figure on where countries lie in terms of burden.
+
+# test <- tb %>% filter(year==thisyear-1) %>% select(year, g_whoregion, c_newinc, c_newinc_100k, iso2) %>% merge(p[c("year", "iso2", "e_pop_num")]) %>% mutate(c_newinc_100k=c_newinc / e_pop_num * 1e5) 
+#   ggplot(test, aes(c_newinc_100k, c_newinc, color=g_whoregion)) +  geom_text(aes(label=iso2), size=4) + scale_y_log10() + scale_x_log10()
 
 
 ## END ---------------------------------------
