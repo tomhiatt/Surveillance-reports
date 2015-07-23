@@ -67,7 +67,7 @@ figsave(inc_map, mfa, "2_5_inc_map")
 # 2_11_mort_src_map -------------------------------------------------
 # Estimates sources maps
 
-mea <- subset(e, year==thisyear-1, select=c("g_whoregion", 'country', 'iso3', 'source_mort'))
+mea <- subset(e.t, year==thisyear-1, select=c("g_whoregion", 'country', 'iso3', 'source_mort'))
 
 # Mortality with VR data
 

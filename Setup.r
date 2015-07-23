@@ -126,7 +126,15 @@ while(max(eraw.t$year) < 2015) {
 
 
 # functions
-# rounding convention
+
+# Report rounding convention
+# - 0 is written as "0"
+# - values under 0.1 are written "<0.1"
+# - from 0.1 to under 10 are written rounding 1 decimal place
+# - 10 and above are written as 3 significant figures for rates and 2 significant figures for absolute numbers.
+# - data that are not reported, but could be are represented as empty cells and should be accompanied by a footnote.
+# - data that cannot be calculated, either because of missing data, data was not requested, or any other reason are represented with an en-dash (ctrl - on your keyboard).
+
 # 0 is 0, under .1 to "<0.1", under 1 to 1 sig fig, otherwise 2 sig fig
 round.conv <- function(x) {
   ifelse(x==0, 0, ifelse(x < 0.1, "<0.1", ifelse(signif(x, 2) < 1, formatC(round(x,1), format='f', digits=1),
