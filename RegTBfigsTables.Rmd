@@ -1,5 +1,5 @@
 ---
-title: 'Epidemiology and control of tuberculosis in the Western Pacific Region: update with `r yr <- 2013; yr` case notification data'
+title: 'Epidemiology and control of tuberculosis in the Western Pacific Region: update with `r yr <- 2014; yr` case notification data'
 author: "Tom Hiatt<sup>&dagger;</sup> and Nobuyuki Nishikiori<sup>&dagger;</sup>"
 csl: vancouver-imperial-college-london.csl
 output:
@@ -20,11 +20,11 @@ bibliography: WPRupdate.bib
 
 ###################################################
 # Tom Hiatt
-# Updated: 23 April 2014
+# Updated: 20 November 2015
 # Regional TB annual analysis
 ###################################################
 
-yr <- 2013
+yr <- 2014
 
 ###################################################
 
@@ -303,7 +303,7 @@ for(i in data1){
 tb$g_hbc22 <- ifelse(tb$iso3 %in% c("AFG", "BGD", "BRA", "CHN", "COD", "ETH", "IDN", "IND", "KEN", "KHM", "MMR", "MOZ", "NGA", "PAK", "PHL", "RUS", "THA", "TZA", "UGA", "VNM", "ZAF", "ZWE"), "high", "low")
 
 # tb$c_new <- .rowsums(tb[c("new_sp", "new_sn", "new_su", "new_ep", "new_oth")])
-tb$c_newinc <- ifelse(tb$year < 2013, .rowsums(tb[c("tot_newrel", "newret_oth")]), .rowsums(tb[c("new_labconf", "new_clindx", "new_ep", "ret_rel_labconf", "ret_rel_clindx", "ret_rel_ep")]))
+# tb$c_newinc <- ifelse(tb$year < 2013, .rowsums(tb[c("tot_newrel", "newret_oth")]), .rowsums(tb[c("new_labconf", "new_clindx", "new_ep", "ret_rel_labconf", "ret_rel_clindx", "ret_rel_ep")]))
 # tb$c_ret <- .rowsums(tb[c("ret_rel", "ret_taf", "ret_tad", "ret_oth")])
 tb$c_notified <- ifelse(tb$year < 2013, .rowsums(tb[c("new_sp", "new_sn", "new_su", "new_ep", "new_oth", "ret_rel", "ret_taf", "ret_tad", "ret_oth", "newret_oth")]), .rowsums(tb[c("c_newinc", "ret_nrel")]))
 tb$c_newrel_tsr <- tb$newrel_succ / tb$newrel_coh * 100
@@ -728,7 +728,7 @@ Treatment success in the Region continues to be over 85% (`r I(pasteLabel("Figur
 **`r I(pasteLabel("Figure", figCount, "f-txout-line", insLink=FALSE))` Trend of treatment success among new laboratory-confirmed cases in select countries of the Western Pacific Region, 2000--`r yr-1`**  
 ``` {r f-txout-line, fig.height=7.5}
 
-ggplot(trd, aes(year, success, color=iso3, size=area=="WPR")) + geom_line() + theme_report() + geom_text(data=end.labels(trd, "year", "success", min.spread=1.4, max1=96), aes(label=iso3), hjust=-0.2, vjust=0, size=4)  + scale_y_continuous("Percent of cohort successfully treated") + scale_x_continuous("", limits=c(2000,2012.7)) + coord_cartesian(ylim=c(30,100)) + scale_size_discrete(range = c(1,1.5)) + theme(legend.position="none") + scale_color_brewer(type="qual", palette=6)  + guides(fill = guide_legend(reverse = TRUE))
+ggplot(trd, aes(year, success, color=iso3, size = area=="WPR")) + geom_line() + theme_report() + geom_text(data=end.labels(trd, "year", "success", min.spread=1.4, max1=96), aes(label=iso3), hjust=-0.2, vjust=0, size=4)  + scale_y_continuous("Percent of cohort successfully treated") + scale_x_continuous("", limits=c(2000,yr-0.3)) + coord_cartesian(ylim=c(30,100)) + scale_size_discrete(range = c(1,1.5)) + theme(legend.position="none") + scale_color_brewer(type="qual", palette=6)  + guides(fill = guide_legend(reverse = TRUE))
 
 # , breaks=min(trc$year):max(trc$year)
 
