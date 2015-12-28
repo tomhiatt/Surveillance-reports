@@ -1,5 +1,5 @@
 ---
-title: 'Epidemiological Situation of Tuberculosis in countries of the Western Pacific with a low or intermediate disease burden using `r yr <- 2013; yr` case notification data'
+title: Epidemiological Situation of Tuberculosis in countries of the Western Pacific with a low or intermediate disease burden using `r yr <- 2013; yr` case notification data
 author: "Tom Hiatt<sup>&dagger;</sup> and Nobuyuki Nishikiori<sup>&dagger;</sup>"
 csl: vancouver-imperial-college-london.csl
 output:
@@ -743,12 +743,12 @@ print(tbm, type="html", include.rownames=FALSE, include.colnames=FALSE, html.tab
 
 --------------------------------------------------------
 
-`r I(pasteLabel("Figure", figCount, "f.spread"))` displays the differences between LICs. New and relapse TB notification rates are mapped to a horizontal log scale to show the natural progression as disease burden decreases. The verticle scale shows the actual burden per year. Japan, with the largest population, sits in the middle of this spread of TB rates with an existing burden of over 20 thousand cases per year. Australia and New Zealand have comparatively lower burdens of TB in terms of proportion and absolute numbers. Brunei Darussalum, China, Hong Kong SAR, China, Macao SAR, and Singapore have higher proportions of TB, but a comparatively lower absolute burden. With similar, but slightly higher proportions, Malaysia and the Republic of Korea have much higher case loads due to their larger populations with over 23 and 41 thousand cases, respectively. 
+`r I(pasteLabel("Figure", figCount, "f.spread"))` displays the differences between LICs. New and relapse TB notification rates are mapped to a horizontal log scale to better show the natural progression as disease burden decreases. The verticle scale shows the actual burden per year. Japan, with the largest population, sits in the middle of this spread of TB rates with an existing burden of over 20 thousand cases per year. Australia and New Zealand have comparatively lower burdens of TB in terms of proportion and absolute numbers. Brunei Darussalum, China, Hong Kong SAR, China, Macao SAR, and Singapore have higher proportions of TB, but a comparatively lower absolute burden. With similar, but slightly higher proportions, Malaysia and the Republic of Korea have much higher case loads due to their larger populations with over 23 and 41 thousand cases, respectively. 
 
 --------------------------------------------------------
 
 <a id="f.spread"></a> 
-**`r I(pasteLabel("Figure", figCount, "f.spread", insLink=FALSE))`. New and relapse TB cases, absolute number and proportion per 100 000 populatoin, `r yr`**  
+**`r I(pasteLabel("Figure", figCount, "f.spread", insLink=FALSE))`. New and relapse TB cases, absolute number and proportion per 100 000 population, `r yr`**  
 ```{r f.spread, fig.height=5, warning=FALSE}
 f.spread
 ```
@@ -841,9 +841,9 @@ therapy (ART) coverage is largely unreported and low in most LICs, except Brunei
 f.tbhiv
 ```
 
-Gaps and emptly panels indicate data not reported.
+Gaps and empty panels indicate data not reported.
 
-CPT=co-trimoxazole preventive therapy;ART=antiretroviral 
+CPT=co-trimoxazole preventive therapy; ART=antiretroviral 
 therapy; AUS=Australia; BRN=Brunei Darussalam; HKG=China, Hong Kong SAR; JPN=Japan; KOR=Republic of Korea; MAC=China, Macao SAR; MYS=Malaysia; NZL=New Zealand; SGP=Singapore.
 
 --------------------------------------------------------
