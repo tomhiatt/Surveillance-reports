@@ -41,14 +41,14 @@ lapply(c("reshape", "dplyr", "ggplot2", "grid", "scales", "xtable", "stringr", "
 
 # Global options for knitr
 # change this to 'postscript' for EPS output.
-# require(knitr)
-# opts_chunk$set(
-#   #   dev="png",
-#   #   dev.args=list(type="cairo"),
-#   #   dpi=96,
-#   fig.width=7,
-#   echo=FALSE
-#   )
+require(knitr)
+opts_chunk$set(
+  #   dev="png",
+  #   dev.args=list(type="cairo"),
+  #   dpi=96,
+  fig.width=7,
+  echo=FALSE
+  )
 
 lic <- c("AUS", "BRN", "HKG", "JPN", "KOR", "MAC", "MYS", "NZL", "SGP")
 
@@ -240,9 +240,9 @@ tb <- merge(tb[names(tb)[names(tb)!="e_pop_num"]], p[c("iso3", "year", "e_pop_nu
 # tb <- merge(tb, tb2, all.x=TRUE)
 tb$c_newrel_tsr <- tb$newrel_succ / tb$newrel_coh * 100
 
-tbl <- tb %>% filter(iso3 %in% lic) %>% arrange(country) 
+tbli <- tb %>% filter(iso3 %in% lic) %>% arrange(country) 
   
-   save(esta, tb, gb, oba, file="./laddata.Rdata")
+   save(esta, tb, tbli, p, gb, oba, file="./laddata.Rdata")
 
 }
 
@@ -305,7 +305,7 @@ tableCount <- incCount(tableCount, "t.notif")
 
 tbb1 <- tb %>% filter(year==yr, g_whoregion=="WPR") %>% mutate(area=country, total="WPR") %>% select(area, total, c_notified, c_newinc, new_labconf, new_clindx, new_ep, ret_rel_labconf, ret_rel_clindx, ret_rel_ep, ret_nrel)
 
-tbb <- tbl %>% filter(year==yr) %>% mutate(area=country, total="Total") %>% select(area, total, c_notified, c_newinc, new_labconf, new_clindx, new_ep, ret_rel_labconf, ret_rel_clindx, ret_rel_ep, ret_nrel)
+tbb <- tbli %>% filter(year==yr) %>% mutate(area=country, total="Total") %>% select(area, total, c_notified, c_newinc, new_labconf, new_clindx, new_ep, ret_rel_labconf, ret_rel_clindx, ret_rel_ep, ret_nrel)
 
 # make aggregate rows
 tbbr <- aggregate(tbb1[3:ncol(tbb1)], by=list(area=tbb1$total), FUN=sum, na.rm=TRUE)
@@ -364,11 +364,11 @@ n10 <- tbc[tbc$area == "Viet Nam","c_notified"]
 ```{r f.spread.data, include=FALSE}
 figCount <- incCount(figCount, "f.spread")
 
-spa <- tbl %>% filter(year==yr) %>% select(c_newinc_100k, c_newinc, iso3, e_pop_num)
+spa <- tbli %>% filter(year==yr) %>% select(c_newinc_100k, c_newinc, iso3, e_pop_num)
 
 f.spread <- spa %>% ggplot(aes(c_newinc_100k, c_newinc, group=iso3, size=e_pop_num/1e6)) + geom_text(aes(label=iso3), size=4, hjust=-.3, vjust=-.5) + geom_point() + theme_report() + labs(x="New and relapse cases per 100 000 (log scale)", y="Total new and relapse cases", size="Population \n(millions)") + scale_x_log10(limits=c(5,100), breaks=c(5, 10, pretty(20:100)))
 
-# tbl %>% filter(year==yr) %>% ggplot(aes(c_newinc_100k, c_newinc, group=iso3)) + geom_text(aes(label=iso3)) + theme_report() + theme(legend.position="none") + labs(x="New and relapse cases per 100 000", y="Total new and relapse cases") + xlim(c(0,100))
+# tbli %>% filter(year==yr) %>% ggplot(aes(c_newinc_100k, c_newinc, group=iso3)) + geom_text(aes(label=iso3)) + theme_report() + theme(legend.position="none") + labs(x="New and relapse cases per 100 000", y="Total new and relapse cases") + xlim(c(0,100))
 
 write.csv(spa, file=paste0(pasteLabel("./figure_data/table", figCount, "f.spread", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
 
@@ -377,7 +377,7 @@ write.csv(spa, file=paste0(pasteLabel("./figure_data/table", figCount, "f.spread
 ```{r f.trend.data, include=FALSE}
 figCount <- incCount(figCount, "f.trend")
 
-trg <- tbl %>% filter(year %in% 1980:yr) %>% select(year, c_newinc_100k, iso3) %>% mutate(orphs=orphaned.dots(c_newinc_100k)) 
+trg <- tbli %>% filter(year %in% 1980:yr) %>% select(year, c_newinc_100k, iso3) %>% mutate(orphs=orphaned.dots(c_newinc_100k)) 
 
 f.trend <- trg %>% ggplot(aes(year, c_newinc_100k, ymin=0)) + geom_line(size=1) + geom_point(data=subset(trg, orphs)) + theme_report() + labs(x="", y="Total new and relapse cases per 100 000 per year") + facet_wrap(~iso3, scales="free_y") + geom_smooth(method="loess") #+ scale_y_log10()
 
@@ -392,7 +392,7 @@ write.csv(trg, file=paste0(pasteLabel("./figure_data/table", figCount, "f.trend"
 ```{r f.agesex.data,  echo=FALSE}
 figCount <- incCount(figCount, "f.agesex")
 
-aga <- merge(subset(tbl, select=c("iso3", "country", "year", "g_whoregion", "g_hbc22", "newrel_m04", "newrel_m514", "newrel_m014", "newrel_m1524", "newrel_m2534", "newrel_m3544", "newrel_m4554", "newrel_m5564", "newrel_m65", "newrel_mu", "newrel_f04", "newrel_f514", "newrel_f014", "newrel_f1524",  "newrel_f2534", "newrel_f3544", "newrel_f4554", "newrel_f5564", "newrel_f65", "newrel_fu",
+aga <- merge(subset(tbli, select=c("iso3", "country", "year", "g_whoregion", "g_hbc22", "newrel_m04", "newrel_m514", "newrel_m014", "newrel_m1524", "newrel_m2534", "newrel_m3544", "newrel_m4554", "newrel_m5564", "newrel_m65", "newrel_mu", "newrel_f04", "newrel_f514", "newrel_f014", "newrel_f1524",  "newrel_f2534", "newrel_f3544", "newrel_f4554", "newrel_f5564", "newrel_f65", "newrel_fu",
                                               "new_sp_m04", "new_sp_m514", "new_sp_m014", "new_sp_m1524", "new_sp_m2534", "new_sp_m3544", "new_sp_m4554", "new_sp_m5564", "new_sp_m65", "new_sp_mu", "new_sp_f04", "new_sp_f514", "new_sp_f014", "new_sp_f1524",  "new_sp_f2534", "new_sp_f3544", "new_sp_f4554", "new_sp_f5564", "new_sp_f65", "new_sp_fu",
                                               "new_sn_m04", "new_sn_m514", "new_sn_m014", "new_sn_m1524", "new_sn_m2534", "new_sn_m3544", "new_sn_m4554", "new_sn_m5564", "new_sn_m65", "new_sn_mu", "new_sn_f04", "new_sn_f514", "new_sn_f014", "new_sn_f1524",  "new_sn_f2534", "new_sn_f3544", "new_sn_f4554", "new_sn_f5564", "new_sn_f65", "new_sn_fu", 
                                               "new_ep_m04", "new_ep_m514", "new_ep_m014", "new_ep_m1524", "new_ep_m2534", "new_ep_m3544", "new_ep_m4554", "new_ep_m5564", "new_ep_m65", "new_ep_mu", "new_ep_f04", "new_ep_f514", "new_ep_f014", "new_ep_f1524",  "new_ep_f2534", "new_ep_f3544", "new_ep_f4554", "new_ep_f5564", "new_ep_f65", "new_ep_fu")), subset(p, select=c("iso3", "country", "year", "e_pop_m04", "e_pop_m514", "e_pop_m014", "e_pop_m1524", "e_pop_m2534", "e_pop_m3544", "e_pop_m4554", "e_pop_m5564", "e_pop_m65", "e_pop_f04", "e_pop_f514", "e_pop_f014", "e_pop_f1524", "e_pop_f2534", "e_pop_f3544", "e_pop_f4554", "e_pop_f5564", "e_pop_f65")))
@@ -597,7 +597,7 @@ n30 <- tb2 %>% filter(year==yr-1, g_whoregion=="WPR") %>% mutate(tsr=ifelse(!is.
 n31 <- n30 %>% filter(tsr >=85) %>% nrow()
 n32 <- n30 %>% filter(iso3 %in% lic) %>% mutate(tsr=signif(tsr,2))
 n33 <- n32 %>% filter(tsr==last(tsr)) %>% mutate(neval=newrel_coh - sum(newrel_succ, newrel_fail, newrel_died, newrel_lost), l=signif(sum(newrel_lost, neval) / newrel_coh * 100, 2)) %>% select(l) %>% mutate(l=ifelse(l %in% 22:25, "approximately a quarter", ifelse(l %in% 25:29, "over a quarter", paste0(l, "%"))))
-n34 <- tbl %>% mutate(idef=signif((c_newinc-newrel_coh)/c_newinc * 100, 2)) %>% filter(year==yr-1, iso3 %in% lic, idef > 2) %>% select(country, idef) %>% arrange(desc(idef)) 
+n34 <- tbli %>% mutate(idef=signif((c_newinc-newrel_coh)/c_newinc * 100, 2)) %>% filter(year==yr-1, iso3 %in% lic, idef > 2) %>% select(country, idef) %>% arrange(desc(idef)) 
 n35c <- paste(paste(n34[1:(nrow(n34)-1),"country"], collapse=", "), n34[nrow(n34),"country"], sep=" and ")
 n35n <- paste(paste(n34[1:(nrow(n34)-1),"idef"], collapse=", "), n34[nrow(n34),"idef"], sep=" and ")
 
@@ -680,14 +680,14 @@ This article is part of complementary analyses conducted in conjunction with the
 Methods
 --------------------------------------------------------
 ```{r methods, echo=FALSE}
-m1 <- lister(unique(tbl$country), ";")
-m2 <- signif(tbl %>% filter(year==yr) %>% summarize(pop=sum(e_pop_num)) / tb %>% filter(year==yr, g_whoregion=="WPR") %>% summarize(pop=sum(e_pop_num)) * 100,3)
-m2b <- signif(tbl %>% filter(year==yr) %>% summarize(notif=sum0(c_notified)) / tb %>% filter(year==yr, g_whoregion=="WPR") %>% summarize(pop=sum0(c_notified)) * 100,3)
+m1 <- lister(unique(tbli$country), ";")
+m2 <- signif(tbli %>% filter(year==yr) %>% summarize(pop=sum(e_pop_num)) / tb %>% filter(year==yr, g_whoregion=="WPR") %>% summarize(pop=sum(e_pop_num)) * 100,3)
+m2b <- signif(tbli %>% filter(year==yr) %>% summarize(notif=sum0(c_notified)) / tb %>% filter(year==yr, g_whoregion=="WPR") %>% summarize(pop=sum0(c_notified)) * 100,3)
 
-m3 <- tbl %>% filter(year %in% 2012) %>% mutate(nd=new_su / c_newinc * 100) %>% group_by(country) %>% summarize(ndo=round(max(nd),0)) %>% arrange(desc(ndo)) %>% head(3) %>% as.data.frame() 
+m3 <- tbli %>% filter(year %in% 2012) %>% mutate(nd=new_su / c_newinc * 100) %>% group_by(country) %>% summarize(ndo=round(max(nd),0)) %>% arrange(desc(ndo)) %>% head(3) %>% as.data.frame() 
 m4 <- paste(paste(m3[1:(nrow(m3)-1),"country"], collapse=", "), m3[nrow(m3),"country"], sep=" and ")
 m5 <- paste(paste(m3[1:(nrow(m3)-1),"ndo"], collapse=", "), m3[nrow(m3),"ndo"], sep=" and ")
-m6 <- tbl %>% filter(year %in% 2012, g_whoregion=="WPR") %>% group_by(year) %>% summarize(new_su=sum0(new_su), c_newinc=sum0(c_newinc), nd=signif(new_su/c_newinc  * 100,2)) %>% arrange(desc(nd)) %>% head(1) %>% select(nd) 
+m6 <- tbli %>% filter(year %in% 2012, g_whoregion=="WPR") %>% group_by(year) %>% summarize(new_su=sum0(new_su), c_newinc=sum0(c_newinc), nd=signif(new_su/c_newinc  * 100,2)) %>% arrange(desc(nd)) %>% head(1) %>% select(nd) 
 
 
 info <- sessionInfo()
