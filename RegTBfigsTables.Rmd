@@ -27,8 +27,6 @@ bibliography: WPRupdate.bib
 
 yr <- 2013
 
-figtabs.at.end <- TRUE
-
 ###################################################
 
 # > sessionInfo()
@@ -485,8 +483,7 @@ In `r yr`, countries and areas in the Region reported `r n1` people with TB dise
 <a id="t-notif"></a> 
 **`r I(pasteLabel("Table", tableCount, "t-notif", insLink=FALSE))`. Tuberculosis case notification from countries and areas of the Western Pacific Region, `r yr`**  
 ```{r t-notif, results='asis'}
-if (!figtabs.at.end) {
-  
+
 print(tbm, type="html", include.rownames=F, include.colnames=F, html.table.attributes="border=0 rules=rows width=900 cellpadding=5", add.to.row=list(pos=list(0, nrow(tbm)), command=c(
   "<TR> 
   <TD colspan='4' style='border-right: solid 1px black;'></TD> 
@@ -510,7 +507,6 @@ print(tbm, type="html", include.rownames=F, include.colnames=F, html.table.attri
   <TR>", 
   "<TR> <TD colspan=11>Blank cells indicate data not reported.<br>
   <sup>a</sup> NEW AND RELAPSE includes cases for which the treatment history is unknown.</TD></TR>")))
-}
 
 ```  
 
@@ -520,10 +516,8 @@ print(tbm, type="html", include.rownames=F, include.colnames=F, html.table.attri
 <a id="m-notif"></a> 
 **`r I(pasteLabel("Figure", figCount, "m-notif", insLink=FALSE))` Tuberculosis case notification rate (new and relapse) per 100 000 population in countries and areas of the Western Pacific Region, `r yr`**  
 ```{r m-notif, fig.height=5}
-if (!figtabs.at.end) {
 
 mc1
-}
 ```  
 
 <font size="1">The boundaries shown and the designations used on this map do not imply the expression of any opinion whatsoever on the part of the World Health Organization concerning the legal status of any country, territory, city or area or of its authorities, or concerning the delimitation of its frontiers or boundaries. White lines on maps represent approximate border lines for which there may not yet be full agreement.</font>
@@ -559,11 +553,10 @@ Between 2002 and 2007, case notification rates in the Region increased from 47 t
 
 notc1 <- ggplot(notc, aes(year, value, color=variable, ymin=0)) + geom_line(size=1) + theme_report() + scale_x_continuous("", breaks = pretty_breaks()) + scale_y_continuous("TB cases per 100 000 per year", breaks = pretty_breaks()) + theme(legend.position="none") + geom_text(data=subset(notc, year==max(notc$year)), aes(label=variable), hjust=1.1, vjust=3) + scale_color_brewer(type="qual", palette=6)
 
+notc1
+
 ggsave(notc1, file=paste0(pasteLabel("./figure/figure", figCount, "f-notif-trend", insLink=FALSE, sepper=""), ".pdf"))
 
-if (!figtabs.at.end) {
-notc1
-}
 ```
 
 --------------------------------------------------------
@@ -644,11 +637,10 @@ p2 <- ggplot(age3, aes(age, newrel_100k, fill=sex)) + geom_bar(stat="identity", 
 # p3 <- facetAdjust(p2 + scale_y_continuous("New and relapse cases per 100 000")) # facetAdjust doesn't seem to come through for some reason.
 p3 <- p2 + scale_y_continuous("New and relapse cases per 100 000")
 
+p3
+
 ggsave(p3, file=paste0(pasteLabel("./figure/figure", figCount, "f-agesex-bar", insLink=FALSE, sepper=""), ".pdf"), height = 11)
 
-if (!figtabs.at.end) {
-p3
-}
 ```
 
 --------------------------------------------------------
@@ -660,7 +652,6 @@ p3
 <a id="f-agesex"></a> 
 **`r I(pasteLabel("Figure", figCount, "f-agesex", insLink=FALSE))` Trend of age group- and sex-specific notification rates (per 100 000 population) of new and relapse^a^ tuberculosis cases in seven countries with a high-burden of TB in the Western Pacific Region, `r min(age$year)`--`r max(age$year)`**  
 ``` {r f-agesex, warning=FALSE, fig.height=15}
-if (!figtabs.at.end) {
 
 p1 <- ggplot(age, aes(year, newrel_100k, color=age)) + geom_line() + facet_grid(sh.name~sex, scales='free_y') + theme_report() + scale_x_continuous("", breaks = pretty_breaks()) + scale_color_brewer("Age group", type="seq", palette=4) + guides(color = guide_legend(reverse = TRUE))
 # Note that 'free_y' only affects scales between countries, not between sexes in countries.
@@ -673,7 +664,6 @@ p1b
 ggsave(p1b, file=paste0(pasteLabel("./figure/figure", figCount, "f-agesex", insLink=FALSE, sepper=""), ".pdf"), height = 15)
                                                                 
 #function (x) floor(x)); function(n) n[floor(length(n)/5)*1:5+1]
-#}
 ```
 
 ^a^ Rates prior to 2013 include new cases only.
@@ -752,7 +742,6 @@ Treatment success in the Region continues to be over 85% (`r I(pasteLabel("Figur
 <a id="f-txout-line"></a> 
 **`r I(pasteLabel("Figure", figCount, "f-txout-line", insLink=FALSE))` Trend of treatment success among new laboratory-confirmed cases in select countries of the Western Pacific Region, `r min(trd$year)`--`r max(trd$year)`**  
 ``` {r f-txout-line, fig.height=7.5}
-if (!figtabs.at.end) {
 
 trd1 <- ggplot(trd, aes(year, success, color=iso3, size = area=="WPR")) + geom_line() + theme_report() + geom_text(data=end.labels(trd, "year", "success", min.spread=1.4, max1=96), aes(label=iso3), hjust=-0.2, vjust=0, size=4)  + scale_y_continuous("Percent of cohort successfully treated") + scale_x_continuous("", limits=c(2000,yr-0.3)) + coord_cartesian(ylim=c(30,100)) + scale_size_discrete(range = c(1,1.5)) + theme(legend.position="none") + scale_color_brewer(type="qual", palette=6)  + guides(fill = guide_legend(reverse = TRUE))
 
@@ -761,7 +750,7 @@ trd1
 ggsave(trd1, file=paste0(pasteLabel("./figure/figure", figCount, "f-txout-line", insLink=FALSE, sepper=""), ".pdf"))
 
 # , breaks=min(trc$year):max(trc$year)
-}
+
 ```
 
 CHN=China, KHM=Cambodia, LAO=Lao People’s Democratic Republic, MNG=Mongolia, PNG=Papua New Guinea, PHL=Philippines, VNM=Viet Nam, WPR=Western Pacific Region.
@@ -803,14 +792,13 @@ therapy (ART) coverage) for the seven countries with a high burden of TB. Cambod
 <a id="f-tbhiv"></a> 
 **`r I(pasteLabel("Figure", figCount, "f-tbhiv", insLink=FALSE))` Progress in TB/HIV activities in seven countries in the Western Pacific Region with a high burden of TB, `r min(thb$year)`--`r max(thb$year)`**  
 ``` {r f-tbhiv, fig.width=8, fig.height=9, warning=FALSE}
-if (!figtabs.at.end) {
 
 thb1 <- ggplot(thb, aes(year, value)) + geom_line(size=1) + facet_grid(country~variable) + theme_report() + labs(y="Percent", x="")
 
 thb1
 
 ggsave(thb1, file=paste0(pasteLabel("./figure/figure", figCount, "f-tbhiv", insLink=FALSE, sepper=""), ".pdf"), height=9)
-}
+
 ```
 
 --------------------------------------------------------
@@ -867,7 +855,6 @@ Although case notification for all forms of TB appears to be flat since 2007, it
 <a id="f-est"></a> 
 **`r I(pasteLabel("Figure", figCount, "f-est", insLink=FALSE))` Tuberculosis case notification rate per 100 000 population, estimated incidence^a^, prevalence and mortality in the Western Pacific Region, `r min(esth$year)`--`r max(esth$year)`**  
 ``` {r f-est, fig.height=3.5}
-if (!figtabs.at.end) {
 
 esth1 <- ggplot(esth, aes(year, best, fill=var, ymin=0)) + geom_line(size=1, aes(color=var)) + geom_ribbon(aes (year, best, ymin=lo, ymax=hi), alpha=0.2) + geom_line(aes(year, c_newinc_100k), color="black", size=1) + theme_report() + facet_wrap(~var, scales="free_y") + theme(legend.position="none") + scale_x_continuous("", minor_breaks=seq(1990, yr, 1)) + scale_y_continuous(breaks=pretty_breaks()) + ylab("Rate per 100 000 population")
 
@@ -876,7 +863,7 @@ esth1 <- ggplot(esth, aes(year, best, fill=var, ymin=0)) + geom_line(size=1, aes
 esth1
 
 ggsave(esth1, file=paste0(pasteLabel("./figure/figure", figCount, "f-est", insLink=FALSE, sepper=""), ".pdf"))
-}
+
 ```
 
 
@@ -916,73 +903,9 @@ The authors are very grateful to the national tuberculosis control programmes of
 
 --------------------------------------------------------
 
-`r if(figtabs.at.end) "Tables and Figures" `
---------------------------------------------------------
-
-**`r I(pasteLabel("Table", tableCount, "t-notif", insLink=FALSE))`. Tuberculosis case notification from countries and areas of the Western Pacific Region, `r yr`** 
-
-```{r t-notif2, results='asis'}
-if (figtabs.at.end) {
-  
-print(tbm, type="html", include.rownames=F, include.colnames=F, html.table.attributes="border=0 rules=rows width=900 cellpadding=5", add.to.row=list(pos=list(0, nrow(tbm)), command=c(
-  "<TR> 
-  <TD colspan='4' style='border-right: solid 1px black;'></TD> 
-  <TH colspan='3' style='border-right: solid 1px black;'>NEW OR PREVIOUS TREATMENT HISTORY UNKNOWN</TH> 
-  <TH colspan='3' style='border-right: solid 1px black;'>RELAPSE</TH> 
-  <TD></TD> 
-  </TR> 
-  <TR> 
-  <TD></TD> 
-  <TD>TOTAL NOTIFIED</TD> 
-  <TD>NEW AND RELAPSE <sup>a</sup></TD> 
-  <TD style='border-right: solid 1px black;'>RETREATMENT EXCLUDING RELAPSE</TD> 
-  <TD>PULMONARY BACTERIOLOGICALLY CONFIRMED</TD>
-  <TD>PULMONARY CLINICALLY DIAGNOSED</TD> 
-  <TD style='border-right: solid 1px black;'>EXTRAPULMONARY</TD> 
-  <TD>PULMONARY BACTERIOLOGICALLY CONFIRMED</TD>
-  <TD>PULMONARY CLINICALLY DIAGNOSED</TD> 
-  <TD style='border-right: solid 1px black;'>EXTRAPULMONARY</TD> 
-  <TD>PERCENTAGE OF PULMONARY CASES BACTERIOLOGICALLY CONFIRMED</TD> 
-  </TR> 
-  <TR>", 
-  "<TR> <TD colspan=11>Blank cells indicate data not reported.<br>
-  <sup>a</sup> NEW AND RELAPSE includes cases for which the treatment history is unknown.</TD></TR>")))
-}
-
-```  
-
-**`r **  
-```{r m-notif2, fig.height=5}
-if (figtabs.at.end) {
-paste(I(pasteLabel("Figure", figCount, "m-notif", insLink=FALSE)), "Tuberculosis case notification rate (new and relapse) per 100 000 population in countries and areas of the Western Pacific Region, ", yr)
-  
-mc1
-}
-```  
-
-**`r I(pasteLabel("Figure", figCount, "f-notif-trend", insLink=FALSE))` Tuberculosis case notification rate (all forms and new laboratory-confirmed) per 100 000 population in the Western Pacific Region, `r min(notc$year)`--`r max(notc$year)`**  
-```{r f-notif-trend2, fig.height=5}
-
-if (figtabs.at.end) {
-notc1
-}
-```
-
-**`r I(pasteLabel("Figure", figCount, "f-agesex-bar", insLink=FALSE))` Age group- and sex-specific notification rates (per 100 000 population) of new and relapse TB cases in countries with a high-burden of TB in the Western Pacific Region, `r yr`**  
-``` {r f-agesex-bar2, fig.height=11, warning=FALSE}
-if (figtabs.at.end) {
-p3
-}
-```
-
-
-
-
 **<em>References:</em>**
 
-
-
-```{r Endcopy, include=FALSE, echo=FALSE}
+```{r, include=FALSE, echo=FALSE}
 # Bit to copy html file over
 # file.copy("D:/Users/hiattt/Dropbox/Code/Surveillance reports/RegTBfigsTables.html", "D:/Users/hiattt/Dropbox/STB-WPRO 2016/WPSAR articles/WPRupdate.html", overwrite = TRUE)
 ```
