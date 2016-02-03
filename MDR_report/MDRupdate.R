@@ -10,7 +10,7 @@
 # Script found at: https://docs.google.com/document/d/1QGiWYD68Y6w1lo8d2or4889kSxHrzcNkMK3lhPQOvCQ/edit
 
 # How to reproduce this analysis.
-# - Download and open in R the "MDRWPRO2014.Rdata" data and scripts. (If you are seeing this you have completed this step.)
+# - Download and open in R the "MDRWPRO2015.Rdata" data and scripts. (If you are seeing this you have completed this step.)
 # - Save the four script files to your computer using 
 ### cat(script1, file = "script1.Rmd")
 ### cat(script2, file = "script2.R")
@@ -28,7 +28,7 @@
 
 
 # Year of TB notification data
-yr <- 2013
+yr <- 2014
 # 
 
 require("reshape")
@@ -201,7 +201,7 @@ tableCat <- function(inFrame) {
 
 # Create directory and Get data #################
 # NOTE: After this is nearly final I will replace this portion with a subset of only the data used which will be embedded in the final HTML file.
-
+# 
 # setwd("D:/Users/hiattt/Dropbox/Code/Surveillance reports/MDR_report")
 # runprofile()
 # mdat1 <- subset(tb, g_whoregion=="WPR" & year %in% 2007:yr, c("iso3", "g_whoregion", "country", "e_new_mdr_num", "e_new_mdr_num_lo", 
@@ -209,12 +209,13 @@ tableCat <- function(inFrame) {
 #  "e_mdr_num", "e_mdr_num_lo", "e_mdr_num_hi", "mdr_new", "mdr_ret", 
 #  "mdr_unk", "dr_r_nh_new", "dr_r_nh_ret", "dr_r_nh_unk", "xpert_dr_r_new", 
 #  "xpert_dr_r_ret", "xpert_dr_r_unk", "mdr", "rapid_dx_dr_r", "conf_mdr_tx", 
-#  "unconf_mdr_tx", "e_new_mdr_prop", "e_new_mdr_prop_lo", "e_new_mdr_prop_hi", 
+#  "unconf_mdr_tx", "conf_rrmdr_tx", 
+#  "unconf_rrmdr_tx", "e_new_mdr_prop", "e_new_mdr_prop_lo", "e_new_mdr_prop_hi", 
 #  "e_ret_mdr_prop", "e_ret_mdr_prop_lo", "e_ret_mdr_prop_hi", "c_newunk", 
 #  "c_ret", "dst_rlt_new", "dst_rlt_ret", "dst_rlt_unk", "year", 
 #  "mdr_dst_rlt", "mdr_ds_fq2li", "mdr_dr_fq", 
 #  "mdr_dr_2li", "xdr", "mdr_coh", "mdr_cur", "mdr_cmplt", "mdr_died", 
-#  "mdr_fail", "mdr_def", "mdr_succ", "mdr_hivpos", "mdr_hivneg", 
+#  "mdr_fail", "mdr_lost", "mdr_succ", "mdr_hivpos", "mdr_hivneg", 
 #  "mdr_hivunk", "nmdr_hivpos", "nmdr_hivneg", "nmdr_hivunk", "mdr_f", 
 #  "mdr_m", "mdr_sexunk", "nmdr_f", "nmdr_m", "nmdr_sexunk", "mdr_014", 
 #  "mdr_15plus", "mdr_ageunk", "nmdr_014", "nmdr_15plus", "nmdr_ageunk", 
@@ -236,8 +237,8 @@ tableCat <- function(inFrame) {
 # 
 # madat <- merge(madat1, madat2)
 # 
-# save(mdat, madat, script1, script2, script3, script4, WHOmap.print, centres, gline, gpoly, gworld, pieces, file="MDRWPRO2014.Rdata")
-load("MDRWPRO2014.Rdata")
+# save(mdat, madat, script1, script2, script3, script4, WHOmap.print, centres, gline, gpoly, gworld, pieces, file="MDRWPRO2015.Rdata")
+load("MDRWPRO2015.Rdata")
 
 
 # external.data <- FALSE
@@ -426,8 +427,8 @@ rownames(od) <- od$area
 
 oe <- subset(od, select=c("e_new_mdr_num", "e_new_mdr_num_range", "e_new_mdr_pct", "e_new_mdr_pct_range", "e_ret_mdr_num", "e_ret_mdr_num_range", "e_ret_mdr_pct", "e_ret_mdr_pct_range", "e_mdr_num", "e_mdr_num_range"))
 
-# Make that table
-t.drestnotif <- htmlTable(oe, caption = "", rowlabel = "", cgroup = rbind(c("MDR-TB among new", "MDR-TB among retreatment", "Total MDR-TB cases", rep(NA,2)), c(rep(c("n", "%"),2), "n")), n.cgroup = rbind(c(4,4,2, rep(NA,2)), rep(2,5)), align=rep(c('r', 'l'),10), ctable = TRUE, headings = NA )
+# Make that table 
+t.drestnotif <- htmlTable(oe, caption = "", rowlabel = "", cgroup = rbind(c("MDR-TB among new", "MDR-TB among retreatment", "Total MDR-TB cases", rep(NA,2)), c(rep(c("n", "%"),2), "n")), n.cgroup = rbind(c(4,4,2, rep(NA,2)), rep(2,5)), align=rep(c('r', 'l'),10), ctable = TRUE, header = rep(NA,10) )
 
 # make text stop wrapping
 t.drestnotif <- gsub('<td', '<td nowrap="nowrap"; ', t.drestnotif)
@@ -435,6 +436,8 @@ t.drestnotif <- gsub('<td', '<td nowrap="nowrap"; ', t.drestnotif)
 write.csv(oe, file=paste0(pasteLabel("./figure_data/table", tableCount, "t.drestnotif", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
 
 # f.estxy ----------------------------------------------------
+
+if(FALSE){
 figCount <- incCount(figCount, "f.estxy")
 
 ea <- subset(mdat, year==yr & g_whoregion=="WPR", 
@@ -469,7 +472,7 @@ write.csv(ef, file=paste0(pasteLabel("./figure_data/figure", figCount, "f.estxy"
 
 # f.estnotif ----------------------------------------------------
 figCount <- incCount(figCount, "f.estnotif")
-
+}
 
 # t.drnotif -------------------------------------------------------------
 tableCount <- incCount(tableCount, "t.drnotif")
@@ -694,7 +697,7 @@ rownames(od) <- od$area
 oe <- subset(od, select=c("e_new_mdr_num", "e_new_mdr_num_range", "e_ret_mdr_num", "e_ret_mdr_num_range", "e_mdr_num", "e_mdr_num_range", "mdrr.new", "mdrr.ret", "pmdr", "pmdr_new_pct", "pmdr_new_pct_range", "pmdr_ret_pct", "pmdr_ret_pct_range", "pmdr_pct", "pmdr_pct_range", "mdr_tx", "mdr_tx_pct"))
 
 # Make that table
-t.est.enroll <- htmlTable(oe, caption = "", rowlabel = "", cgroup = rbind(c("Estimated", "Notified", "% notified among estimated", "Enrolled on treatment", rep(NA,7)), c(c("New", "Ret.", "Total", "New", "Ret.", "Total<sup>&Dagger;</sup>", "New", "Ret.", "Total"), "n", "% among detected")), n.cgroup = rbind(c(6,3,6,2, rep(NA,7)), c(rep(2,3),rep(1,3),rep(2,3),1,1)), align=c(rep(c('r','l'),3), rep('r',3), rep(c('r','l'),3), rep('r',2)), ctable = TRUE, tfoot = "<sup>&Dagger;</sup> Total column includes cases with treatment history unavailable.<br>", headings = NA )
+t.est.enroll <- htmlTable(oe, caption = "", rowlabel = "", cgroup = rbind(c("Estimated", "Notified", "% notified among estimated", "Enrolled on treatment", rep(NA,7)), c(c("New", "Ret.", "Total", "New", "Ret.", "Total<sup>&Dagger;</sup>", "New", "Ret.", "Total"), "n", "% among detected")), n.cgroup = rbind(c(6,3,6,2, rep(NA,7)), c(rep(2,3),rep(1,3),rep(2,3),1,1)), align=c(rep(c('r','l'),3), rep('r',3), rep(c('r','l'),3), rep('r',2)), ctable = TRUE, tfoot = "<sup>&Dagger;</sup> Total column includes cases with treatment history unavailable.<br>", header = rep(NA,17) )
 
 write.csv(oe, file=paste0(pasteLabel("./figure_data/table", tableCount, "t.est.enroll", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
 
@@ -702,11 +705,11 @@ write.csv(oe, file=paste0(pasteLabel("./figure_data/table", tableCount, "t.est.e
 # f.alignment ------------------------------------------------------
 figCount <- incCount(figCount, "f.alignment")
 
-tea <- subset(mdat, year %in% 2007:yr & g_whoregion=="WPR", select=c(iso3, country, year, e_mdr_num, e_mdr_num_lo, e_mdr_num_hi, mdr, rapid_dx_dr_r, conf_mdr_tx, unconf_mdr_tx))
+tea <- subset(mdat, year %in% 2007:yr & g_whoregion=="WPR", select=c(iso3, country, year, e_mdr_num, e_mdr_num_lo, e_mdr_num_hi, mdr, rapid_dx_dr_r, conf_mdr_tx, unconf_mdr_tx, conf_rrmdr_tx, unconf_rrmdr_tx))
 
 # Calculate new vars
 tea$`Cases confirmed` <- .rowsums(tea[c('mdr', 'rapid_dx_dr_r')])
-tea$`Patients enrolled on treatment` <- .rowsums(tea[c('conf_mdr_tx', 'unconf_mdr_tx')])
+tea$`Patients enrolled on treatment` <- .rowsums(tea[c('conf_mdr_tx', 'unconf_mdr_tx', 'conf_rrmdr_tx', 'unconf_rrmdr_tx')])
 
 tea$agg.case.conf <- ifelse(is.na(tea$`Patients enrolled on treatment`), NA, tea$`Cases confirmed`)
 tea$agg.pts.enr <- ifelse(is.na(tea$`Cases confirmed`), NA, tea$`Patients enrolled on treatment`)
@@ -736,7 +739,7 @@ write.csv(tec, file=paste0(pasteLabel("./figure_data/figure", figCount, "f.align
 # f.tx.out --------------------------------------------
 figCount <- incCount(figCount, "f.tx.out")
 
-tra <- subset(mdat, year %in% 2006:(yr-2) & g_whoregion=="WPR", select=c(iso3, country, year, mdr_coh, mdr_cur, mdr_cmplt, mdr_died, mdr_fail, mdr_def, mdr_succ))
+tra <- subset(mdat, year %in% 2006:(yr-2) & g_whoregion=="WPR", select=c(iso3, country, year, mdr_coh, mdr_cur, mdr_cmplt, mdr_died, mdr_fail, mdr_lost, mdr_succ))
 
 # Fill in 0s for NAs
 tra[is.na(tra)] <- 0
@@ -757,8 +760,8 @@ trb$mdr_succ <- ifelse(trb$year>=2011, trb$mdr_succ, trb$mdr_cur + trb$mdr_cmplt
 trb$Success <- trb$mdr_succ / trb$mdr_coh * 100
 trb$Died <- trb$mdr_died / trb$mdr_coh * 100
 trb$Failed <- trb$mdr_fail / trb$mdr_coh * 100
-trb$`Lost to follow-up` <- trb$mdr_def / trb$mdr_coh * 100
-trb$`Not evaluated` <- (trb$mdr_coh - (trb$mdr_succ + trb$mdr_died + trb$mdr_fail + trb$mdr_def)) / trb$mdr_coh * 100
+trb$`Lost to follow-up` <- trb$mdr_lost / trb$mdr_coh * 100
+trb$`Not evaluated` <- (trb$mdr_coh - (trb$mdr_succ + trb$mdr_died + trb$mdr_fail + trb$mdr_lost)) / trb$mdr_coh * 100
 
 trc <- melt(trb[c("area", "year", "Success", "Died", "Failed", "Lost to follow-up", "Not evaluated")], id=1:2)
 
