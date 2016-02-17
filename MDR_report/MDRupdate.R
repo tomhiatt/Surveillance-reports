@@ -209,7 +209,7 @@ tableCat <- function(inFrame) {
 #  "e_mdr_num", "e_mdr_num_lo", "e_mdr_num_hi", "mdr_new", "mdr_ret", 
 #  "mdr_unk", "dr_r_nh_new", "dr_r_nh_ret", "dr_r_nh_unk", "xpert_dr_r_new", 
 #  "xpert_dr_r_ret", "xpert_dr_r_unk", "mdr", "rapid_dx_dr_r", "conf_mdr_tx", 
-#  "unconf_mdr_tx", "conf_rrmdr_tx", 
+#  "unconf_mdr_tx", "conf_rrmdr_tx", "conf_rrmdr",
 #  "unconf_rrmdr_tx", "e_new_mdr_prop", "e_new_mdr_prop_lo", "e_new_mdr_prop_hi", 
 #  "e_ret_mdr_prop", "e_ret_mdr_prop_lo", "e_ret_mdr_prop_hi", "c_newunk", 
 #  "c_ret", "dst_rlt_new", "dst_rlt_ret", "dst_rlt_unk", "year", 
@@ -280,14 +280,17 @@ load("MDRWPRO2015.Rdata")
 
 # Common data munging 
 
-whbc <- subset(mdat, g_whoregion=="WPR" & year==yr & mdr>=1, c(iso3))
+whbc <- subset(mdat, g_whoregion=="WPR" & year==yr & conf_rrmdr>=1, c(iso3))
 whbc <- whbc$iso3
 
-whbc10 <- subset(mdat, g_whoregion=="WPR" & year==yr & mdr>=10, c(iso3))
+whbc10 <- subset(mdat, g_whoregion=="WPR" & year==yr & conf_rrmdr>=10, c(iso3))
 whbc10 <- whbc10$iso3
 
 mdat$country2 <- ifelse(mdat$iso3 %in% whbc, as.character(mdat$iso3), "Other") 
 mdat$country2 <- factor(mdat$country2, c("KHM", "CHN", "JPN", "MYS", "MNG", "PNG", "PHL", "KOR", "VNM", "Other"), c("Cambodia", "China", "Japan", "Malaysia", "Mongolia", "Papua New Guinea", "Philippines", "Republic of Korea", "Viet Nam", "Other countries"))
+
+mdat$c_rrmdr <- .rowsums(mdat[c('mdr', 'rapid_dx_dr_r')]) 
+mdat$c_rrmdr <- ifelse(mdat$year < 2014, mdat$c_rrmdr, mdat$conf_rrmdr)
 
 # Embed data -----------------------------------------
 
@@ -705,10 +708,10 @@ write.csv(oe, file=paste0(pasteLabel("./figure_data/table", tableCount, "t.est.e
 # f.alignment ------------------------------------------------------
 figCount <- incCount(figCount, "f.alignment")
 
-tea <- subset(mdat, year %in% 2007:yr & g_whoregion=="WPR", select=c(iso3, country, year, e_mdr_num, e_mdr_num_lo, e_mdr_num_hi, mdr, rapid_dx_dr_r, conf_mdr_tx, unconf_mdr_tx, conf_rrmdr_tx, unconf_rrmdr_tx))
+tea <- subset(mdat, year %in% 2007:yr & g_whoregion=="WPR", select=c(iso3, country, year, e_mdr_num, e_mdr_num_lo, e_mdr_num_hi, mdr, c_rrmdr, conf_mdr_tx, unconf_mdr_tx, conf_rrmdr_tx, unconf_rrmdr_tx))
 
 # Calculate new vars
-tea$`Cases confirmed` <- .rowsums(tea[c('mdr', 'rapid_dx_dr_r')])
+tea$`Cases confirmed` <- tea$c_rrmdr
 tea$`Patients enrolled on treatment` <- .rowsums(tea[c('conf_mdr_tx', 'unconf_mdr_tx', 'conf_rrmdr_tx', 'unconf_rrmdr_tx')])
 
 tea$agg.case.conf <- ifelse(is.na(tea$`Patients enrolled on treatment`), NA, tea$`Cases confirmed`)
@@ -719,7 +722,7 @@ teb1$country <- teb1$iso3 <- "WPR"
 
 # Separate hbcs
 teb3 <- tea[tea$iso3 %in% whbc10,] 
-# teb2 <- aggregate(teb3[4:ncol(tea)], by=list(year=teb3$year, area=teb3$country), FUN=sum, na.rm=TRUE)
+# teb2 <- aggregate(teb3[4:ncol(tea)], by=list(year=teb3$year, area=teb3$country), FUN=sum, na.rm=TRUE) c("CHN", "KHM", "LAO", "KOR", "MNG", "MYS", "PHL", "PNG", "VNM")
 
 
 #combine
@@ -911,4 +914,4 @@ age.sex.hiv.exploration <- htmlTable(oe, caption = "Risk ratios for MDR-TB")
 write.csv(oe, file=paste0(pasteLabel("./figure_data/table", tableCount, "age.sex.hiv.exploration", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
 
 # Bit to copy html file over
-# file.copy("D:/Users/hiattt/Dropbox/Code/Surveillance reports/MDR_report/MDRupdate.html", "D:/Users/hiattt/Dropbox/STB-WPRO/MDR article/MDRupdate.html", overwrite = TRUE)
+# file.copy("D:/Users/hiattt/Dropbox/Code/Surveillance reports/MDR_report/MDRupdate.html", "D:/Users/hiattt/Dropbox/STB-WPRO 2016/WPSAR articles/MDR article/MDRupdate.html", overwrite = TRUE)

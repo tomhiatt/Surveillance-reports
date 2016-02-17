@@ -1,7 +1,7 @@
 ---
-title: "Drug resistant tuberculosis in the WHO Western Pacific Region"
-author: "Tauhid Islam,^a^ Tom Hiatt,^a^ Cornelia Hennig,^a^
-  Nobuyuki Nishikiori^a^"
+title: 'Drug resistant tuberculosis in the WHO Western Pacific Region: update with
+  `r yr <- 2014; yr` case notification data'
+author: "Tauhid Islam,^a^ Tom Hiatt,^a^ Cornelia Hennig,^a^ Nobuyuki Nishikiori^a^"
 csl: vancouver-imperial-college-london.csl
 output:
   html_document:
@@ -73,7 +73,7 @@ In this report, the data reported to WHO by countries and areas from 2007 to 201
 
 The estimated burden of drug-resistant TB by country was sourced from the global TB database,where the proportion of new and previously treated TB cases with MDR-TB from the latest available information from routine surveillance or a survey of drug resistance were used to estimate the total caseload of drug-resistant TB. The full description of these methods is available in the Global Tuberculosis Report 2014,[@WorldHealthOrganization2014] and the data sets can be downloaded from the WHO global TB database (www.who.int/tb/data).
 
-This report describes the available data on TB drug resistance and progress in programmatic response for those countries and areas of the Region where at least one MDR-TB case was notified in 2013. Trends of MDR-TB rates over time were assessed for countries and areas with more than one survey or surveillance data points since 1996. A special focus was maintained on seven countries considered priority countries due to their high burden of TB: Cambodia, China, the Lao People’s Democratic Republic, Mongolia, Papua New Guinea, the Philippines and Viet Nam.
+This report describes the available data on TB drug resistance and progress in programmatic response for those countries and areas of the Region where at least one RR-TB case was notified in 2013. Trends of MDR-TB rates over time were assessed for countries and areas with more than one survey or surveillance data points since 1996. A special focus was maintained on seven countries considered priority countries due to their high burden of TB: Cambodia, China, the Lao People’s Democratic Republic, Mongolia, Papua New Guinea, the Philippines and Viet Nam.
 
 In 2013, WHO published revised TB case definitions and introduced a case definition for TB cases resistant to rifampicin only (RR-TB).[@WorldHealthOrganization2013] A new rapid diagnostic technology, Xpert MTB/RIF assay (Cepheid, Sunnyvale, CA, USA), endorsed by WHO in 2010,[@WorldHealthOrganization2011a] tests for RR-TB. RR-TB cases identified by the Xpert MTB/RIF test are recommended to start second-line TB treatment[@WorldHealthOrganization2014c] and require similar management to MDR-TB cases. In this report, we included RR-TB cases with the confirmed MDR-TB cases.
 
@@ -130,7 +130,7 @@ Source: Global TB database.
 
 CI, confidence interval; MDR-TB, multidrug-resistant tuberculosis. 
 
-\* Countries that reported at least one MDR-TB case in 2013. 
+\* Countries that reported at least one RR-TB case in 2013. 
 
 --------------------------------------------------------
 
@@ -143,7 +143,7 @@ There was a positive correlation between the proportion of MDR-TB among new and 
 ##### `r I(pasteLabel("Figure", figCount, "f.estxy", insLink=FALSE))`. Correlation* between the estimated proportion of MDR-TB cases among new and previously treated TB cases respectively by selected country,&dagger; WHO Western Pacific Region, `r yr`
 
 ``` {r f.estxy, fig.width=9, fig.height=9}
-f.estxy
+# f.estxy
 ```
 
 MDR-TB, multidrug-resistant tuberculosis. 
@@ -182,7 +182,7 @@ t.drnotif
 
 DST, drug susceptibility testing; MDR-TB, multidrug-resistant tuberculosis; Prev, previously treated tuberculosis; RR-TB, rifampicin-resistant tuberculosis. 
 
-&dagger; Countries that reported at least one MDR-TB case in 2013. 
+&dagger; Countries that reported at least one RR-TB case in 2013. 
 
 \* Rifampicin-resistant only cases are included whether confirmed by DST or Xpert
 
@@ -219,7 +219,7 @@ There were 11 153 reported cases of MDR-TB and RR-TB in the Region in 2013, repr
 t.est.enroll
 ```
 
-\* Countries that reported at least one MDR-TB case in 2013.
+\* Countries that reported at least one RR-TB case in 2013.
 
 &dagger; All columns except estimates include RR-TB cases confirmed by Xpert only. Total MDR-TB cases detected included cases among extrapulmonary and from samples taken more than 2 weeks after start of treatment.
 
@@ -239,7 +239,7 @@ t.xdr
 
 DST, drug susceptibility testing; FQ, fluoroquinolones; MDR-TR, multidrug-resistant tuberculosis; RR-TB, rifampicin-resistant tuberculosis; XDR-TB, extensively drug-resistant tuberculosis.
 
-\* Countries that reported at least one MDR-TB case in 2013.
+\* Countries that reported at least one RR-TB case in 2013.
 
 --------------------------------------------------------
 
@@ -273,7 +273,7 @@ f.tx.out
 
 MDR-TB, multidrug-resistant tuberculosis; RR-TB, rifampicin-resistant tuberculosis. 
 
-\* Countries that reported at least one MDR-TB case in 2013 and reported treatment outcomes for 2011.
+\* Countries that reported at least one RR-TB case in 2013 and reported treatment outcomes for 2011.
 
 --------------------------------------------------------
 
