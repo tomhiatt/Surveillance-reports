@@ -4,16 +4,16 @@ title: 'Epidemiology and control of tuberculosis in the Western Pacific Region: 
 author: "Tom Hiatt<sup>&dagger;</sup> and Nobuyuki Nishikiori<sup>&dagger;</sup>"
 csl: vancouver-imperial-college-london.csl
 output:
+  word_document:
+    fig_height: 7
+  pdf_document:
+    toc: yes
   html_document:
     fig_caption: yes
     keep_md: yes
     number_sections: no
     theme: united
     toc: yes
-  pdf_document:
-    toc: yes
-  word_document:
-    fig_height: 7
 bibliography: WPRupdate.bib
 ---
 
@@ -515,7 +515,7 @@ print(tbm, type="html", include.rownames=F, include.colnames=F, html.table.attri
   <TR> 
   <TD></TD> 
   <TD>TOTAL NOTIFIED</TD> 
-  <TD>NEW AND RELAPSE <sup>*</sup></TD> 
+  <TD>NEW AND RELAPSE <sup>a</sup></TD> 
   <TD style='border-right: solid 1px black;'>RETREATMENT EXCLUDING RELAPSE</TD> 
   <TD>PULMONARY BACTERIOLOGICALLY CONFIRMED</TD>
   <TD>PULMONARY CLINICALLY DIAGNOSED</TD> 
@@ -527,7 +527,7 @@ print(tbm, type="html", include.rownames=F, include.colnames=F, html.table.attri
   </TR> 
   <TR>", 
   "<TR> <TD colspan=11>Blank cells indicate data not reported.<br>
-  <sup>*</sup> NEW AND RELAPSE includes cases for which the treatment history is unknown.</TD></TR>")))
+  <sup>a</sup> NEW AND RELAPSE includes cases for which the treatment history is unknown.</TD></TR>")))
 
 ```  
 
@@ -535,7 +535,7 @@ print(tbm, type="html", include.rownames=F, include.colnames=F, html.table.attri
 --------------------------------------------------------
 
 <a id="m-notif"></a> 
-**`r I(pasteLabel("Figure", figCount, "m-notif", insLink=FALSE))` TB case notification rate (new and relapse^*^) per 100 000 population in countries and areas of the Western Pacific Region, `r yr`**  
+**`r I(pasteLabel("Figure", figCount, "m-notif", insLink=FALSE))` TB case notification rate (new and relapse^a^) per 100 000 population in countries and areas of the Western Pacific Region, `r yr`**  
 ```{r m-notif, fig.height=5}
 
 mc1
@@ -543,7 +543,7 @@ mc1
 
 <font size="1">The boundaries shown and the designations used on this map do not imply the expression of any opinion whatsoever on the part of the World Health Organization concerning the legal status of any country, territory, city or area or of its authorities, or concerning the delimitation of its frontiers or boundaries. White lines on maps represent approximate border lines for which there may not yet be full agreement.</font>
 
-^*^ New and Relapse TB cases includes cases for which the treatment history is unknown.
+^a^ New and Relapse TB cases includes cases for which the treatment history is unknown.
 
 --------------------------------------------------------
 
@@ -572,7 +572,7 @@ Between 2002 and 2005, case notification rates in the Region of all forms of TB 
 --------------------------------------------------------
 
 <a id="f-notif-trend"></a> 
-**`r I(pasteLabel("Figure", figCount, "f-notif-trend", insLink=FALSE))` Tuberculosis case notification rate (all forms and new bacteriologically confirmed^*^) per 100 000 population per year in the Western Pacific Region, `r min(notc$year)`--`r max(notc$year)`**  
+**`r I(pasteLabel("Figure", figCount, "f-notif-trend", insLink=FALSE))` Tuberculosis case notification rate (all forms and new bacteriologically confirmed^a^) per 100 000 population per year in the Western Pacific Region, `r min(notc$year)`--`r max(notc$year)`**  
 ```{r f-notif-trend, fig.height=5}
 
 notc1 <- ggplot(notc, aes(year, value, color=variable, ymin=0)) + geom_line(size=1) + theme_report() + scale_x_continuous("", breaks = pretty_breaks()) + scale_y_continuous("TB cases per 100 000 per year", breaks = pretty_breaks()) + theme(legend.position="none") + geom_text(data=subset(notc, year==max(notc$year)), aes(label=variable), hjust=1.1, vjust=3) + scale_color_brewer(type="qual", palette=6)
@@ -583,7 +583,7 @@ ggsave(notc1, file=paste0(pasteLabel("./figure/figure", figCount, "f-notif-trend
 
 ```
 
-^*^ All forms of TB includes new and relapse TB cases, pulmonary and extrapulmonary, bacteriologically confirmed or clinicially diagnosed. New bacteriologically confirmed includes pulmonary TB cases only. Both categories include cases that have unknown treatment history.
+^a^ All forms of TB includes new and relapse TB cases, pulmonary and extrapulmonary, bacteriologically confirmed or clinicially diagnosed. New bacteriologically confirmed includes pulmonary TB cases only. Both categories include cases that have unknown treatment history.
 
 --------------------------------------------------------
 
@@ -655,7 +655,7 @@ In general, males are more affected than females with male-to-female TB ratios a
 --------------------------------------------------------
 
 <a id="f-agesex-bar"></a> 
-**`r I(pasteLabel("Figure", figCount, "f-agesex-bar", insLink=FALSE))` Age group- and sex-specific notification rates (per 100 000 population) of new and relapse TB cases in countries with a high-burden of TB in the Western Pacific Region, `r yr`^*^**  
+**`r I(pasteLabel("Figure", figCount, "f-agesex-bar", insLink=FALSE))` Age group- and sex-specific notification rates (per 100 000 population) of new and relapse TB cases in countries with a high-burden of TB in the Western Pacific Region, `r yr`^a^**  
 ``` {r f-agesex-bar, fig.height=10, warning=FALSE}
 
 # Workaround for non-reporting countries (so it doesn't break the plot)
@@ -676,7 +676,7 @@ ggsave(p3, file=paste0(pasteLabel("./figure/figure", figCount, "f-agesex-bar", i
 
 ```
 
-^*^ Scale of the vertical axis is different for each country. Data from Papua New Guinea were not available.
+^a^ Scale of the vertical axis is different for each country. Data from Papua New Guinea were not available.
 
 --------------------------------------------------------
 
@@ -686,7 +686,7 @@ ggsave(p3, file=paste0(pasteLabel("./figure/figure", figCount, "f-agesex-bar", i
 --------------------------------------------------------
 
 <a id="f-agesex"></a> 
-**`r I(pasteLabel("Figure", figCount, "f-agesex", insLink=FALSE))` Trend of age- and sex-specific notification rates (per 100 000 population per year) of new and relapse^*^ tuberculosis cases in countries with a high-burden of TB in the Western Pacific Region, `r min(age$year)`--`r max(age$year)`**  
+**`r I(pasteLabel("Figure", figCount, "f-agesex", insLink=FALSE))` Trend of age- and sex-specific notification rates (per 100 000 population per year) of new and relapse^a^ tuberculosis cases in countries with a high-burden of TB in the Western Pacific Region, `r min(age$year)`--`r max(age$year)`**  
 ``` {r f-agesex, warning=FALSE, fig.height=10, fig.width=4}
 
 age.iso <- data.frame(a=unique(age$iso3)[1:4], b=unique(age$iso3)[5:8]) 
@@ -711,7 +711,7 @@ age.a + scale_y_log10("New and relapse cases per 100 000 (log scale)")+ theme(le
 age.b + labs(y="")
 ```
 
-^*^ Rates prior to 2013 include new cases only.
+^a^ Rates prior to 2013 include new cases only.
 
 --------------------------------------------------------
 
