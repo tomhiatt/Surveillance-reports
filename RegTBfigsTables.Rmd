@@ -4,16 +4,16 @@ title: 'Epidemiology and control of tuberculosis in the Western Pacific Region: 
 author: "Tom Hiatt<sup>&dagger;</sup> and Nobuyuki Nishikiori<sup>&dagger;</sup>"
 csl: vancouver-imperial-college-london.csl
 output:
-  word_document:
-    fig_height: 7
-  pdf_document:
-    toc: yes
   html_document:
     fig_caption: yes
     keep_md: yes
     number_sections: no
     theme: united
     toc: yes
+  pdf_document:
+    toc: yes
+  word_document:
+    fig_height: 7
 bibliography: WPRupdate.bib
 ---
 
@@ -352,27 +352,28 @@ To cite this article:
 
 Abstract 
 --------------------------------------------------------
-```{r abstract, echo=FALSE}
+```{r abstract, echo=FALSE, warning=FALSE}
 a1 <- signif((subset(esta, year==2000, e_prev_num) - subset(esta, year==yr, e_prev_num)) / subset(esta, year==2000, e_prev_num) * 100, 2)
-a2 <- tb %>% filter(year==yr, g_whoregion=="WPR") %>% summarize(cases=sum0(c_notified / 1e6)) %>% signif(2)
+a2 <- tb %>% filter(year==yr, g_whoregion=="WPR") %>% summarize(cases=sum0(c_newinc / 1e6)) %>% signif(2)
 a3 <- tb %>% filter(year==yr-1, g_whoregion=="WPR", c_newrel_tsr >= 85) %>% nrow()
 a4 <- esta %>% filter(year==yr) %>% select(e_mort_exc_tbhiv_num, e_inc_num) %>% signif(2)
+a5 <- rounder(a4[1]) # Updated estimates
 
 ```
 
 ### Introduction
-Since the year 2000, tuberculosis (TB) prevalence in the World Health Organization (WHO) Western Pacific Region decreased `r a1` percent. The current TB burden remains immense, however with `r a4[2]/1e6` million cases and `r a4[1]/1e3` thousand deaths every year. This study describes a regional analysis using data from the WHO global TB database incorporating TB notification data for `r yr`. 
+Since the year 2000, tuberculosis (TB) prevalence in the World Health Organization (WHO) Western Pacific Region decreased `r a1` percent. There are estimated `r a4[2]/1e6` million TB cases with `r a5` deaths every year. This study describes a regional analysis using the WHO global TB database data from 2000--`r yr`. 
 
 ### Methods
-TB surveillance data are collected annually from countries and areas in the Region (n=36). TB case notifications, treatment outcomes and information on TB/HIV co-infection are covered in this analysis. For 2013, 32 countries and areas of the Western Pacific Region reported data representing more than 99.9% of the total population.
+TB surveillance data are annually collected from 36 countries and areas in the Western Pacific Region using a web-based system. TB case notifications, treatment outcomes and information on TB/HIV co-infection are analysed descriptively. Stratified analysis of the TB data by age, sex and countries and areas were conducted.
 
 ### Results
-Countries and areas in the Region notified  `r a2` million new and relapse TB cases in `r yr`. The trend of the case notification rate saw an increase in the early 2000s, stabilized for several years and is in decline recently for all forms and bacteriologically confirmed cases. Country TB case rates for 2013 broken down by age and sex show generally higher rates with increased age and declining rates over time for all age groups. Treatment success remains high in the Region with `r a3` countries reaching or maintaining an 85% success rate. HIV testing among TB patients has increased gradually with approximately 11 000 HIV-positive TB patients found each year since 2009.
+Countries and areas in the Region notified `r a2` million new and relapse TB cases in `r yr`. The TB notification rate increased in the early 2000s, stabilized for several years and declined recently. Country specific TB case rates declined over time for all age-groups. The TB treatment success rate remains high in the Region with `r a3` countries reaching or maintaining 85% or over in 2013. HIV testing among TB patients has increased gradually with approximately 11 000 HIV-positive TB patients found in each year since 2009.
 
 ### Discussion
-Notification rates suggest that true TB incidence is possibly declining while programme efforts for early case-finding, including clinically diagnosed cases, are increasing. Treatment success has remained high for six of seven high-burden countries in the Region. If patients are put on treatment early, this high level of success will help drive incidence downward. An estimated 32 000 (range: 29 000--36 000) people living with HIV develop TB every year in the Region, the majority of which remain undetected.
+The results suggest that true TB incidence is possibly declining. The treatment success rate has remained high for six of seven high-burden countries.
 
-TB surveillance data is an important source of programmatic and epidemiological information within inherent limitations. Careful interpretation of these findings can provide useful insight for programmatic decision-making. While the TB burden remains immense, national TB programmes must evolve and adapt to build upon these gains.
+TB surveillance data is an important source of programmatic and epidemiological information. Careful interpretation of these findings can provide useful insight for programmatic decision-making. While the TB burden remains immense, national TB programmes must evolve and adapt to build upon these gains.
 
 --------------------------------------------------------
 
@@ -381,19 +382,19 @@ Introduction
 ```{r intro, echo=FALSE}
 i1 <- signif(subset(esta, year==2000, e_prev_num) / 1e6, 2)
 i2 <- signif(subset(esta, year==yr, e_prev_num) / 1e6, 2)
-i2a <- signif(sum0(subset(tb, g_whoregion=="WPR" & year >= 2000, c_newinc)) / 1e6, 3)
+i2a <- signif(sum0(subset(tb, g_whoregion=="WPR" & year %in% 2000:yr, c_newinc)) / 1e6, 3)
 i3 <- tb %>% filter(year==yr, g_whoregion=="WPR") %>% summarize(cases=sum0(c_notified / 1e6)) %>% signif(2)
 
 ```
 
-The burden of tuberculosis (TB) in the World Health Organization (WHO) Western Pacific Region has been greatly reduced with increased decline since 2000. Estimated TB prevalence fell from `r i1` million cases in 2000 to `r i2` million in `r yr`.[@WorldHealthOrganization2014] During the same period, `r i2a` million patients were diagnosed and treated. However, with TB programmes reporting `r i3` million TB cases annually and disease transmission high in several countries, national TB control programmes must continue to evolve and take advantage of new tools in order to further combat the epidemic. Under the new End TB Strategy with ambitous targets,[@WorldHealthOrganization2014a] effective monitoring and evaluation is needed to track progress and understand how to best adapt interventions. Surveillance data analysis provides valuable information on the current epidemiological situation, programmatic progress and future directions.
+The burden of tuberculosis (TB) in the World Health Organization (WHO) Western Pacific Region has been greatly reduced since 2000. Estimated TB prevalence fell from `r i1` million cases in 2000 to `r i2` million in `r yr`.[@WorldHealthOrganization2014] During the same period, `r i2a` million patients were diagnosed and treated. However, with TB programmes reporting `r i3` million TB cases in `r yr` and disease transmission high in several countries, national TB control programmes must continue to evolve and take advantage of new tools in order to further combat the epidemic. Under the new WHO End TB Strategy with ambitious targets,[@WorldHealthOrganization2014a] effective monitoring and evaluation is needed to track progress and understand how to best adapt interventions. Surveillance data analysis provides valuable information on the current epidemiological situation, programmatic progress and future directions.
 
 This article presents an updated regional analysis of TB notification data which provides updated information for our previous study.[@Hiatt2014] It describes the epidemiological situation and progress in programmatic response with particular focus on seven countries with a high burden of TB: Cambodia, China, the Lao People’s Democratic Republic, Mongolia, Papua New Guinea, the Philippines and Viet Nam. 
 
 Methods
 --------------------------------------------------------
 ```{r methods, echo=FALSE}
-m1 <- tb %>% filter(year==yr, g_whoregion=="WPR", !is.na(c_newinc)) %>% nrow()
+m1 <- tb %>% filter(year==yr, g_whoregion=="WPR", !is.na(c_newinc)) %>% nrow() %>% numbers2words() # Add to the setup block a capitalizer.
 m2 <- floor(tb %>% filter(year==yr, g_whoregion=="WPR", !is.na(c_newinc)) %>% summarize(pop=sum(e_pop_num)) / tb %>% filter(year==yr, g_whoregion=="WPR") %>% summarize(pop=sum(e_pop_num)) * 100 / 0.1) * 0.1 # rounding to increment
 m3 <- tb %>% filter(year %in% 2008:2012, g_whoregion=="WPR") %>% mutate(nd=new_su / c_newinc * 100) %>% group_by(country) %>% summarize(ndo=round(max(nd),0)) %>% arrange(desc(ndo)) %>% head(3) %>% as.data.frame() 
 m4 <- paste(paste(m3[1:(nrow(m3)-1),"country"], collapse=", "), m3[nrow(m3),"country"], sep=" and ")
@@ -406,11 +407,11 @@ r_ver <- paste(info$R.version$major, info$R.version$minor, sep=".")
 ```
 
 ### Data
+For `r yr`, `r m1` countries and areas of the Western Pacific Region reported data representing more than `r m2`% of the total population. 
+
 Around March of each year, TB surveillance data are collected from countries and areas in the Region (n=36) using a web-based data collection form. Collected data covers the following areas: TB case notifications and treatment outcomes, diagnostic and treatment services, drug management, surveillance and surveys of drug-resistance, information on TB/HIV co-infection, infection control, engagement of all care providers and budgets and expenditures for TB control. The full description of methods is available in the Global Tuberculosis Report[@WorldHealthOrganization2014] and the data sets are available from the WHO global TB database.[@WorldHealthOrganization] This analysis only covers case notifications, treatment outcomes and TB/HIV co-infection data.
 
 Case definitions for TB were revised in 2013[@WorldHealthOrganization2013] and cases previously known as smear-positive are now included in the category of bacteriologically confirmed cases which includes cases confirmed by any laboratory method. Similarly, smear-negative cases are combined with all clinically diagnosed cases including where smear was not done or results are unknown. This obscures the number of cases where laboratory confirmation was sought by including them with the number of cases for which confirmation was not attempted. Knowing this information can indicate uncertainty around the number of notified cases. 
-
-For `r yr`, `r m1` countries and areas of the Western Pacific Region reported data representing more than `r m2`% of the total population. 
 
 ### Analysis and reproducibility
 All analysis was conducted by the statistical software environment R (ver. `r r_ver`, R Core Team, `r info$R.version$year`, Vienna, Austria, www.R-project.org). 
@@ -639,7 +640,7 @@ write.csv(age, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-agese
 write.csv(age, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-agesex", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE)
 
 # For paragraph
-n15 <- age %>% group_by(area, sex) %>% summarize(newrel=sum0(newrel)) %>% spread(sex, newrel) %>% mutate(sr=Male/Female) %>% arrange(desc(sr)) %>% filter(sr %in% range(sr)|area=="WPR") %>% mutate(sr=signif(sr,2))
+n15 <- age %>% group_by(year, area, sex) %>% summarize(newrel=sum0(newrel)) %>% filter(year==yr, !is.na(newrel)) %>% spread(sex, newrel) %>% mutate(sr=Male/Female) %>% arrange(desc(sr)) %>% filter(sr %in% range(sr)|area=="WPR") %>% mutate(sr=signif(sr,2))
 n17 <- age %>% filter(year==yr, age=="0–14") %>% group_by(area) %>% summarise(um=signif(mean(newrel_100k),2)) %>% arrange(um) %>% slice(1)
 n18 <- age %>% filter(year==yr, age!="0–14") %>% group_by(area, sex) %>% summarise(low=min(newrel_100k), high=max(newrel_100k)) %>% mutate(diffr=signif(high/low,2)) %>% filter(!is.na(diffr)) %>% ungroup() %>% arrange(desc(diffr))
 n18a <- n18 %>% filter(diffr==max(diffr))
@@ -762,7 +763,7 @@ Overall speaking, TB treatment success in the Region continues to be over 85% (`
 **`r I(pasteLabel("Figure", figCount, "f-txout-line", insLink=FALSE))` Trend of TB treatment success among new bacteriologically confirmed cases in countries with a high-burden of TB of the Western Pacific Region, `r min(trd$year)`--`r max(trd$year)`**  
 ``` {r f-txout-line, fig.height=7.5}
 
-trd1 <- ggplot(trd, aes(year, success, color=iso3, size = area=="WPR")) + geom_line() + theme_report() + geom_text(data=end.labels(trd, "year", "success", min.spread=1.4, max1=96), aes(label=iso3), hjust=-0.2, vjust=0, size=4)  + scale_y_continuous("Percent of cohort successfully treated") + scale_x_continuous("", limits=c(2000,yr-0.3)) + coord_cartesian(ylim=c(30,100)) + scale_size_discrete(range = c(1,1.5)) + theme(legend.position="none") + scale_color_brewer(type="qual", palette=6)  + guides(fill = guide_legend(reverse = TRUE))
+trd1 <- ggplot(trd, aes(year, success, color=iso3, size = area=="WPR")) + geom_line() + theme_report() + geom_text(data=end.labels(trd, "year", "success", min.spread=1.4, max1=96), aes(label=iso3), hjust=-0.2, vjust=0, size=4)  + scale_y_continuous("Percent of cohort successfully treated") + scale_x_continuous("", limits=c(2000,yr-0.3)) + coord_cartesian(ylim=c(30,100)) + scale_size_discrete(range = c(1,1.5)) + theme(legend.position="none") + scale_color_brewer(type="qual", palette=3)  + guides(fill = guide_legend(reverse = TRUE))
 
 trd1
 
@@ -807,10 +808,11 @@ write.csv(thb, file=paste0(pasteLabel("./figure_data/figure", figCount, "f-tbhiv
 
 # For paragraph
 thc <- tha %>% filter(iso3=="WPR", year==yr)
-hivtest.pct.wpr <- thc %>% transmute(x=signif(test,2))
-tbhiv.pct.wpr <- thc %>% transmute(x=signif(pos,2))
+thc2 <- tha %>% filter(iso3=="WPR", year %in% c(2006,yr) )
+hivtest.pct.wpr <- thc2 %>% transmute(x=signif(test,2))
+tbhiv.pct.wpr <- thc2 %>% transmute(x=signif(pos,2))
 tbhiv.num.wpr <- thc %>% transmute(x=rounder(hivtest_pos_pct_numerator))
-thd <- tha %>% filter(iso3=="WPR", year > 2009) %>% select(cpt) %>% signif(2) %>% range()
+thd <- tha %>% filter(iso3=="WPR", year %in% 2009:yr) %>% select(cpt) %>% signif(2) %>% range()
 cpt.pct.range.wpr <- paste0(thd[1], "% and ", thd[2], "%")
 art.pct.wpr <- thc %>% transmute(x=signif(art,2))
 tbhiv.num.mng.max <- tha %>% filter(iso3=="MNG") %>% transmute(x=hivtest_pos_pct_numerator) %>% filter(x==max(x, na.rm=TRUE)) %>% mutate(x=numbers2words(x))
@@ -821,7 +823,7 @@ tbhiv.pct.png <- tha %>% filter(iso3=="PNG", year==yr) %>% transmute(x=signif(po
 
 ```
 
-`r I(pasteLabel("Figure", figCount, "f-tbhiv"))` summarizes four basic indicators (HIV testing, HIV positivity rate, co-trimoxazole preventive therapy (CPT) coverage and  antiretroviral therapy (ART) coverage) for the seven countries with a high burden of TB. Overall in the Region HIV testing has steadily increased to `r hivtest.pct.wpr`% in `r yr`. Alongside this increase in testing the proportion of TB/HIV cases found has steadily declined over the same period to `r tbhiv.pct.wpr`% in `r yr` equivalent to `r tbhiv.num.wpr` cases. CPT coverage increased from 2007 to 2009 and has since leveled off ranging between `r cpt.pct.range.wpr` and possibly declining in `r yr`. ART coverage has also increased reaching the highest point in `r yr` at `r art.pct.wpr`%.
+`r I(pasteLabel("Figure", figCount, "f-tbhiv"))` summarizes four basic indicators (HIV testing, HIV positivity rate, co-trimoxazole preventive therapy (CPT) coverage and  antiretroviral therapy (ART) coverage) for the seven countries with a high burden of TB. Overall in the Region HIV testing has steadily increased from `r hivtest.pct.wpr[1,]`% to `r hivtest.pct.wpr[2,]`% in `r yr`. Alongside this increase in testing the proportion of TB/HIV cases found has steadily declined over the same period from `r tbhiv.pct.wpr[1,]`% in 2006 to `r tbhiv.pct.wpr[2,]`% in `r yr` equivalent to `r tbhiv.num.wpr` cases. CPT coverage increased from 2007 to 2009 and has since leveled off ranging between `r cpt.pct.range.wpr` and possibly declining in `r yr`. ART coverage has also increased reaching the highest point in `r yr` at `r art.pct.wpr`%.
 
 Cambodia and Viet Nam reported the most comprehensive data completeness and programmatic progress. The coverage of HIV testing, CPT and ART progressively increased, with a steady decrease in the proportion of HIV positive individuals among TB patients. Mongolia also reported a high level of testing with no more than `r tbhiv.num.mng.max` cases per year found positive since 2006. HIV testing is the lowest in the Philippines at `r test.pct.phl`% in `r yr` detecting the second lowest proportion of cases (after Mongolia) at `r tbhiv.pct.phl`%. The next lowest proportion tested is Papua New Guinea at `r test.pct.png`%, but with the highest proportion found positive at `r tbhiv.pct.png`%. 
 
@@ -851,7 +853,7 @@ figCount <- incCount(figCount, "f-est")
 
 eget <- c("year", "e_pop_num", "e_inc_100k", "e_inc_100k_lo", "e_inc_100k_hi", "e_prev_100k", "e_prev_100k_lo", "e_prev_100k_hi", "e_mort_exc_tbhiv_100k", "e_mort_exc_tbhiv_100k_lo", "e_mort_exc_tbhiv_100k_hi")
 
-# esta <- subset(estimates, year >=1990 & group_name=="WPR", select=eget)
+# esta <- subset(estimates, year %in% 1990:yr & group_name=="WPR", select=eget)
 estb <- tb[tb$year %in% 1990:yr & tb$g_whoregion=="WPR", c("year", "c_newinc")]
 estc <- aggregate(estb["c_newinc"], by=list(year=estb$year), FUN=sum, na.rm=TRUE)
 
@@ -901,7 +903,7 @@ With the disaggregated view of notification in `r I(pasteLabel("Figure", figCoun
 
 Treatment success has remained high for six of seven high-burden countries in the Region since 2005. In addition to patient benefit, if patients are put on treatment early, this high level of success will help drive incidence downward. The trend is erratic in the remaining high-burden country, Papua New Guinea, with a large proportion of cases not put on treatment and a large number of patients lost to follow-up or not evaluated. The number of cases not put on treatment is also a concern in Lao People's Democratic Republic and Cambodia although if these cases were included in the treatment cohort, treatment success would still be over 85%. 
 
-An estimated `r d2[1]` (range: `r d2[2]`--`r d2[3]`) people living with HIV develop TB every year in the Region. While the HIV burden in the Region remains comparatively low, TB poses a dangerous threat and collaborative TB/HIV services are vital to save lives. Testing continues to increase gradually, although still below 50%. CPT coverage has levelled off and perhaps began to decline representing a possible risk for essential services. ART coverage is increasing, but still shows major gaps in most countries in the Region.
+An estimated `r d2[1]` (range: `r d2[2]`--`r d2[3]`) people living with HIV develop TB every year in the Region.[@WorldHealthOrganization2014] While the HIV burden in the Region remains comparatively low, TB poses a dangerous threat and collaborative TB/HIV services are vital to save lives. Testing continues to increase gradually, although still below 50%. CPT coverage has levelled off and perhaps began to decline representing a possible risk for essential services. ART coverage is increasing, but still shows major gaps in most countries in the Region.
 
 This report provides a snapshot of the epidemiological and programmatic situation of TB in the Western Pacific Region based on the case notification data in `r yr`. Many countries report case data broken down by age for bacteriologically confirmed cases only although WHO has been requesting this information since 2006.[@WorldHealthOrganization2006] This obscures the number of young children detected and poses a great limitation to the analysis of notifications by age and sex. Bacteriological confirmation is much rarer in young children due to difficulty in producing sputum. With the expanding coverage of central case-based recording and reporting systems, this data is becoming more available.
 
