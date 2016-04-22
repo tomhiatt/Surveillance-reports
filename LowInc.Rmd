@@ -1,5 +1,5 @@
 ---
-title: Epidemiological Situation of Tuberculosis in countries of the Western Pacific with a low or intermediate disease burden using `r yr <- 2013; yr` case notification data
+title: Epidemiological Situation of Tuberculosis in countries of the Western Pacific with a low or intermediate disease burden using `r yr <- 2014; yr` case notification data
 author: "Tom Hiatt<sup>&dagger;</sup> and Nobuyuki Nishikiori<sup>&dagger;</sup>"
 csl: vancouver-imperial-college-london.csl
 output:
@@ -27,7 +27,7 @@ bibliography: WPRupdate.bib
 
 ## Change this information to customize for your own data.
 
-yr <- 2013
+yr <- 2014
 
 ###################################################
 
@@ -377,9 +377,21 @@ write.csv(spa, file=paste0(pasteLabel("./figure_data/table", figCount, "f.spread
 ```{r f.trend.data, include=FALSE}
 figCount <- incCount(figCount, "f.trend")
 
-trg <- tbli %>% filter(year %in% 1980:yr) %>% select(year, c_newinc_100k, iso3) %>% mutate(orphs=orphaned.dots(c_newinc_100k)) 
+trg <- tbli %>% filter(year %in% 1980:yr) %>% select(year, c_newinc_100k, iso3) %>% mutate(orphs=orphaned.dots(c_newinc_100k))
 
-f.trend <- trg %>% ggplot(aes(year, c_newinc_100k, ymin=0)) + geom_line(size=1) + geom_point(data=subset(trg, orphs)) + theme_report() + labs(x="", y="Total new and relapse cases per 100 000 per year") + facet_wrap(~iso3, scales="free_y") + geom_smooth(method="loess") #+ scale_y_log10()
+# Get exponential prediction
+trh <- NULL
+for(cnty in lic){
+  fitbegin <- 2004
+  temp1 <- trg %>% filter(iso3==cnty) %>% mutate(c_newinc_100k.part = ifelse(year<fitbegin, NA, c_newinc_100k))
+  emod <- lm(log(c_newinc_100k.part)~year, temp1)
+  temp1$fit.y <- c(rep(NA, fitbegin-1980), exp(predict(emod,list(year=fitbegin:yr))) )
+  temp1$coef <- sprintf("%1.1f%%", round(coef(emod)[2] * 100, 1))
+  trh <- rbind(trh, temp1)
+}
+
+
+f.trend <- trh %>% ggplot(aes(year, c_newinc_100k, ymin=0)) + geom_line(size=1) + geom_point(data=subset(trg, orphs)) + theme_report() + labs(x="", y="Total new and relapse cases per 100 000 per year") + facet_wrap(~iso3, scales="free_y") + geom_line(aes(y=fit.y), color="blue", linetype="solid", size=0.75) + geom_text(aes(label=coef), data = subset(trh, year==yr-3), size=3, vjust=2.5) #+ geom_smooth(method="lm", se=FALSE) #+ scale_y_log10()
 
 write.csv(trg, file=paste0(pasteLabel("./figure_data/table", figCount, "f.trend", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
 
@@ -454,7 +466,7 @@ age$age <- factor(age$age, c("014", "1524", "2534", "3544", "4554", "5564", "65"
 age$trnd.brk <- ifelse(age$iso3=="HKG" & age$year < 2005, "sp", "all")
 age$trnd.brk <- ifelse(age$iso3!="HKG" & age$year < 2006, "sp", age$trnd.brk)
 
-f.agesex <- ggplot(subset(age, year %in% 1995:yr & iso3 %in% lic[1:9]), aes(year, newrel_100k, color=age, width=trnd.brk)) + geom_line(size=1) + facet_wrap(~iso3, scales='free_y', nrow=3) + theme_report() + scale_x_continuous("", breaks = pretty_breaks()) + scale_color_brewer("Age group", type="seq", palette=4) + scale_y_continuous("New and relapse cases per 100 000 per year") + guides(color = guide_legend(reverse = TRUE)) + theme(legend.text.align=1)
+f.agesex <- ggplot(subset(age, year %in% 1995:yr & iso3 %in% lic[1:9]), aes(year, newrel_100k, color=age, width=trnd.brk)) + geom_line(size=1) + facet_wrap(~iso3, scales='free_y', nrow=3) + theme_report() + scale_x_continuous("", breaks = pretty_breaks()) + scale_color_brewer("Age group", type="div", palette="RdYlBu") + scale_y_continuous("New and relapse cases per 100 000 per year") + guides(color = guide_legend(reverse = TRUE)) + theme(legend.text.align=1)
 
 # NOtE: Can also do log y scale, but it just crushes the space and makes differences harder to see. But maybe more consistent with other graphs.
 
@@ -484,16 +496,16 @@ obd <- obb %>%
 f.migrant.trend <- ggplot(obb, aes(year, migtb_pct, ymin=0)) + geom_point(aes(size=mig)) + geom_line() + theme_report() + scale_x_continuous("", limits=c(2007,yr)) + scale_y_continuous("Foreign-born TB cases (% of total notified)") + facet_wrap(~iso3, scales = "free_y") + scale_size("International migrant stock 2010 (% of population)") + theme(legend.position="bottom")
 
 obq <- obb %>%
-  mutate(mig=ifelse(year==2010, mig, NA), migtb_pct=ifelse(year==2013, migtb_pct, NA)) %>%
+  mutate(mig=ifelse(year==2010, mig, NA), migtb_pct=ifelse(year==2014, migtb_pct, NA)) %>%
   group_by(iso3) %>%
   summarize(mig=sum0(mig), migtb_pct=sum0(migtb_pct)) %>%
-ggplot(aes(mig, migtb_pct)) + geom_point(aes(color=iso3)) + geom_line(aes(x,y), data.frame(x=c(0,60), y=c(0,60)), alpha=0.2) + theme_report() + scale_x_continuous("International migrant stock 2010 (% of population)") + scale_y_continuous("Foreign-born TB cases 2013 (% of total notified)")
+ggplot(aes(mig, migtb_pct)) + geom_point(aes(color=iso3)) + geom_line(aes(x,y), data.frame(x=c(0,60), y=c(0,60)), alpha=0.2) + theme_report() + scale_x_continuous("International migrant stock 2010 (% of population)") + scale_y_continuous("Foreign-born TB cases 2014 (% of total notified)")
 
 f.migrant <- direct.label(obq)
 
 
 obq <- obb %>%
-  mutate(mig=ifelse(year==2010, mig, NA), c_newinc_100k=ifelse(year==2013, c_newinc_100k, NA)) %>%
+  mutate(mig=ifelse(year==2010, mig, NA), c_newinc_100k=ifelse(year==2014, c_newinc_100k, NA)) %>%
   group_by(iso3) %>%
   summarize(mig=sum0(mig), c_newinc_100k=sum0(c_newinc_100k)) %>%
 ggplot(aes(mig, c_newinc_100k)) + geom_point(aes(color=iso3)) + geom_line(aes(x,y), data.frame(x=c(0,75), y=c(0,75))) + theme_report() + scale_x_continuous("International migrant stock 2010 (% of population)") + scale_y_continuous("New and relapse TB cases per 100 000 per year")
@@ -673,7 +685,7 @@ i3 <- tb %>% filter(year==yr, g_whoregion=="WPR") %>% summarize(cases=sum0(c_not
 
 The End TB Strategy, adopted by the World Health Assembly in 2014,[cite] expands the scope of TB control beyond countries with a high burden of TB to also include countries and areas with a low and intermediate burden of the disease. The challenges faced by these countries are diverse and often require innovative solutions. WHO released guidelines toward TB elimination in countries that have a low burden of disease,[cite] which requires concerted efforts on marginalized and vulnerable populations. In the World Health Organization (WHO) Western Pacific Region, significant progress has been made in the past few decades in reducing the burden of TB including among higher-income countries with a lower disease burden. Analysis of TB data from these countries provides an opportuntity to assess progress and inform future directions.
 
-This article is part of complementary analyses conducted in conjunction with the regional analysis of 2013 TB case notification data.[cite] 
+This article is part of complementary analyses conducted in conjunction with the regional analysis of 2014 TB case notification data.[cite] 
 
 
 
@@ -716,7 +728,7 @@ Results
 
 ### Case notification
 
-In `r yr`, LICs in the Region reported `r n1` people with TB disease (`r I(pasteLabel("Table", tableCount, "t.notif"))`). This accounts for `r m2b`% of the regional burden. New and relapse cases (new episodes of TB) accounted for 95.5% of those notified. Cases were bacteriologically confirmed in 72% of LIC cases, ranging from 64% in Singapore to 95% in Brunei Darussalam. The proportion of extrapulmonary cases formed the LICs into three groups, high proportions of over 40% in Australia and New Zealand, low proportions in China, Macao SAR, Malaysia and Singapore with less than 15%, and the remaining LICs around 20%. Relapse cases comprise about 9% of cases in these countries with a comparatively narrow spread between LICs. Other retreatment cases have a larger range with the highest proportion in the Republic of Korea (8.2%). All proportions presented are higher in LICs than the WPR average.
+In `r yr`, LICs in the Region reported `r n1` people with TB disease (`r I(pasteLabel("Table", tableCount, "t.notif"))`). This accounts for `r m2b`% of the regional burden. New and relapse cases (new episodes of TB) accounted for 96.2% of those notified. Pulmonary new and relapse cases were bacteriologically confirmed in 72% of LIC cases, ranging from 62% in Singapore to 96% in Brunei Darussalam. The proportion of extrapulmonary cases tend to form three groups, high proportions of over 35% in Australia and New Zealand, low proportions in China, Macao SAR, Malaysia and Singapore with around 15%, and the remaining LICs around 20%. Relapse cases comprise 8.7% of cases in these countries with the highest in the Republic of Korea at 13%. Other retreatment cases are generally low with the highest proportions in Malaysia (2.7%) and the Republic of Korea (6.7%). All proportions presented are higher in LICs than the WPR average.
 
  
 
@@ -738,8 +750,8 @@ print(tbm, type="html", include.rownames=FALSE, include.colnames=FALSE, html.tab
   <TD style='border-right: solid 1px black;'></TD> 
   <TD style='width:75px'>TOTAL</TD> 
   <TD>BACTERIOLOGICALLY CONFIRMED AMONG PULMONARY CASES (%)</TD> 
-  <TD>EXRAPULMONARY (%)</TD> 
-  <TD style='border-right: solid 1px black;'>RELAPSE (%)</TD> 
+  <TD>EXRAPULMONARY AMONG TOTAL (%)</TD> 
+  <TD style='border-right: solid 1px black;'>RELAPSE AMONG TOTAL (%)</TD> 
   <TD style='width:75px'>TOTAL NOTIFIED</TD>
   <TD>RETREATMENT EXCLUDING RELAPSE AMONG NOTIFIED (%)</TD> 
   </TR> 
@@ -751,7 +763,7 @@ print(tbm, type="html", include.rownames=FALSE, include.colnames=FALSE, html.tab
 
 --------------------------------------------------------
 
-`r I(pasteLabel("Figure", figCount, "f.spread"))` displays the differences in TB burden between LICs. New and relapse TB notification rates are mapped to a horizontal log scale to better show the natural progression as disease burden decreases. The verticle scale shows the actual number of cases per year. Japan, with the largest population, sits in the middle of this spread with an existing burden of over 20 thousand cases per year. Australia and New Zealand have comparatively lower burdens of TB in terms of proportion and absolute numbers. Brunei Darussalum, China, Hong Kong SAR, China, Macao SAR, and Singapore have higher proportions of TB, but a comparatively lower absolute burden due to smaller population size. With similar, but slightly higher proportions, Malaysia and the Republic of Korea have much higher case loads due to their larger populations with over 23 and 41 thousand cases, respectively. 
+`r I(pasteLabel("Figure", figCount, "f.spread"))` displays the differences in TB burden between LICs. New and relapse TB notification rates are mapped to a horizontal log scale to better show the natural progression as disease burden decreases. The vertical scale shows the actual number of cases per year. Japan, with the largest population, sits in the middle of this spread with an existing burden of nearly 20 thousand cases per year. Australia and New Zealand have comparatively lower burdens of TB in terms of proportion and absolute numbers. Brunei Darussalum, China, Hong Kong SAR, China, Macao SAR, and Singapore have higher proportions of TB, but a comparatively lower absolute burden due to smaller population sizes. With similar, but slightly higher proportions, Malaysia and the Republic of Korea have much higher case loads due to their larger populations with over 24 and 40 thousand cases, respectively. 
 
 --------------------------------------------------------
 
@@ -765,17 +777,20 @@ AUS=Australia; BRN=Brunei Darussalam; HKG=China, Hong Kong SAR; JPN=Japan; KOR=R
 
 --------------------------------------------------------
 
-Case notification rates have mostly trended downward since 1980, with the exception of rates in Malaysia and the Republic of Korea which have been increasing since 2004 and 2000, respectively (`r I(pasteLabel("Figure", figCount, "f.trend"))`). Trends have tapered off in recent years in Australia, Brunei Darussalam, the Republic of Korea, and China, Macao SAR. The trend in Singapore also appears to have reached a point of stagnation, possibly even beginning to increase. Since 2000, the greatest annual rate of decline is seen in Japan (5.0%).
+Case notification rates have mostly trended downward since 1980, with the exception of rates in Malaysia and Singapore (`r I(pasteLabel("Figure", figCount, "f.trend"))`). Trends have tapered off in recent years in Australia, Brunei Darussalam, the Republic of Korea, and China, Macao SAR. Modeling from 2004, the greatest annual rate of decline is seen in Japan (3.7%).
 
 
 
 --------------------------------------------------------
 
 <a id="f.trend"></a> 
-**`r I(pasteLabel("Figure", figCount, "f.trend", insLink=FALSE))`. Tuberculosis case notification rate (all forms and new laboratory-confirmed) per 100 000 population in select countries of the Western Pacific Region, `r min(trg$year)`--`r max(trg$year)`**  
-```{r f.trend, fig.height=5, warning=FALSE}
+**`r I(pasteLabel("Figure", figCount, "f.trend", insLink=FALSE))`. Tuberculosis case notification rate (all forms and new laboratory-confirmed) per 100 000 population in select countries of the Western Pacific Region, `r min(trg$year)`--`r max(trg$year)`** 
+
+```{r f.trend, fig.height=6, warning=FALSE}
 f.trend
 ```
+
+Blue trendlines and numbers indicate the exponential fit and annual change for the last 10 years.
 
 AUS=Australia; BRN=Brunei Darussalam; HKG=China, Hong Kong SAR; JPN=Japan; KOR=Republic of Korea; MAC=China, Macao SAR; MYS=Malaysia; NZL=New Zealand; SGP=Singapore.
 
@@ -789,7 +804,7 @@ The breakdown of cases by age group, including both native- and foreign-born, ar
 --------------------------------------------------------
 
 <a id="f.agesex"></a> 
-**`r I(pasteLabel("Figure", figCount, "f.agesex", insLink=FALSE))`. Trend of age group-specific notification rates (per 100 000 population) of new and relapse^a^ tuberculosis cases in select countries of the Western Pacific Region, `r min(age$year)`--`r max(age$year)**  
+**`r I(pasteLabel("Figure", figCount, "f.agesex", insLink=FALSE))`. Trend of age group-specific notification rates (per 100 000 population) of new and relapse^a^ tuberculosis cases in select countries of the Western Pacific Region, `r min(age$year)`--`r max(age$year)`**  
 ``` {r f.agesex, warning=FALSE, fig.width=9, fig.height=10}
 f.agesex
 ```
@@ -803,7 +818,7 @@ AUS=Australia; BRN=Brunei Darussalam; HKG=China, Hong Kong SAR; JPN=Japan; KOR=R
 
 #### Migration
 
-The proportion of TB cases and of the general population that are foreign-born ranges greatly amongst the LICs (`r I(pasteLabel("Figure", figCount, "f.migrant"))`). The proportion of TB cases foreign-born is much higher than in the general population in Australia and New Zealand, whereas in the special administrative regions of China, it is much lower. The remaining five LICs have proportions similar between the two groups, although Brunei Darussalam and Singapore have much higher proportions.
+The proportion of TB cases and of the general population that are foreign-born ranges greatly amongst the LICs (`r I(pasteLabel("Figure", figCount, "f.migrant"))`). The proportion of TB cases foreign-born is much higher than in the general population in Australia and New Zealand, whereas in the special administrative regions of China, it is much lower. The remaining five LICs have proportions similar between the two groups, although Brunei Darussalam and Singapore have much higher proportions of foreigners amongst TB cases and the general population. All LICs besides Australia and New Zealand have the majority of TB cases coming from the domestic-born population.
 
 --------------------------------------------------------
 
@@ -822,12 +837,12 @@ AUS=Australia; BRN=Brunei Darussalam; HKG=China, Hong Kong SAR; JPN=Japan; KOR=R
 
 #### Treatment outcomes
 
-For the 2012 cohort as see in `r I(pasteLabel("Figure", figCount, "f.txout"))`, the proportion of patients successfully treated was highest in China, Macao SAR (88.3%) and lowest in Japan (54.1%). Patients not evaluated was the most common unfavourable treatment outcome, followed by death and lost to follow-up. Death rates were highest in China, Hong Kong SAR (17.1%) and Japan (16.5%). The rates of lost to follow-up were highest in the Republic of Korea (10.0%), Japan (6.7%) and Malaysia (5.0%). Trends show some consistency in treatment success alongside considerable variation over time in the causes of unfavourable outcomes.
+For the 2013 cohort as see in `r I(pasteLabel("Figure", figCount, "f.txout"))`, the proportion of patients successfully treated was highest in China, Macao SAR (88.3%) and lowest in Japan (54.1%). Patients not evaluated was the most common unfavourable treatment outcome, followed by death and lost to follow-up. Death rates were highest in China, Hong Kong SAR (17.1%) and Japan (16.5%). The rates of lost to follow-up were highest in the Republic of Korea (10.0%), Japan (6.7%) and Malaysia (5.0%). Trends show some consistency in treatment success alongside considerable variation over time in the causes of unfavourable outcomes.
 
 --------------------------------------------------------
 
 <a id="f.txout"></a> 
-**`r I(pasteLabel("Figure", figCount, "f.txout", insLink=FALSE))`. Trend of treatment outcome expressed as a proportion among new laboratory-confirmed cases in the Western Pacific Region, min(trc$year)--`r max(trc$year)`**  
+**`r I(pasteLabel("Figure", figCount, "f.txout", insLink=FALSE))`. Trend of treatment outcome expressed as a proportion among new laboratory-confirmed cases in the Western Pacific Region, `r min(trc$year)`--`r max(trc$year)`**  
 ``` {r f.txout, fig.width=9, warning=FALSE}
 f.txout
 ```
