@@ -1,20 +1,22 @@
 ---
-title: Epidemiological Situation of Tuberculosis in countries of the Western Pacific with a low or intermediate disease burden using `r yr <- 2014; yr` case notification data
+title: Epidemiological Situation of Tuberculosis in countries of the Western Pacific
+  with a low or intermediate disease burden using `r yr <- 2014; yr` case notification
+  data
 author: "Tom Hiatt<sup>&dagger;</sup> and Nobuyuki Nishikiori<sup>&dagger;</sup>"
 csl: vancouver-imperial-college-london.csl
 output:
+  word_document:
+    fig_height: 7
+  pdf_document:
+    toc: yes
   html_document:
     fig_caption: yes
+    fig_width: 7
     keep_md: yes
     number_sections: no
     theme: united
     toc: yes
-    fig_width: 7
-  pdf_document:
-    toc: yes
-  word_document:
-    fig_height: 7
-bibliography: WPRupdate.bib
+bibliography: LowInc.bib
 ---
 
 ```{r setup, echo=FALSE, include=FALSE}
@@ -82,7 +84,10 @@ theme_report <- function(base_size=12, base_family="") {
       strip.background = element_rect(fill="white", colour=NA),
       strip.text = element_text(hjust=0)
       )
-  }
+}
+
+# WPSAR color palette
+wpsar_colors <- c("#00B050", "#31859C", "#215968", "#00B0F0", "#558ED5", "#17375E", "#7F7F7F", "#007332") # [6,7]
 
 ########################################################
 # Functions for data formatting and manipulation
@@ -107,24 +112,6 @@ rounder <- function(x, decimals=FALSE, thousep=" ") {
 
 sum0 <- function(x) sum(x, na.rm = !all(is.na(x)))
 
-# Change names to WPSAR convention
-# .WPSARnames <- function(d, col='country', the=FALSE){
-#   d[col] <- as.character(d[[col]])
-#   d[col] <- ifelse(d[[col]]=='China, Hong Kong SAR', 'Hong Kong Special Administrative Region (China)', 
-#                    ifelse(d[[col]]=='China, Macao SAR', 'Macao Special Administrative Region (China)', 
-#                           ifelse(d[[col]]=='Micronesia (Federated States of)', 'Micronesia, Federated States of', 
-#                                  ifelse(d[[col]]=='WPR', 'Western Pacific Region
-#                                         ', d[[col]]))))
-#   
-#   if(the){
-#     d[col] <- ifelse(d[[col]]=='Philippines', 'the Philippines',
-#                      ifelse(d[[col]]=="Lao People's Democratic Republic", "the Lao People's Democratic Republic", d[[col]]))
-#     }
-#   
-#   
-#   return(d)
-#   }
-
 lister <- function(x, sep=","){
   if(length(x)==1) return(x)
   if(length(x)==2) return(paste(x, collapse=" and "))
@@ -142,13 +129,6 @@ orphaned.dots <- function(vect){
   vect1 <- c(vect1, ifelse(!is.na(vect[length(vect)]) & is.na(vect[length(vect)-1]), TRUE, FALSE))
   return(vect1)
 }
-
-########################################################
-# Functions for maps
-########################################################
-
-# source("./MapFunctions.r")
-# load("gparts.Rdata")
 
 ########################################################
 # Functions to assist with tables and figure in markdown document (from here: http://rmflight.github.io/posts/2012/10/papersinRmd.html)
@@ -382,7 +362,7 @@ trg <- tbli %>% filter(year %in% 1980:yr) %>% select(year, c_newinc_100k, iso3) 
 # Get exponential prediction
 trh <- NULL
 for(cnty in lic){
-  fitbegin <- 2004
+  fitbegin <- 2005
   temp1 <- trg %>% filter(iso3==cnty) %>% mutate(c_newinc_100k.part = ifelse(year<fitbegin, NA, c_newinc_100k))
   emod <- lm(log(c_newinc_100k.part)~year, temp1)
   temp1$fit.y <- c(rep(NA, fitbegin-1980), exp(predict(emod,list(year=fitbegin:yr))) )
@@ -391,7 +371,7 @@ for(cnty in lic){
 }
 
 
-f.trend <- trh %>% ggplot(aes(year, c_newinc_100k, ymin=0)) + geom_line(size=1) + geom_point(data=subset(trg, orphs)) + theme_report() + labs(x="", y="Total new and relapse cases per 100 000 per year") + facet_wrap(~iso3, scales="free_y") + geom_line(aes(y=fit.y), color="blue", linetype="solid", size=0.75) + geom_text(aes(label=coef), data = subset(trh, year==yr-3), size=3, vjust=2.5) #+ geom_smooth(method="lm", se=FALSE) #+ scale_y_log10()
+f.trend <- trh %>% ggplot(aes(year, c_newinc_100k, ymin=0)) + geom_line(size=1) + geom_point(data=subset(trg, orphs)) + theme_report() + labs(x="", y="Total new and relapse cases per 100 000 per year") + facet_wrap(~iso3, scales="free_y") + geom_line(aes(y=fit.y), color=wpsar_colors[1], linetype="solid", size=0.75) + geom_text(aes(label=coef), data = subset(trh, year==yr-3), size=3, vjust=2.5, color=wpsar_colors[1]) #+ geom_smooth(method="lm", se=FALSE) #+ scale_y_log10()
 
 write.csv(trg, file=paste0(pasteLabel("./figure_data/table", figCount, "f.trend", insLink=FALSE, sepper=""), ".csv"), row.names=FALSE, na="")
 
@@ -441,7 +421,7 @@ agd$newrel_100k <- agd$newrel / agd$pop * 1e5
 age <- subset(agd, (iso3 %in% lic | area=="LIC") & age!="u" & !age %in% c("04", "514")) %>% filter(year %in% 1995:yr)
 age$sex <- factor(age$sex, levels=c("m", "f"), labels=c("Male", "Female"))
 
-age$age <- factor(age$age, c("014", "1524", "2534", "3544", "4554", "5564", "65"), c("0–14", "15–24", "25–34", "35–44", "45–54", "55–64", "\u2265 <65"))
+age$age <- factor(age$age, c("014", "1524", "2534", "3544", "4554", "5564", "65"), c("0–14", "15–24", "25–34", "35–44", "45–54", "55–64", "\u226565"))
 
 p1 <- ggplot(subset(age, year %in% 1995:yr & iso3 %in% lic[1:3]), aes(year, newrel_100k, color=age)) + geom_line(size=1) + facet_grid(iso3~sex, scales='free_y') + theme_report() + scale_x_continuous("", breaks = pretty_breaks()) + scale_color_brewer("Age group", type="seq", palette=4)
 
@@ -466,7 +446,7 @@ age$age <- factor(age$age, c("014", "1524", "2534", "3544", "4554", "5564", "65"
 age$trnd.brk <- ifelse(age$iso3=="HKG" & age$year < 2005, "sp", "all")
 age$trnd.brk <- ifelse(age$iso3!="HKG" & age$year < 2006, "sp", age$trnd.brk)
 
-f.agesex <- ggplot(subset(age, year %in% 1995:yr & iso3 %in% lic[1:9]), aes(year, newrel_100k, color=age, width=trnd.brk)) + geom_line(size=1) + facet_wrap(~iso3, scales='free_y', nrow=3) + theme_report() + scale_x_continuous("", breaks = pretty_breaks()) + scale_color_brewer("Age group", type="div", palette="RdYlBu") + scale_y_continuous("New and relapse cases per 100 000 per year") + guides(color = guide_legend(reverse = TRUE)) + theme(legend.text.align=1)
+f.agesex <- ggplot(subset(age, year %in% 1995:yr & iso3 %in% lic[1:9]), aes(year, newrel_100k, color=age, width=trnd.brk)) + geom_line(size=1) + facet_wrap(~iso3, scales='free_y', nrow=3) + theme_report() + scale_x_continuous("", breaks = pretty_breaks()) + scale_color_manual("Age group", values=wpsar_colors) + scale_y_continuous("New and relapse cases per 100 000 per year") + guides(color = guide_legend(reverse = TRUE)) + theme(legend.text.align=1)
 
 # NOtE: Can also do log y scale, but it just crushes the space and makes differences harder to see. But maybe more consistent with other graphs.
 
@@ -499,7 +479,7 @@ obq <- obb %>%
   mutate(mig=ifelse(year==2010, mig, NA), migtb_pct=ifelse(year==2014, migtb_pct, NA)) %>%
   group_by(iso3) %>%
   summarize(mig=sum0(mig), migtb_pct=sum0(migtb_pct)) %>%
-ggplot(aes(mig, migtb_pct)) + geom_point(aes(color=iso3)) + geom_line(aes(x,y), data.frame(x=c(0,60), y=c(0,60)), alpha=0.2) + theme_report() + scale_x_continuous("International migrant stock 2010 (% of population)") + scale_y_continuous("Foreign-born TB cases 2014 (% of total notified)")
+ggplot(aes(mig, migtb_pct)) + geom_point(aes(color=iso3)) + geom_line(aes(x,y), data.frame(x=c(0,60), y=c(0,60)), alpha=0.2) + theme_report() + scale_x_continuous("International migrant stock 2010 (% of population)") + scale_y_continuous("Foreign-born TB cases 2014 (% of total notified)") + scale_color_manual(values=rep(wpsar_colors, 2))
 
 f.migrant <- direct.label(obq)
 
@@ -550,7 +530,7 @@ trd <- tra %>% rowSumsNA2("succ", c("new_sp_cur", "new_sp_cmplt", "newrel_succ")
 
 
 
-f.txout.line <- ggplot(trd, aes(year, success, color=iso3)) + geom_line(size=1) + theme_report() + geom_text(data=end.labels(trd, "year", "success", min.spread=2.1), aes(label=iso3), hjust=-0.2, vjust=0, size=4)  + scale_y_continuous("Percent of cohort successfully treated") + scale_x_continuous("", limits=c(2000,2012.7)) + coord_cartesian(ylim=c(0,100)) + scale_size_discrete(range = c(1,1.5)) + theme(legend.position="none") + scale_color_brewer(type="qual", palette=6)  + guides(fill = guide_legend(reverse = TRUE))
+# f.txout.line <- ggplot(trd, aes(year, success, color=iso3)) + geom_line(size=1) + theme_report() + geom_text(data=end.labels(trd, "year", "success", min.spread=2.1), aes(label=iso3), hjust=-0.2, vjust=0, size=4)  + scale_y_continuous("Percent of cohort successfully treated") + scale_x_continuous("", limits=c(2000,2012.7)) + coord_cartesian(ylim=c(0,100)) + scale_size_discrete(range = c(1,1.5)) + theme(legend.position="none") + scale_color_brewer(type="qual", palette=6)  + guides(fill = guide_legend(reverse = TRUE))
 
 # old school
 
@@ -580,6 +560,7 @@ f.txout <- ggplot(trc, aes(year, value, fill=variable)) + geom_area(stat="identi
 
 
 # For stack overflow
+# The stack area doesn't show gaps.
 require(dplyr)
 require(ggplot2)
 
@@ -642,20 +623,11 @@ write.csv(thb, file=paste0(pasteLabel("./figure_data/figure", figCount, "f.tbhiv
 
 ```
 
-
-
-
 <sup>&dagger;</sup> Stop TB and Leprosy Elimination, Division of Communicable Diseases, World Health Organization Regional Office for the Western Pacific, Manila, Philippines.
 
 --------------------------------------------------------
 
 Correspondence to Tom Hiatt (e-mail: hiattt@wpro.who.int).
-
---------------------------------------------------------
-
-To cite this article: 
-
-
 
 --------------------------------------------------------
 
@@ -666,11 +638,17 @@ a1 <- signif((subset(esta, year==2000, e_prev_num) - subset(esta, year==yr, e_pr
 a2 <- tb %>% filter(year==yr, g_whoregion=="WPR") %>% summarize(cases=sum0(c_notified / 1e6)) %>% signif(2)
 a3 <- tb %>% filter(year==yr-1, g_whoregion=="WPR", c_newrel_tsr >= 85) %>% nrow()
 
+foreign_born_pct <- tb %>% filter(year==2014) %>% filter(iso3 %in% lic) %>% summarize(mig=sum0(c(notif_foreign)), c_notified=sum0(c_notified))
 ```
 
-[To be written after the rest of the text.]
 
-TB surveillance data, within inherent limitations, is an important source of programmatic and epidemiological information. Careful interpretation of these findings can provide useful insight for programmatic decision-making.
+**Introduction**: The End TB Strategy, adopted by the World Health Assembly in 2014, expands the scope of TB control beyond countries with a high burden of TB to also include countries and areas with a low and intermediate burden of the disease. Analysis of TB data from these countries provides an opportuntity to assess progress and inform future directions.
+
+**Methods**: Case notifications, treatment outcomes and TB/HIV progress from nine low- and intermediate-burden countries and areas in the Region (LICs) were analysed---Australia; Brunei Darussalam; China, Hong Kong SAR; China, Macao SAR; Japan; Malaysia; New Zealand; Republic of Korea and Singapore. These countries and areas make up 13.5% of the regional population.
+
+**Results**: In 2014, LICs in the Region reported 97 thousand people with TB disease accounting for 7.02% of the regional burden. Case notification rates have mostly trended downward since 1980. Most LICs show a consecutive decrease in TB trends from older to younger age groups with children under 15 substantially lower than the next eldest age group. The proportion foreign-born amongst TB cases and that of the general population ranges greatly amongst the LICs. All LICs besides Australia and New Zealand have the majority of TB cases coming from the domestic-born population. For the 2013 cohort, the proportion of patients successfully treated was highest in China, Macao SAR (88.3%) and lowest in Japan (54.1%). Patients not evaluated was the most common unfavourable treatment outcome, followed by death and lost to follow-up. HIV testing among TB patients is high or increasing in all LICs except Japan. Co-trimoxazole preventive therapy (CPT) and antiretroviral therapy (ART) coverage is largely unreported and low in most LICs.
+
+**Discussion**: The TB burden found in these nine LICs, while comparatively small, still represents nearly 100 000 cases in the Region. The epidemiological situation amongst the LICs is varied and suggests diverse strategies for controlling TB. Migration continues to be a key issue for TB control, although less than 10% of TB cases in LICs are foreign-born. Treatment success is still low in most LICs, which may be attributable to complications surrounding TB treatment for the elderly. Patients lost to follow-up is still a problem, especially in Japan, Malaysia and the Republic of Korea. HIV testing is over 50% in most LICs and rising. The proportion of TB/HIV cases found is low indicating a good level of testing coverage and prioritization of patients tested. CPT and ART coverage, however, should receive more attention as proportions are well below 100%. Within inherent limitations, TB surveillance data are an important source of programmatic and epidemiological information. Careful interpretation of these findings can provide useful insight for programmatic decision-making.
 
 --------------------------------------------------------
 
@@ -683,11 +661,7 @@ i2a <- signif(sum0(subset(tb, g_whoregion=="WPR" & year >= 2000, c_newinc)) / 1e
 i3 <- tb %>% filter(year==yr, g_whoregion=="WPR") %>% summarize(cases=sum0(c_notified / 1e6)) %>% signif(2)
 ```
 
-The End TB Strategy, adopted by the World Health Assembly in 2014,[cite] expands the scope of TB control beyond countries with a high burden of TB to also include countries and areas with a low and intermediate burden of the disease. The challenges faced by these countries are diverse and often require innovative solutions. WHO released guidelines toward TB elimination in countries that have a low burden of disease,[cite] which requires concerted efforts on marginalized and vulnerable populations. In the World Health Organization (WHO) Western Pacific Region, significant progress has been made in the past few decades in reducing the burden of TB including among higher-income countries with a lower disease burden. Analysis of TB data from these countries provides an opportuntity to assess progress and inform future directions.
-
-This article is part of complementary analyses conducted in conjunction with the regional analysis of 2014 TB case notification data.[cite] 
-
-
+The End TB Strategy, adopted by the World Health Assembly in 2014,[@WorldHealthOrganization2014a] expands the scope of TB control beyond countries with a high burden of TB to also include countries and areas with a low and intermediate burden of the disease. The challenges faced by these countries are diverse and often require innovative solutions. WHO released a framework towards TB elimination in countries that have a low burden of disease,[@WorldHealthOrganization2014] which requires concerted efforts on marginalized and vulnerable populations. In the WHO Western Pacific Region, significant progress has been made in the past few decades in reducing the burden of TB including among higher-income countries with a lower disease burden. Analysis of TB data from these countries provides an opportuntity to assess progress and inform future directions.
 
 Methods
 --------------------------------------------------------
@@ -709,28 +683,98 @@ r_ver <- paste(info$R.version$major, info$R.version$minor, sep=".")
 Of the 36 countries and areas in the Region which are requested to submit annual reports of TB surveillance data, seven are considered high-burden countries for TB and an additional 20 are Pacific islands. The remaining nine low- and intermediate-burden countries and areas in the Region (LICs) are the focus of this analysis---`r m1`.
 
 ### Data
-Methods of data collection have evolved since WHO began routinely collecting TB data. Since 2009, a web-based online system has been used for data submission and validation. Collected data covers the following areas: TB case notifications and treatment outcomes, diagnostic and treatment services, drug management, surveillance and surveys of drug-resistance, information on TB/HIV co-infection, infection control, engagement of all care providers and budget and expenditure for TB control. The full description of methods is available in the Global Tuberculosis Report[@WorldHealthOrganization2014] and the data sets are available from the WHO global TB database (www.who.int/tb/data). Case definitions for TB were revised in 2013[@WorldHealthOrganization2013] and cases previously known as smear-positive are now included in laboratory-confirmed cases. The revised case definitions combine smear-negative cases with all clinically diagnosed cases and therefore obscure the number of cases where smear was not done or results are unknown. In 2012 for these LICs, `r m6`% of cases did not have a smear result. At the country level, the proportion was as high as `r m5` percent  in `r m4`, respectively.
+Methods of data collection have evolved since WHO began routinely collecting TB data. Since 2009, a web-based online system has been used for data submission and validation. Collected data covers the following areas: TB case notifications and treatment outcomes, diagnostic and treatment services, drug management, surveillance and surveys of drug-resistance, information on TB/HIV co-infection, infection control, engagement of all care providers and budget and expenditure for TB control. The full description of methods is available in the Global Tuberculosis Report[@WorldHealthOrganization2015] and the data sets are available from the WHO global TB database (www.who.int/tb/data). Case definitions for TB were revised in 2013[@WorldHealthOrganization2013] and cases previously known as smear-positive are now included in laboratory-confirmed cases. The revised case definitions combine smear-negative cases with all clinically diagnosed cases and therefore obscure the number of cases where smear was not done or results are unknown. In 2012 for these LICs, `r m6`% of cases did not have a smear result. At the country level, the proportion was as high as `r m5` percent  in `r m4`, respectively.
 
 For `r yr`, all nine LICs of the Western Pacific Region reported data representing `r m2`% of the Regional population. 
-
-### Analysis and reproducibility
-Analysis was conducted in the statistical software environment R (ver. `r r_ver`, R Core Team, `r info$R.version$year`, Vienna, Austria, www.R-project.org). Due to calls for transparent and reproducible research,[@Peng2006; @Groves2012] we have published programme code to generate the entire contents of this article including all figures and tables by using R with the knitr package (ver. `r info$otherPkgs$knitr$Version`, Yihui Xie, `r format.Date(info$otherPkgs$knitr$Date, "%Y")`). Readers can download the code (see supplement material) and reproduce all figures and tables under an appropriate personal computing environment. For non-commercial purposes, readers may modify the code to produce figures and tables that are not presented in this article. For instance, readers may wish to produce tables and figures for countries or regions other than the WHO Western Pacific Region.
-
 
 
 Results
 --------------------------------------------------------
-```{r results, include=FALSE}
 
 
+#### Case notification
+
+In `r yr`, LICs in the Region reported `r n1` people with TB disease (`r I(pasteLabel("Table", tableCount, "t.notif"))`). This accounts for `r m2b`% of the regional burden. New and relapse cases (new episodes of TB) accounted for 96.2% of those notified. Pulmonary new and relapse cases were bacteriologically confirmed in 72% of LIC cases, ranging from 62% in Singapore to 96% in Brunei Darussalam. The proportion of extrapulmonary cases tend to form three groups, high proportions of over 35% in Australia and New Zealand, low proportions in China, Macao SAR, Malaysia and Singapore with around 15%, and the remaining LICs around 20%. Relapse cases comprise 8.7% of cases in these countries with the highest in the Republic of Korea at 13%. Other retreatment cases are generally low with the highest proportions in Malaysia (2.7%) and the Republic of Korea (6.7%). All proportions presented are higher in LICs combined total than the WPR average.
+
+`r I(pasteLabel("Figure", figCount, "f.spread"))` displays the differences in TB burden between LICs. New and relapse TB notification rates are mapped to a horizontal log scale to better show the natural progression as disease burden decreases. The vertical scale shows the actual number of cases per year. Japan, with the largest population, sits in the middle of this spread with an existing burden of nearly 20 thousand cases per year. Australia and New Zealand have comparatively lower burdens of TB in terms of proportion and absolute numbers. Brunei Darussalum, China, Hong Kong SAR, China, Macao SAR, and Singapore have higher proportions of TB, but a comparatively lower absolute burden due to smaller population sizes. With similar, but slightly higher proportions, Malaysia and the Republic of Korea have much higher case loads due to their larger populations with over 24 and 40 thousand cases, respectively. 
+
+Case notification rates have mostly trended downward since 1980, with the exception of rates in Malaysia and Singapore (`r I(pasteLabel("Figure", figCount, "f.trend"))`). Trends have tapered off in recent years in Australia, Brunei Darussalam, the Republic of Korea, and China, Macao SAR. The trend modeled from 2005 to 2014 shows the greatest annual rate of decline to be in Japan (3.7%).
+
+
+#### Age-specific notification rates
+
+The breakdown of cases by age group, including both native- and foreign-born, are presented in `r I(pasteLabel("Figure", figCount, "f.agesex"))`. All countries besides Australia and New Zealand show a distinct gap between the oldest and the remaining age groups. Most of these countries show a consecutive decrease with younger age groups with the most clear distinction seen in Malaysia since 2003. TB among children under 15 is substantially lower than the next eldest age group in all settings.
+
+
+#### Migration
+
+The proportion of TB cases and of the general population that are foreign-born ranges greatly amongst the LICs (`r I(pasteLabel("Figure", figCount, "f.migrant"))`). The proportion of TB cases foreign-born is much higher than in the general population in Australia and New Zealand, whereas in the special administrative regions of China, it is much lower. The remaining five LICs have proportions similar between the two groups, although Brunei Darussalam and Singapore have much higher proportions of foreigners amongst TB cases and the general population. All LICs besides Australia and New Zealand have the majority of TB cases coming from the domestic-born population.
+
+
+#### Treatment outcomes
+
+For the 2013 cohort as seen in `r I(pasteLabel("Figure", figCount, "f.txout"))`, the proportion of patients successfully treated was highest in China, Macao SAR (88.3%) and lowest in Japan (54.1%). Patients not evaluated was the most common unfavourable treatment outcome, followed by death and lost to follow-up. Death rates were highest in China, Hong Kong SAR (17.1%) and Japan (16.5%). The rates of lost to follow-up were highest in the Republic of Korea (10.0%), Japan (6.7%) and Malaysia (5.0%). Trends show some consistency in treatment success alongside considerable variation over time in the causes of unfavourable outcomes.
+
+
+#### TB/HIV
+
+HIV testing among TB patients is high or increasing in all LICs except Japan (`r I(pasteLabel("Figure", figCount, "f.tbhiv"))`). The number of TB/HIV cases found remains low and decreasing, again with the exception of Japan. Co-trimoxazole preventive therapy (CPT) and antiretroviral 
+therapy (ART) coverage is largely unreported and low in most LICs, except Brunei Darussalam (also unreported for the latest year).  
+
+
+Discussion
+--------------------------------------------------------
+
+```{r discussion}
+
+
+# for paragraph
+# d1 <- estd %>% filter(year==yr) %>% mutate(c=signif(c_newinc / 1e6, 2), r=signif(c_newinc_100k,2)) %>% select(c, r)
+prop.new.licall <- tb %>% filter(year==2014, g_whoregion=="WPR") %>% mutate(lic=iso3 %in% lic) %>% group_by(lic) %>% summarize(prop.new=sum0(c_newinc)/sum0(c_notified) * 100)
+
+  
 ```
 
 
-### Case notification
+The TB burden found in these nine LICs, while comparatively small, still represents nearly 100 000 cases in the Region. As these countries are wealthier than the regional average, the higher levels of bacteriological confirmation may be attributed to the greater availability of more sensitive diagnostics. As noted above, the proportion of cases which did not receive confirmatory testing is unknown, but likely not insignificant. The proportion of extrapulmonary at two and a half times the regional average may also be a result of more sophisticated diagnostics and increased clinical ability to detect these cases. 
 
-In `r yr`, LICs in the Region reported `r n1` people with TB disease (`r I(pasteLabel("Table", tableCount, "t.notif"))`). This accounts for `r m2b`% of the regional burden. New and relapse cases (new episodes of TB) accounted for 96.2% of those notified. Pulmonary new and relapse cases were bacteriologically confirmed in 72% of LIC cases, ranging from 62% in Singapore to 96% in Brunei Darussalam. The proportion of extrapulmonary cases tend to form three groups, high proportions of over 35% in Australia and New Zealand, low proportions in China, Macao SAR, Malaysia and Singapore with around 15%, and the remaining LICs around 20%. Relapse cases comprise 8.7% of cases in these countries with the highest in the Republic of Korea at 13%. Other retreatment cases are generally low with the highest proportions in Malaysia (2.7%) and the Republic of Korea (6.7%). All proportions presented are higher in LICs than the WPR average.
+The epidemiological situation amongst the LICs is varied and suggests diverse strategies for controlling TB. Australia and New Zealand meet the criteria of less than 10 cases per 100 000 identified for targeting elimination.[@WorldHealthOrganization2014] Similar to other countries with a low burden of TB, the challenge of providing effective TB services for migrants should be prioritized if elimination is to be realized.[@WorldHealthOrganizationRegionalOfficefortheWesternPacific2016] 
 
- 
+Where active transmission has been interrupted, TB disease is only a result of reactivation of previous infection. `r I(pasteLabel("Figure", figCount, "f.agesex"))` presents TB trends in age groups and reveals diverse epidemiological situations. Australia and New Zealand have the highest proportions of foreign-born cases (`r I(pasteLabel("Figure", figCount, "f.migrant"))`) and show the highest rates in the 15--44 age groups. China, Hong Kong SAR and Japan show general downward trends in nearly all age groups indicating some transmission control despite aging populations. Malaysia shows increasing trends in nearly all age groups giving evidence toward ongoing transmission and a growing epidemic. In the Republic of Korea, TB in the older groups is increasing while decreasing in the younger groups with minimal foreign-born cases. This situation warrants further investigation.
+
+Migration continues to be a key issue for TB control, although with the exception of Australia and New Zealand, the majority of TB cases are not in migrant populations (`r I(pasteLabel("Figure", figCount, "f.migrant"))`). As the proportion of infected individuals amongst the elderly decreases in Singapore and Brunei Darussalam, effective TB services for migrant populations will become more important. In Japan, Malaysia and the Republic of Korea, the vast majority of TB cases are in the native-born population. China, Hong Kong SAR and China, Macao SAR have lower than expected migration amongst their TB cases compared to Australia and New Zealand. This may be due to the predominate source countries for migrants and due to migrant screening policy differences.
+
+Treatment failure is considerably low in recent years and the number of unevaluated cases is gradually reducing (`r I(pasteLabel("Figure", figCount, "f.txout"))`). Treatment success is still low in most LICs, which may be attributable to complications surrounding TB treatment for the elderly. Patients lost to follow-up is still a problem, especially in Japan, Malaysia and the Republic of Korea. HIV testing is mostly over 50% and rising (`r I(pasteLabel("Figure", figCount, "f.tbhiv"))`). The proportion of TB/HIV cases found is low indicating a good level of testing coverage and prioritization of patients tested. CPT and ART coverage, however, should receive more attention as proportions are well below 100%.
+
+This analysis provides a snapshot of the epidemiological and programmatic situation of TB in these select countries and areas based on the case notification data in `r yr`. As for any disease surveillance system, the analysis of surveillance data has inherent limitations. TB is a notifiable disease in all LICs, however adherence to notification protocols and fluctuation in government public health performance can strongly influence observed epidemiological trends. A careful assessment is needed of programmatic progress in the country and the quality of surveillance data when interpreting these findings.
+
+TB surveillance continues to be an important source of information for assessing the TB situation and measuring the progress for decision-making. WHO Regional Office for the Western Pacific will continue to conduct regional analyses on various topics related to TB epidemiology and programmatic progress. WHO continues to provide open access to the global TB database for additional analysis.
+
+
+Supplementary materials
+--------------------------------------------------------
+
+In response to calls for transparent and reproducible research,[@Peng2006; @Groves2012] we have published the programme code to generate the entire contents of this article including all figures and tables by using *R* with the knitr package (ver. `r info$otherPkgs$knitr$Version`, Yihui Xie, `r format.Date(info$otherPkgs$knitr$Date, "%Y")`). Readers can download the code (available on request) and reproduce all figures and tables under an appropriate personal computing environment. 
+
+
+##### Funding
+
+None.
+
+
+##### Conflict of interest
+
+None declared.
+
+
+##### Acknowledgement
+
+The authors are very grateful to the national tuberculosis control programmes of the countries of the Western Pacific Region.
+
+
+Tables and Figures
+--------------------------------------------------------
+
 
 --------------------------------------------------------
 
@@ -757,13 +801,9 @@ print(tbm, type="html", include.rownames=FALSE, include.colnames=FALSE, html.tab
   </TR> 
   <TR>", 
   "<TR> <TD colspan=7>Blank cells indicate data not reported.<br>
-  <sup>a</sup> NEW AND RELAPSE includes cases for which the treatment history is unknown.</TD></TR>")))
+  <sup>a</sup> New and relapse includes cases for which the treatment history is unknown.</TD></TR>")))
 
 ```  
-
---------------------------------------------------------
-
-`r I(pasteLabel("Figure", figCount, "f.spread"))` displays the differences in TB burden between LICs. New and relapse TB notification rates are mapped to a horizontal log scale to better show the natural progression as disease burden decreases. The vertical scale shows the actual number of cases per year. Japan, with the largest population, sits in the middle of this spread with an existing burden of nearly 20 thousand cases per year. Australia and New Zealand have comparatively lower burdens of TB in terms of proportion and absolute numbers. Brunei Darussalum, China, Hong Kong SAR, China, Macao SAR, and Singapore have higher proportions of TB, but a comparatively lower absolute burden due to smaller population sizes. With similar, but slightly higher proportions, Malaysia and the Republic of Korea have much higher case loads due to their larger populations with over 24 and 40 thousand cases, respectively. 
 
 --------------------------------------------------------
 
@@ -773,13 +813,7 @@ print(tbm, type="html", include.rownames=FALSE, include.colnames=FALSE, html.tab
 f.spread
 ```
 
-AUS=Australia; BRN=Brunei Darussalam; HKG=China, Hong Kong SAR; JPN=Japan; KOR=Republic of Korea; MAC=China, Macao SAR; MYS=Malaysia; NZL=New Zealand; SGP=Singapore.
-
---------------------------------------------------------
-
-Case notification rates have mostly trended downward since 1980, with the exception of rates in Malaysia and Singapore (`r I(pasteLabel("Figure", figCount, "f.trend"))`). Trends have tapered off in recent years in Australia, Brunei Darussalam, the Republic of Korea, and China, Macao SAR. Modeling from 2004, the greatest annual rate of decline is seen in Japan (3.7%).
-
-
+AUS, Australia; BRN, Brunei Darussalam; HKG, China, Hong Kong SAR; JPN, Japan; KOR, Republic of Korea; MAC, China, Macao SAR; MYS, Malaysia; NZL, New Zealand; SGP, Singapore.
 
 --------------------------------------------------------
 
@@ -790,16 +824,9 @@ Case notification rates have mostly trended downward since 1980, with the except
 f.trend
 ```
 
-Blue trendlines and numbers indicate the exponential fit and annual change for the last 10 years.
+Green trendlines and numbers in the plot area indicate the exponential fit and annual change for the last 10 years.
 
-AUS=Australia; BRN=Brunei Darussalam; HKG=China, Hong Kong SAR; JPN=Japan; KOR=Republic of Korea; MAC=China, Macao SAR; MYS=Malaysia; NZL=New Zealand; SGP=Singapore.
-
---------------------------------------------------------
-
-#### Age-specific notification rates
-
-The breakdown of cases by age group, including both native- and foreign-born, are presented in `r I(pasteLabel("Figure", figCount, "f.agesex"))`. All countries besides Australia and New Zealand show a distinct gap between the oldest and the remaining age groups. Most of these countries show a consecutive decrease with younger age groups with the most clear distinction seen in Malaysia since 2003. TB among children under 15 is substantially lower than the next eldest age group in all settings.
-
+AUS, Australia; BRN, Brunei Darussalam; HKG, China, Hong Kong SAR; JPN, Japan; KOR, Republic of Korea; MAC, China, Macao SAR; MYS, Malaysia; NZL, New Zealand; SGP, Singapore.
 
 --------------------------------------------------------
 
@@ -811,14 +838,7 @@ f.agesex
 
 ^a^ Rates prior to 2013 include new cases only and prior to 2006 (2005 for HKG) include smear-positive cases only. Other gaps indicate data not reported.
 
-AUS=Australia; BRN=Brunei Darussalam; HKG=China, Hong Kong SAR; JPN=Japan; KOR=Republic of Korea; MAC=China, Macao SAR; MYS=Malaysia; NZL=New Zealand; SGP=Singapore.
-
---------------------------------------------------------
-
-
-#### Migration
-
-The proportion of TB cases and of the general population that are foreign-born ranges greatly amongst the LICs (`r I(pasteLabel("Figure", figCount, "f.migrant"))`). The proportion of TB cases foreign-born is much higher than in the general population in Australia and New Zealand, whereas in the special administrative regions of China, it is much lower. The remaining five LICs have proportions similar between the two groups, although Brunei Darussalam and Singapore have much higher proportions of foreigners amongst TB cases and the general population. All LICs besides Australia and New Zealand have the majority of TB cases coming from the domestic-born population.
+AUS, Australia; BRN, Brunei Darussalam; HKG, China, Hong Kong SAR; JPN, Japan; KOR, Republic of Korea; MAC, China, Macao SAR; MYS, Malaysia; NZL, New Zealand; SGP, Singapore.
 
 --------------------------------------------------------
 
@@ -828,16 +848,10 @@ The proportion of TB cases and of the general population that are foreign-born r
 f.migrant
 ```
 
-Diagonal line indicates equal proportions on horizontal and vertical scales.
-International migrant stock data from World Development Indicators, World Bank.
+The diagonal line indicates equal proportions on horizontal and vertical scales.
+International migrant stock data are from World Development Indicators, World Bank.
 
-AUS=Australia; BRN=Brunei Darussalam; HKG=China, Hong Kong SAR; JPN=Japan; KOR=Republic of Korea; MAC=China, Macao SAR; MYS=Malaysia; NZL=New Zealand; SGP=Singapore.
-
---------------------------------------------------------
-
-#### Treatment outcomes
-
-For the 2013 cohort as see in `r I(pasteLabel("Figure", figCount, "f.txout"))`, the proportion of patients successfully treated was highest in China, Macao SAR (88.3%) and lowest in Japan (54.1%). Patients not evaluated was the most common unfavourable treatment outcome, followed by death and lost to follow-up. Death rates were highest in China, Hong Kong SAR (17.1%) and Japan (16.5%). The rates of lost to follow-up were highest in the Republic of Korea (10.0%), Japan (6.7%) and Malaysia (5.0%). Trends show some consistency in treatment success alongside considerable variation over time in the causes of unfavourable outcomes.
+AUS, Australia; BRN, Brunei Darussalam; HKG, China, Hong Kong SAR; JPN, Japan; KOR, Republic of Korea; MAC, China, Macao SAR; MYS, Malaysia; NZL, New Zealand; SGP, Singapore.
 
 --------------------------------------------------------
 
@@ -847,84 +861,29 @@ For the 2013 cohort as see in `r I(pasteLabel("Figure", figCount, "f.txout"))`, 
 f.txout
 ```
 
-AUS=Australia; BRN=Brunei Darussalam; HKG=China, Hong Kong SAR; JPN=Japan; KOR=Republic of Korea; MAC=China, Macao SAR; MYS=Malaysia; NZL=New Zealand; SGP=Singapore.
-
---------------------------------------------------------
-
-#### TB/HIV
-
-HIV testing among TB patients is high or increasing in all LICs except Japan (`r I(pasteLabel("Figure", figCount, "f.tbhiv"))`). The number of TB/HIV cases found remains low and decreasing, again with the exception of Japan. Co-trimoxazole preventive therapy (CPT) and antiretroviral 
-therapy (ART) coverage is largely unreported and low in most LICs, except Brunei Darussalam (also unreported for the latest year).  
+AUS, Australia; BRN, Brunei Darussalam; HKG, China, Hong Kong SAR; JPN, Japan; KOR, Republic of Korea; MAC, China, Macao SAR; MYS, Malaysia; NZL, New Zealand; SGP, Singapore.
 
 --------------------------------------------------------
 
 <a id="f.tbhiv"></a> 
-**`r I(pasteLabel("Figure", figCount, "f.tbhiv", insLink=FALSE))`. Progress in TB/HIV activities in select countries in the Western Pacific Region, min(thb$year)--`r max(thb$year)`**  
+**`r I(pasteLabel("Figure", figCount, "f.tbhiv", insLink=FALSE))`. Progress in TB/HIV activities in select countries in the Western Pacific Region, `r min(thb$year)`--`r max(thb$year)`**  
 ``` {r f.tbhiv, fig.width=9, fig.height=7, warning=FALSE}
 f.tbhiv
 ```
 
 Gaps and empty panels indicate data not reported.
 
-CPT=co-trimoxazole preventive therapy; ART=antiretroviral 
-therapy; AUS=Australia; BRN=Brunei Darussalam; HKG=China, Hong Kong SAR; JPN=Japan; KOR=Republic of Korea; MAC=China, Macao SAR; MYS=Malaysia; NZL=New Zealand; SGP=Singapore.
+CPT, co-trimoxazole preventive therapy; ART, antiretroviral 
+therapy; AUS, Australia; BRN, Brunei Darussalam; HKG, China, Hong Kong SAR; JPN, Japan; KOR, Republic of Korea; MAC, China, Macao SAR; MYS, Malaysia; NZL, New Zealand; SGP, Singapore.
 
 --------------------------------------------------------
 
 
-
-Discussion
+References
 --------------------------------------------------------
 
-```{r discussion}
-
-
-# for paragraph
-# d1 <- estd %>% filter(year==yr) %>% mutate(c=signif(c_newinc / 1e6, 2), r=signif(c_newinc_100k,2)) %>% select(c, r)
-
-  
-```
-
-
-The TB burden found in these nine LICs, while comparatively small, still represents nearly 100 000 cases in the Region. As these countries are wealthier than the regional average, the higher levels of bacteriological confirmation may be attributed to the greater availability of more sensitive diagnostics. As noted above, the proportion of cases which did not receive confirmatory testing is unknown, but likely not insignificant. The proportion of extrapulmonary at two and a half times the regional average may also be a result of more sophisticated diagnostics and increased ability to detect these cases. The higher levels of retreatment cases, including relapse, give some indication that active transmission is lower in these settings.
-
-The epidemiological situation amongst the LICs is varied and suggests diverse strategies for controlling TB. Australia and New Zealand meet the criteria of less than 10 cases per 100 000 identified for targeting elimination.[cite] Similar to other countries with a low burden, the challenge of providing effective TB services for migrants should be prioritized if elimination is to be realized. 
-
-Where active transmission has been mostly removed, the highest TB rates are seen in the elderly due to reactivation and in migrants due to infection occuring in their country of departure. The majority of migrants are younger and `r I(pasteLabel("Figure", figCount, "f.agesex"))` provides a clue as to when the burden of TB shifts to migrants from the native elderly population. The gap in many LICs between the oldest and the younger age groups also hints at the remains of a peak in transmission during the mid-twentieth century. The gap between the youngest age group and the rest may be a result of underdiagnosis in this age group. [is there any epidemiological explanation for this?]
-
-Migration continues to be a key issue for TB control, although with the exception of Australia and New Zealand, the majority of TB cases are not in migrant populations (`r I(pasteLabel("Figure", figCount, "f.migrant"))`). As the proportion of infected individuals amongst the elderly decreases in Singapore and Brunei Darussalam, effective TB services for migrant populations will become more important. In Japan, Malaysia and the Republic of Korea, the vast majority of TB cases are in the native-born population. 
-
-Treatment failure is considerably low in recent years and the number of unevaluated cases is reducing (`r I(pasteLabel("Figure", figCount, "f.txout"))`). Treatment success is still low in most LICs, which may be attributable to complications surrounding TB treatment for the elderly. Patients lost to follow-up is still a problem, especially in Japan, Malaysia and the Republic of Korea. HIV testing is mostly over 50% and rising (`r I(pasteLabel("Figure", figCount, "f.tbhiv"))`). The proportion of TB/HIV cases found is low indicating a good level of testing coverage. CPT and ART coverage, however, should receive more attention as proportions are well below 100%.
-
-This analysis provides a snapshot of the epidemiological and programmatic situation of TB in these select countries and areas based on the case notification data in `r yr`. As for any disease surveillance system, the analysis of surveillance data has inherent limitations. TB surveillance covers populations served by care providers linked with the national TB programme. Ideally this would include all known cases in the country; in practice the proportion of cases diagnosed outside of the TB programme and included in national reporting varies depending on the legal framework in the country. The WHO TB Impact Measurement Task Force recommends that countries continuously improve surveillance systems until reported cases can be considered a reliable proxy for incidence.[@WorldHealthOrganization2009; @WorldHealthOrganization2014b] A careful assessment is needed of programmatic progress in the country and the quality of surveillance data when interpreting these findings.
-
-TB surveillance continues to be an important source of information for assessing the situation and measuring the progress for decision-making. WHO Regional Office for the Western Pacific will continue to conduct regional analyses on various topics related to TB epidemiology and programmatic progress. WHO continues to provide open access to the global TB database for additional analysis.
-
-
-
---------------------------------------------------------
-
-**<em>Funding</em>**
-
-None.
-
---------------------------------------------------------
-
-**<em>Conflict of interest</em>**
-
-None declared.
-
---------------------------------------------------------
-
-**<em>Acknowledgement</em>**
-
-The authors are very grateful to the national tuberculosis control programmes of the countries of the Western Pacific Region.
-
---------------------------------------------------------
-
-**<em>References:</em>**
 
 ```{r magic copier, include=FALSE, echo=FALSE}
 # Bit to copy html file over
-# file.copy("D:/Users/hiattt/Dropbox/Code/Surveillance reports/LowInc.html", "D:/Users/hiattt/Dropbox/STB-WPRO/WPSAR surveillance paper/LIburden.html", overwrite = TRUE)
+# file.copy("D:/Users/hiattt/Dropbox/Code/Surveillance reports/LowInc.html", "D:/Users/hiattt/Dropbox/STB-WPRO 2016/WPSAR articles/LIburden.html", overwrite = TRUE)
 ```
