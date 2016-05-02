@@ -1,5 +1,5 @@
 ---
-title: 'Epidemiology and control of tuberculosis in the Western Pacific Region: update with 2013 case notification data'
+title: 'Epidemiology and control of tuberculosis in the Western Pacific Region: update with 2014 case notification data'
 author: "Tom Hiatt<sup>&dagger;</sup> and Nobuyuki Nishikiori<sup>&dagger;</sup>"
 csl: vancouver-imperial-college-london.csl
 output:
@@ -24,7 +24,7 @@ bibliography: WPRupdate.bib
 # Regional TB annual analysis
 ###################################################
 
-yr <- 2013
+yr <- 2014
 
 ###################################################
 
@@ -754,7 +754,7 @@ The overall trend of TB treatment success in the Western Pacific Region continue
 
 <a id="f-txout-line"></a> 
 **`r I(pasteLabel("Figure", figCount, "f-txout-line", insLink=FALSE))` Trend of TB treatment success among new bacteriologically-confirmed cases in the Western Pacific Region and countries with a high-burden of TB in the Region, `r min(trd$year)`--`r max(trd$year)`**  
-``` {r f-txout-line, fig.height=7.5}
+``` {r f-txout-line, fig.height=7.5, warning=FALSE}
 
 trd1 <- ggplot(trd, aes(year, success, color=iso3, size = area=="WPR")) + geom_line() + theme_report() + geom_text(data=end.labels(trd, "year", "success", min.spread=1.4, max1=96), aes(label=iso3), hjust=-0.2, vjust=0, size=4)  + scale_y_continuous("Per cent of cohort successfully treated") + scale_x_continuous("", limits=c(2000,yr-0.3)) + coord_cartesian(ylim=c(30,100)) + scale_size_discrete(range = c(1,1.5)) + theme(legend.position="none") + scale_colour_manual(values=wpsar_colors) + guides(fill = guide_legend(reverse = TRUE))
 
