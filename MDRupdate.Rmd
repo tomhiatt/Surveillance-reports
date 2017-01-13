@@ -1,0 +1,394 @@
+```{r setup, echo=FALSE, include=FALSE}
+
+###################################################
+# Tom Hiatt
+# Updated: 12 March 2014
+# Regional TB annual analysis
+###################################################
+
+## Change this information to customize for your own data.
+
+# Year of TB notification data
+yr <- 2012
+# 
+
+###################################################
+
+# > sessionInfo()
+
+
+require("reshape")
+require("ggplot2")
+require("grid")
+require("scales")
+require("xtable")
+require("stringr")
+require("timeSeries")
+require("ggthemes")
+
+
+# Reproducible research process inspired by: http://gforge.se/2014/01/fast-track-publishing-using-knitr-part-ii/
+
+# Global options for knitr
+# change this to 'postscript' for EPS output.
+require(knitr)
+opts_chunk$set(
+#   dev="png",
+#   dev.args=list(type="cairo"),
+#   dpi=96,
+  fig.width=7,
+  echo=FALSE
+  )
+
+whbc <- c("KHM", "CHN", "LAO", "MNG", "PNG", "PHL", "VNM")
+
+# Create regional report folder if needed.
+# dir.create("./Regional_report") # run this if error below
+# dir.create("./figure data") # run this if error below
+if(!any(grep("Regional_report", getwd()))) setwd("./Regional_report")
+
+
+# Theme for plots
+theme_report <- function(base_size=12, base_family="") {
+    colors <- ggthemes_data$few
+    gray <- colors$medium['gray']
+    black <- colors$dark['black'] # I don't know why these last 3 parts are needed, but they are. List is here: http://docs.ggplot2.org/0.9.2.1/theme.html
+    theme_bw(base_size=base_size, base_family=base_family) +
+        theme(
+            line = element_line(colour = gray),
+            rect = element_rect(fill = "white", colour = NA),
+            text = element_text(colour = black),
+            axis.ticks.x = element_line(colour = gray),
+            axis.ticks.y = element_blank(),
+            legend.key = element_rect(colour = NA),
+            ## Examples do not use grid lines
+            panel.border = element_rect(colour = gray),
+            panel.grid.major.x = element_blank(),
+            panel.grid.minor = element_blank(),
+            strip.background = element_rect(fill="white", colour=NA),
+            strip.text = element_text(hjust=0)
+            )
+}
+
+########################################################
+# Functions for data formatting
+########################################################
+
+# Simple rounder that just adds in the thousands separator 
+rounder <- function(x, decimals=FALSE) {
+  if(decimals==TRUE){
+    ifelse(is.na(x), NA, ifelse(x==0, 0, ifelse(x < 0.01, "<0.01", ifelse(round(x,2) < 0.1, formatC(round(x,2), format='f', digits=2), ifelse(round(x,1) < 10, formatC(round(x,1), format='f', digits=1), formatC(round(x,0), big.mark=" ", format='d') )))))
+  }
+  else ifelse(is.na(x), NA, ifelse(x==0, 0, ifelse(x < 1, "< 1", formatC(round(x,0), big.mark=" ", format='d'))))
+}
+
+.rowsums <- function(x) { 
+  # This function sums rows ignoring NAs unless all are NA
+  # use it like this
+  # t3c$snu <- .rowsums(t3c[c('new_sn', 'new_su')])
+  	tosum <- as.matrix(x)
+		summed <- rowMeans((tosum), na.rm=T) * rowSums(!is.na((tosum)))
+		return(summed)
+}
+
+# Change names to WPSAR convention
+.WPSARnames <- function(d, col='country', ord='no order'){
+  d[col] <- as.character(d[[col]])
+  d[col] <- ifelse(d[[col]]=='China, Hong Kong SAR', 'Hong Kong Special Administrative Region (China)', 
+                   ifelse(d[[col]]=='China, Macao SAR', 'Macao Special Administrative Region (China)', 
+                          ifelse(d[[col]]=='Micronesia (Federated States of)', 'Micronesia, Federated States of', 
+                                 ifelse(d[[col]]=='WPR', 'Western Pacific Region
+', d[[col]]))))
+
+  if(!ord %in% c('wpr')) warning('Not ordering.')
+if(ord=='wpr')  d <- d[match(c("Afghanistan", "Bangladesh", "Brazil", "Cambodia", "China", "DR Congo", "Ethiopia", "India", "Indonesia", "Kenya", "Mozambique",  "Myanmar", "Nigeria", "Pakistan", "Philippines", "Russian Federation", "South Africa", "Thailand", "Uganda", "UR Tanzania", "Viet Nam", "Zimbabwe", "High-burden countries", "AFR", "AMR", "EMR", "EUR", "SEAR", "WPR", "Global"), d[[col]]),]
+
+  return(d)
+}
+
+
+
+########################################################
+# Functions to assist with tables and figure in markdown document (from here: http://rmflight.github.io/posts/2012/10/papersinRmd.html)
+########################################################
+
+incCount <- function(inObj, useName) {
+  nObj <- length(inObj)
+  useNum <- max(inObj) + 1
+  inObj <- c(inObj, useNum)
+  names(inObj)[nObj + 1] <- useName
+  inObj
+}
+figCount <- c(`_` = 0)
+tableCount <- c(`_` = 0)
+
+# tableCount
+
+pasteLabel <- function(preText, inObj, objName, insLink = TRUE) {
+  objNum <- inObj[objName]
+  
+  useText <- paste(preText, objNum, sep = " ")
+  if (insLink) {
+    useText <- paste("[", useText, "](#", objName, ")", sep = "")
+  }
+  useText
+}
+
+tableCat <- function(inFrame) {
+  outText <- paste(names(inFrame), collapse = " | ")
+  outText <- c(outText, paste(rep("---", ncol(inFrame)), collapse = " | "))
+  invisible(apply(inFrame, 1, function(inRow) {
+    outText <<- c(outText, paste(inRow, collapse = " | "))
+  }))
+  return(outText)
+}
+
+# Create directory and Get data
+
+if(!"data" %in% dir() | length(list.files('./data'))==0){
+  dir.create(paste("./data"))
+  stop("Download the notification and treatment outcomes data from 'http://who.int/tb/country/data/download/en/' to './data'.")
+  }
+
+data1 <- dir("./data", full.names=TRUE)
+tb <- NA
+for(i in data1){
+  data3 <- read.csv(i)
+  tb <- merge(tb, data3, all=TRUE)
+}
+
+# Note: to use your own data, make a flat data file with each row corresponding to the lower reporting unit and a aggregating variable. EG by country with aggregating variable of region.
+
+# Add needed variables
+tb$g_hbc22 <- ifelse(tb$iso3 %in% c("AFG", "BGD", "BRA", "CHN", "COD", "ETH", "IDN", "IND", "KEN", "KHM", "MMR", "MOZ", "NGA", "PAK", "PHL", "RUS", "THA", "TZA", "UGA", "VNM", "ZAF", "ZWE"), "high", "low")
+
+tb$c_new <- .rowsums(tb[c("new_sp", "new_sn", "new_su", "new_ep", "new_oth")])
+tb$c_newinc <- .rowsums(tb[c("c_new", "ret_rel", "newret_oth")])
+tb$c_ret <- .rowsums(tb[c("ret_rel", "ret_taf", "ret_tad", "ret_oth")])
+tb$c_notified <- .rowsums(tb[c("c_new", "c_ret", "newret_oth")])
+
+tb$c_tot_newrel_100k <- tb$tot_newrel / tb$e_pop_num * 1e5
+
+# Get population data (available from UN population division. http://esa.un.org/unpd/wpp/unpp/panel_population.htm) and formatted TB/HIV data and estimates for the WHO Western Pacific Region.
+
+# load("./addata.Rdata")
+
+# tb <- merge(tb, tbhiv[c(3,4,13:20)], all=TRUE)
+
+```
+
+
+Drug resistant tuberculosis in the WHO Western Pacific Region
+========================================================
+
+### Tauhid Islam,^a Tom Hiatt^a and Nobuyuki Nishikiori^a
+
+
+^a Stop TB and Leprosy Elimination, Division of Combating Communicable Diseases, World Health Organization Regional Office for the Western Pacific, Manila, the Philippines.
+
+Correspondence to Tauhid Islam (e-mail: islamt@wpro.who.int).
+
+Running title: 
+
+Key words: 
+
+Abstract 
+--------------------------------------------------------
+
+
+
+
+Introduction
+--------------------------------------------------------
+
+
+
+
+Methods
+--------------------------------------------------------
+
+[modify this text appropriately.]
+
+### Data
+Every year, 36 countries and areas in the Region are requested to report TB surveillance data to WHO using a standardized data collection form. Since 2009, a web-based online system has been used for data submission and validation. Collected data covers the following areas: TB case notifications and treatment outcomes, diagnostic and treatment services, drug management, surveillance and surveys of drug-resistance, information on TB/HIV co-infection, infection control, engagement of all care providers and budgets and expenditures for TB control. The full description of methods is available in the Global Tuberculosis Report 2013 and the data sets are available from the WHO global TB database (www.who.int/tb/data). Case definitions for TB can be found in the 4th edition of the TB treatment guidelines.^4 In 2013, 30 countries and areas of the Western Pacific Region reported data representing more than 99.9% of the total population. This report described the epidemiological situation and progress in programmatic response with a focus on seven countries with a high burden of TB: Cambodia, China, the Lao People's Democratic Republic, Mongolia, Papua New Guinea, the Philippines and Viet Nam. (Globally, WHO designates 22 countries with a high burden of TB that include Cambodia, China, the Philippines and Viet Nam. The other three countries: the Lao People's Democratic Republic, Mongolia and Papua New Guinea are considered priority countries with a high burden of TB in the Western Pacific Region).
+
+### Analysis and reproducibility
+Analysis was conducted by the statistical package R (R Core Team, 2013, Vienna, Austria, www.R-project.org). Due to calls for transparent and reproducible research,^5,6 we have published programme code to generate the entire contents of this article including all figures and tables by using R with the knitr package (Yihui Xie, 2013). Readers can download the code (see supplement material) and reproduce all figures and tables under an appropriate personal computing environment. For non-commercial purposes, readers may modify the code to produce figures and tables that are not presented in this article. For instance, readers may wish to produce tables and figures for countries or regions other than the WHO Western Pacific Region.
+
+
+Results
+--------------------------------------------------------
+
+
+### Surveillance
+#### coverage of drug resistance surveillance: 
+<a id="t-notif"></a> 
+##### `r I(pasteLabel("Table", tableCount, "t-notif", insLink=FALSE))`.			Table or map (survey/ surveillance, single/several data point, 				national/ sub national)
+		
+#### MDR-TB rate:
+<a id="t-notif"></a> 
+##### `r I(pasteLabel("Table", tableCount, "t-notif", insLink=FALSE))`.			Table: rate among new and reTx, CI, year, number of country year 				data point
+
+			(R resistance data need to be included as separate column)
+
+#### XDR-TB:
+<a id="t-notif"></a> 
+##### `r I(pasteLabel("Table", tableCount, "t-notif", insLink=FALSE))`.			Table, number and year of reporting
+
+#### Resistance to SLD: 
+<a id="t-notif"></a> 
+##### `r I(pasteLabel("Table", tableCount, "t-notif", insLink=FALSE))`.			Rate (FQ and injectable)
+
+#### Trends in drug resistance:
+<a id="t-notif"></a> 
+##### `r I(pasteLabel("Table", tableCount, "t-notif", insLink=FALSE))`.			Possible?? Graph?
+	
+### Management of drug resistant TB
+		
+#### DST coverage
+<a id="t-notif"></a> 
+##### `r I(pasteLabel("Table", tableCount, "t-notif", insLink=FALSE))`.			Table : % of DST result among new and reTx
+			
+#### Notification and enrolment
+<a id="t-notif"></a> 
+##### `r I(pasteLabel("Table", tableCount, "t-notif", insLink=FALSE))`.			Year, number notified and enrolled, % of total burden
+			Age, sex? Child MDR-TB?
+
+#### Alignment
+<a id="t-notif"></a> 
+##### `r I(pasteLabel("Table", tableCount, "t-notif", insLink=FALSE))`.			Graph showing notification and enrolment
+
+#### Treatment outcome
+<a id="t-notif"></a> 
+##### `r I(pasteLabel("Table", tableCount, "t-notif", insLink=FALSE))`.			Graph (bar country wise)
+
+
+Discussion
+---------------------------------------------------
+
+### WPRO response
+		
+#### rGLC and  activities
+
+
+### Issues & way forward
+
+
+Conflicts of interest
+--------------------------------------------------------
+None declared.
+
+Funding
+--------------------------------------------------------
+None.
+
+References
+--------------------------------------------------------
+
+1. Global Tuberculosis Report 2013. Geneva, World Health Organization, 2013 (http://www.who.int/tb/publications/global_report/en/, accessed 15 March 2014). 
+
+
+
+### Case notification
+
+```{r t-notif-data, warning=FALSE}
+tableCount <- incCount(tableCount, "t-notif")
+
+# Notification table
+
+tbb <- subset(tb, year==yr & g_whoregion=="WPR", select=c('country', 'g_whoregion', 'c_notified', "new_sp", "new_sn", "new_su", "new_ep", "new_oth", "ret_rel", 'c_newinc', "c_ret", "newret_oth", "new_labconf", 'c_new', "e_pop_num"))
+
+tbb$new.pulm <- .rowsums(tbb[c('new_sp', 'new_sn', 'new_su')])
+
+tbb <- tbb[order(tbb$country),]
+names(tbb)[names(tbb)=='country'] <- 'area'
+
+# make aggregate row
+tbbr <- aggregate(tbb[3:ncol(tbb)], by=list(area=tbb$g_whoregion), FUN=sum, na.rm=TRUE)
+
+
+# combine together
+tbc <- rbind(tbb[tbb$g_whoregion=='WPR', c(1, 3:ncol(tbb))], tbbr[tbbr$area=='WPR',]) # , tbbh, tbbga
+
+# Fill in data for countries not reporting lab confirmed (see below too)
+tbc$new_labconf2 <- ifelse(is.na(tbc$new_labconf), tbc$new_sp, tbc$new_labconf)
+
+# calculate and format vars
+tbc$ret_nrel <- tbc$c_ret - tbc$ret_rel
+tbc$newpulm_lab_pct <- tbc$new_labconf2 / tbc$new.pulm * 100
+tbc$tot_newrel_100k <- tbc$c_newinc / tbc$e_pop_num * 1e5
+
+for(var in 2:ncol(tbc)){
+  tbc[var] <- rounder(tbc[[var]])
+}
+tbc[is.na(tbc$newpulm_lab_pct), 'newpulm_lab_pct'] <-  "--"
+tbc[is.na(tbc$tot_newrel_100k), 'newpulm_lab_pct'] <-  "--"
+
+# Add footnote for countries not reporting Lab confirmed 
+footnote.b <- ifelse(any(is.na(tbc$new_labconf) & !is.na(tbc$new_sp)), paste('(b) LABORATORY CONFIRMED data for', paste(subset(tbc, is.na(new_labconf), 'area'), collapse=', '), 'refer to smear-positive cases only. Data on cases that were laboratory confirmed using other methods were not reported.'), "")
+tbc$new_labconf2 <- ifelse(is.na(tbc$new_labconf) & !is.na(tbc$new_sp), paste0(tbc$new_sp, "(b)"), tbc$new_labconf2)
+
+# Rename countries
+tbd <- .WPSARnames(tbc[c("area", "c_notified", "tot_newrel_100k", "new_sp", "new_sn", "new_su", "new_ep", "new_oth", "new_labconf2", "newpulm_lab_pct", "ret_rel", "ret_nrel", "c_newinc")], col="area")
+
+tbm <- xtable(tbd)
+digits(tbm) <- 0
+
+write.csv(tbm, file=paste0(pasteLabel("./figure_data/table", tableCount, "t-notif", insLink=FALSE), ".csv"), row.names=FALSE, na="")
+```
+
+```{r m-notif-data, include=FALSE}
+
+figCount <- incCount(figCount, "m-notif")
+
+mc <- subset(tb, year==yr & g_whoregion=="WPR", select=c(country, iso2, iso3, g_whoregion, c_tot_newrel_100k))
+
+mc$cat <- cut(round(mc$c_tot_newrel_100k,0), c(0, 10, 50, 100, 200, Inf), c('0–9', '10–49', '50–99', '100–199', '>199'), right=FALSE)
+
+mc1 <- WHOmap.print(mc, legend.title= "TB cases per \n100 000 population", copyright=FALSE, show=FALSE, zoom="WPR")
+
+write.csv(mc, file=paste0(pasteLabel("./figure_data/figure", figCount, "m-notif", insLink=FALSE), ".csv"), row.names=FALSE)
+```
+
+
+In 2012, countries and areas in the Region reported 1 410 835 people with TB disease (`r I(pasteLabel("Table", tableCount, "t-notif"))`) making up 23% of the global burden. Of these cases, 97.5% (1 375 713) were new episodes of TB disease (either new or relapse cases). Within the Region China accounts for 64% (900 678) of the caseload with the Philippines and Viet Nam following with 16% (230 162) and 7% (103 906), respectively. TB notification rates, expressed as cases per 100 000 population, vary substantially in the Region with the highest rates found in Kiribati, Papua New Guinea, the Marshall Islands, Cambodia and the Philippines (343, 287, 276, 270 and 224 per 100 000 population, respectively (`r I(pasteLabel("Table", tableCount, "t-notif"))`, `r I(pasteLabel("Figure", figCount, "m-notif"))`). 
+
+
+<a id="t-notif"></a> 
+#### `r I(pasteLabel("Table", tableCount, "t-notif", insLink=FALSE))`. Tuberculosis case notification from countries and areas of the Western Pacific Region, 2012
+```{r t-notif, results='asis'}
+
+print(tbm, type="html", include.rownames=FALSE, include.colnames=F, html.table.attributes="border=0 rules=rows width=900 cellpadding=5", 
+      add.to.row=list(pos=list(0,37), command=c(
+"<TR> <TD colspan=3></TD> 
+  <TH colspan=7>NEW CASES</TH> 
+  <TH colspan=2>RETREATMENT CASES</TH> 
+  <TD colspan=1></TD> </TR> 
+  <TR> <TD></TD> <TD>TOTAL NOTIFIED</TD>
+  <TD>TOTAL NOTIFIED PER 100 000</TD>
+  <TD>SMEAR-<br>POSITIVE</TD> 
+  <TD>SMEAR-<br>NEGATIVE</TD> 
+  <TD>SMEAR NOT DONE</TD>
+  <TD>EXTRA-<br>PULMONARY</TD> 
+  <TD>CASE TYPE<br> UNKNOWN</TD> 
+  <TD>PULMONARY CASES LABORATORY CONFIRMED</TD> 
+  <TD>PERCENTAGE OF PULMONARY CASES LABORATORY CONFIRMED</TD>   
+  <TD>RELAPSE</TD> 
+  <TD>RETREATMENT<br>EXCL. RELAPSE</TD> 
+  <TD>NEW AND<br>RELAPSE(a)</TD> 
+ </TR>", 
+  paste0("<TR> <TD colspan=13>Blank cells indicate data not reported. -- indicates values that cannot be calculated.<br>
+(a) NEW AND RELAPSE includes cases for which the treatment history is unknown.<br>Data reported as of 1 October 2013. See ANNEX 4 of Global Tuberculosis Report, 2013.<br>", footnote.b,"</TD></TR>"))))
+
+```
+
+
+
+<a id="m-notif"></a> 
+#### `r I(pasteLabel("Figure", figCount, "m-notif", insLink=FALSE))` Tuberculosis case notification rate (new and relapse) per 100 000 population in countries and areas of the Western Pacific Region, 2012
+```{r m-notif, fig.height=5}
+
+mc1
+```
+> The boundaries shown and the designations used on this map do not imply the expression of any opinion whatsoever on the part of the World Health Organization concerning the legal status of any country, territory, city or area or of its authorities, or concerning the delimitation of its frontiers or boundaries. White lines on maps represent approximate border lines for which there may not yet be full agreement.
+
